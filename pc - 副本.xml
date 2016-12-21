@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<components>
+  <references>
+    <reference file="java.xml"/>
+    <reference file="aa.xml"/>
+	<reference file="scm.base.xml"/>
+	<reference file="base.xml"/>
+	<reference file="voucher.base.xml"/>
+  </references>
+  <component name="purchaseBill" moduleName="pc" title="请购单">
+	
+    <class name="PurchaseBillHead" title="请购单表头" tableName="PurchaseBillHead" type="class">
+      <attributes>
+        <!-- 基本信息 -->
+		<attribute name="businessType"  columnName="businessType" title="业务类型" type="String" iLength="20"/>
+		<attribute name="purchaseType"  columnName="purchaseType" title="采购类型" type="aa.purchase.PurchasingType" />
+		<attribute name="createOrg" columnName="createOrg" title="创建组织" type="base.org.Organization"/>
+		<attribute name="billNumber" columnName="billNumber" title="请购单编号" type="String" iLength="20"/>
+		<attribute name="billInfo" title="单据日期" columnName="billInfo" type="Date"/>	
+		<attribute name="department" title="请购部门" columnName="departmentId" type="aa.dept.Department"/>		
+		<attribute name="person" title="请购业务员" columnName="personId" type="aa.person.Person"/>		
+		<attribute name="voucherState" columnName="voucherState" title="单据状态" type="String" iLength="20"/>
+		<!-- 其他信息 -->
+		<attribute name="billMaker" columnName="bill_maker" title="制单人" type="aa.user.User"/>
+		<attribute name="billTime" title="制单时间" columnName="bill_time" type="DateTime"/>	
+		<attribute name="billDate" title="制单日期" columnName="bill_date" type="Date"/>	
+		<attribute name="remark" columnName="remark" title="备注" type="aa.role.Role"/>
+      </attributes>
+	</class>
+	
+	<generalizations>
+		<generalization parent="scm.base.SCMVouch" child="PurchaseBillHead" />		
+	</generalizations>
+	<class name="PurchaseBillHeadItem" title="采购订单自定义项" tableName="pc_order_customitem">
+	    
+	</class>
+	<realizations>
+		<realization supplier="base.itf.CustomItem" client="PurchaseBillHeadItem"/>
+	</realizations>
+	<!-- <realizations>
+		<realization supplier="voucher.base.IAutoCode" client="PurchaseBillHead"/>
+	</realizations> -->
+	
+	<class name="PurchaseBillDetail" title="请购单表体" tableName="PurchaseBillDetail" type="class">
+      <attributes>
+        <!-- 基本信息 -->
+		<attribute name="demandOrg" columnName="demandOrg" title="需求组织" type="base.org.Organization" />
+		<attribute name="purchaseOrg" columnName="purchaseOrg" title="采购组织" type="base.org.Organization"/>
+		<attribute name="model" columnName="model" title="型号"  type="String" iLength="255" /> 
+		<attribute name="standard" columnName="standard" title="规格"  type="String" iLength="255" /> 
+		<!-- 料品自定义项 -->
+		<attribute name="requireDate" title="需求日期" columnName="require_date" type="Date"/>	
+		<attribute name="suggestTime" title="建议订货日期" columnName="suggest_time" type="Date"/>
+		<attribute name="CurrentStock" columnName="CurrentStock" title="现存量"  type="String" iLength="255" /> 
+		<attribute name="purchaseUpper" columnName="purchase_upper" title="订货上限%"  type="Decimal" /> 
+		<attribute name="dataKind" columnName="dataKind" title="上游单据类型" type="String" iLength="20"/>
+		<attribute name="dataKindNum" columnName="dataKindNum" title="上游单据号" type="String" iLength="20"/>
+		<attribute name="attachment" columnName="attachment" title="附件" type="String" iLength="200"/>
+		<attribute name="remark" columnName="remark" title="备注" type="String" iLength="1000"/>
+      </attributes>
+	</class>
+	
+	<generalizations>
+		<generalization parent="scm.base.SCMVouchLine" child="PurchaseBillDetail" />
+		<generalization parent="archive.base.Archive" child="PurchaseBillDetail" />		
+		<generalization parent="aa.relation.VendorAndInventory" child="PurchaseBillDetail" />
+		<generalization parent="scm.base.SCMVouch" child="PurchaseBillDetail" />
+	</generalizations>
+	
+	<class name="PurchaseBillDetailItem" title="采购订单自定义项" tableName="pc_order_customitem">
+	    
+	</class>
+    
+	<realizations>
+		<realization supplier="base.itf.CustomItem" client="PurchaseBillDetailItem"/>
+	</realizations>
+		
+  </component>
+</components>
