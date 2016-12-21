@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<components>
+  <references>
+    <reference file="java.xml"/>
+    <reference file="aa.xml"/>
+	<reference file="scm.base.xml"/>
+	<reference file="base.xml"/>
+	<reference file="voucher.base.xml"/>
+  </references>
+  <component name="cancelBill" moduleName="ca" title="退货出库单">
+	
+    <class name="CancelBillHead" title="退货出库单表头" tableName="can_bill_head" type="class">
+      <attributes>
+        <!-- 基本信息 -->
+		<attribute name="bustype" title="业务类型" type="String" iLength="20"/>
+	    <attribute name="purchasingType" columnName="purchasingType_id" title="采购类型id" type="aa.purchase.PurchasingType" />
+		<attribute name="purchaseOrg"  columnName="purchase_org" title="采购组织" type="base.org.Organization" />
+		<attribute name="gainOrg"  columnName="gain_org" title="收货组织" type="base.org.Organization" />
+		<attribute name="financeOrg"  columnName="finance_org" title="财务组织" type="base.org.Organization" />
+		<attribute name="billNumber" columnName="bill_number" title="入库单编号" type="String" iLength="20"/>
+		<attribute name="billInfo" title="单据日期" columnName="bill_info" type="Date"/>	
+		<attribute name="billTime" title="制单时间" columnName="bill_time" type="DateTime"/>
+		<attribute name="department" title="采购部门" columnName="department_id" type="aa.dept.Department"/>		
+		<attribute name="gainPerson" title="采购业务员" columnName="person_id" type="aa.person.Person"/>		
+		<attribute name="voucherState" columnName="voucher_state" title="单据状态" type="String" iLength="20"/>
+		<attribute name="belongVendor" title="供应商" columnName="vendorId" type="aa.vendor.Vendor" isRequired="true"/>
+		<attribute name="contactVendor" title="供应商联系人" columnName="vendor_contact" type="aa.vendor.VendorContact"/>
+		
+		<attribute name="paymentVendor" title="付款供应商" columnName="payment_vendor" type="aa.vendor.Vendor" isRequired="true"/>
+		<attribute name="transceiverType" title="出入库类型" type="aa.transceiverType.TransceiverType" />
+		<attribute name="paymentTerm" title="付款条件" columnName="payment_term_id" type="aa.pay.Payment" note="付款条件"/>
+		
+		<!-- 其他信息页签 -->
+		<attribute name="billMaker" columnName="bill_maker" title="制单人" type="aa.user.User"/>
+		<attribute name="billTime" title="制单时间" columnName="bill_time" type="DateTime"/>	
+		<attribute name="billDate" title="制单日期" columnName="bill_date" type="Date"/>	
+		<attribute name="modifier" columnName="modifier" title="修改人" type="aa.user.User"/>
+		<attribute name="modifyTime" title="修改时间" columnName="modify_time" type="DateTime"/>	
+		<attribute name="modifyDate" title="修改日期" columnName="modify_date" type="Date"/>
+		<attribute name="adjustPerson" columnName="adjust_person" title="价格调整人" type="aa.person.Person" />
+		<attribute name="adjustTime" columnName="adjust_time" title="价格调整时间" type="DateTime" />
+		<attribute name="remark" columnName="remark" title="备注" type="aa.role.Role"/>
+      </attributes>
+	</class>
+	
+	<generalizations>
+		<generalization parent="scm.base.SCMVouch" child="CancelBillHead"/>		
+	</generalizations>
+    <class name="VendorCustomItem" title="供应商自定义项" tableName="aa_vendor_customitem">
+		<attributes>
+			<attribute name="vendor" columnName="vendor_id" title="供应商id" type="Vendor" isKey="true" />
+	    </attributes>
+	<realizations>
+		<realization supplier="base.itf.CustomItem" client="VendorCustomItem" />
+	</realizations>
+	
+	<class name="BillHeadItem" title="表头自定义项" tableName="ca_bill_head_item">
+	    
+	</class>
+    
+	<realizations>
+		<realization supplier="base.itf.CustomItem" client="BillHeadItem"/>
+	</realizations>
+	
+	<class name="CancelBillDetail" title="退货出库单表体" tableName="can_bill_detail" type="class">
+      <attributes>
+        <!-- 基本信息 -->
+		<attribute name="outputLine" columnName="output_line" title="出库单行号" type="Long" />
+		<attribute name="houseCode" columnName="house_code" title="仓库编码"  type="String" iLength="40" /> 
+		<attribute name="houseName" columnName="house_name" title="仓库名称"  type="String" iLength="100"/> 
+		<attribute name="goodsCode" title="料品编码" columnName="goods_code" type="String" iLength="64"/>
+	    <attribute name="goodsName" title="料品名称" columnName="goods_name" type="String" iLength="64"/>
+	    <attribute name="model" title="型号" columnName="model" type="String" iLength="64"/>
+		<attribute name="size" title="规格" columnName="size" type="String" iLength="20"/>
+		<attribute name="describe" title="商品描述" columnName="describe" type="String" iLength="1000"/>
+		<attribute name="venCode" title="供应商料品编号" columnName="ven_code" type="String" iLength="1000"/>
+		<attribute name="venName" title="供应商料品名称" columnName="ven_name" type="String" iLength="1000"/>
+		<attribute name="gift" title="赠品" columnName="gift" type="String" iLength="10"/>
+		<attribute name="purchaseUnit" columnName="purchase_unit" title="采购单位"  type="aa.uom.UOM"/>
+		<attribute name="puUnitNum" title="采购单位数量" type="Decimal" iPrecision="19" iScale="8"/>
+		<attribute name="basicUnitPrice" title="基本计量本币单价" type="Decimal" iPrecision="19" iScale="8"/>
+		<attribute name="estimatePrice" title="暂估单价" type="Decimal" iPrecision="19" iScale="8"/>
+		<attribute name="estimateAmount" title="暂估金额" type="Decimal" iPrecision="19" iScale="8"/>
+		<attribute name="currentStock" title="现存量" type="Decimal" iPrecision="19" iScale="8"/>
+		<attribute name="availability" title="可用量" type="Decimal" iPrecision="19" iScale="8"/>
+		<attribute name="storeKeeper" columnName="store_keeper" title="库管员" type="aa.person.Person"/>
+		<attribute name="batchNum" columnName="batch_num" title="批号" type="String" iLength="20"/>
+		
+		
+		
+		<attribute name="demandOrg" columnName="demandOrg" title="需求组织" type="base.org.Organization" />
+		<attribute name="purchaseOrg" columnName="purchaseOrg" title="采购组织" type="base.org.Organization"/>
+		<attribute name="model" columnName="model" title="型号"  type="String" iLength="255" /> 
+		<attribute name="standard" columnName="standard" title="规格"  type="String" iLength="255" /> 
+		<!-- 料品自定义项 -->
+		<attribute name="requireDate" title="需求日期" columnName="require_date" type="Date"/>	
+		<attribute name="suggestTime" title="建议订货日期" columnName="suggest_time" type="Date"/>
+		<attribute name="CurrentStock" columnName="CurrentStock" title="现存量"  type="String" iLength="255" /> 
+		<attribute name="purchaseUpper" columnName="purchase_upper" title="订货上限%"  type="Decimal" /> 
+		<attribute name="dataKind" columnName="dataKind" title="上游单据类型" type="String" iLength="20"/>
+		<attribute name="dataKindNum" columnName="dataKindNum" title="上游单据号" type="String" iLength="20"/>
+		<attribute name="attachment" columnName="attachment" title="附件" type="String" iLength="200"/>
+		<attribute name="remark" columnName="remark" title="备注" type="String" iLength="1000"/>
+      </attributes>
+	</class>
+	
+	<generalizations>
+		<generalization parent="scm.base.SCMVouchLine" child="PurchaseBillDetail" />
+		<generalization parent="archive.base.Archive" child="PurchaseBillDetail" />		
+		<generalization parent="aa.relation.VendorAndInventory" child="PurchaseBillDetail" />
+		<generalization parent="scm.base.SCMVouch" child="PurchaseBillDetail" />
+	</generalizations>
+	
+	<!-- 料品自定义项 -->
+	<class name="GoodsDetailItem" title="料品自定义项" tableName="ca_goods_item">
+	    
+	</class>
+    
+	<realizations>
+		<realization supplier="base.itf.CustomItem" client="GoodsDetailItem"/>
+	</realizations>
+		
+  </component>
+</components>
