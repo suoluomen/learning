@@ -1,0 +1,64 @@
+delete from billentity_base where iBillId in (select id from bill_base where cBillNo='sa_basearchive_inventoryDimension');
+delete from billtemplate_base where iBillId in (select id from bill_base where cBillNo='sa_basearchive_inventoryDimension');
+delete from billtplgroup_base where iBillId in (select id from bill_base where cBillNo='sa_basearchive_inventoryDimension');
+delete from billitem_base where iBillId in (select id from bill_base where cBillNo='sa_basearchive_inventoryDimension');
+delete from pub_makebillrule_detail where makebill_id in (select makebill_id from pub_makebillrule where iBillId in (select id from bill_base where cBillNo='sa_basearchive_inventoryDimension'));
+delete from pub_makebillrule where iBillId in (select id from bill_base where cBillNo='sa_basearchive_inventoryDimension');
+delete from bill_base where cBillNo='sa_basearchive_inventoryDimension';
+
+select ifnull(max(id),0)+1 into @id4 from bill_base;
+insert into bill_base(`id`,`cBillNo`,`cName`,`cCardKey`,`cSubId`,`iDefTplId`,`iDefPrnTplId`,`iOrder`,`bAllowMultiTpl`,`cDefWhere`,`isDeleted`,`bPrintLimited`,`iSystem`,`cAuthId`,`cBillType`,`cBeanId`,`cFilterId`) values (@id4,'sa_basearchive_inventoryDimension','料品维度','sa_basearchive_inventoryDimension','SA',null,null,'10',1,null,0,1,1,null,'Archive',null,null);
+
+select ifnull(max(id),0)+1 into @id10 from billentity_base;
+insert into billentity_base(`id`,`iBillId`,`cCode`,`cName`,`cSubId`,`iOrder`,`isDeleted`,`cDataSourceName`,`cPrimaryKey`,`iSystem`,`bMain`,`cForeignKey`,`cParentCode`,`childrenField`) values (@id10,@id4,'sa_basearchive_inventoryDimension','料品维度','SA','10',0,'sa.basearchive.InventoryDimension','id',1,1,null,null,null);
+
+select ifnull(max(id),0)+1 into @id17 from billtemplate_base;
+update bill_base set iDefTplId=@id17,iDefPrnTplId=@id17 where cBillNo='sa_basearchive_inventoryDimension';
+insert into billtemplate_base(`id`,`iBillId`,`cName`,`iOrder`,`iTplMode`,`iWidth`,`isDeleted`,`cPrintSetting`,`cPageHeader`,`cPageFooter`,`cTitleHeight`,`iPrintTotal`,`iFixedCols`,`cMemo`,`cTitle`,`iGridStyle`,`cRowLayout`,`cTitleStyle`) values (@id17,@id4,'料品维度显示模板','10',0,'10000',0,null,null,null,null,null,null,null,'料品维度',null,null,null);
+
+select ifnull(max(id),0)+1 into @id24 from billtplgroup_base;
+insert into billtplgroup_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`cCode`,`cName`,`cSubId`,`iOrder`,`cDataSourceName`,`cPrimaryKey`,`isDeleted`,`iSystem`,`bMain`,`cForeignKey`,`cParentDataSource`,`cType`,`iParentID`,`cAlign`) values (@id24,@id4,@id10,@id17,'sa_basearchive_inventoryDimension','料品维度','SA','10','sa.basearchive.InventoryDimension','id',0,1,0,'id',null,'Card',null,null);
+
+select ifnull(max(id),0)+1 into @id30 from billitem_base;
+insert into billitem_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`iBillTplGroupId`,`cSubId`,`cFieldName`,`cName`,`cCaption`,`cShowCaption`,`iOrder`,`iMaxLength`,`iFieldType`,`bEnum`,`cEnumString`,`isDeleted`,`bMustSelect`,`bHidden`,`cRefType`,`cRefId`,`cRefRetID`,`cDataRule`,`iFunctionType`,`bSplit`,`bExtend`,`iNumPoint`,`bCanModify`,`cSourceType`,`iMaxShowLen`,`cMemo`,`iColWidth`,`cSumType`,`iAlign`,`bNeedSum`,`bShowIt`,`bFixed`,`bFilter`,`cDefaultValue`,`cFormatData`,`cUserId`,`iTabIndex`,`bIsNull`,`bPrintCaption`,`bJointQuery`,`bPrintUpCase`,`bSelfDefine`,`cDataSourceName`,`cOrder`,`bCheck`,`cControlType`,`cEnumType`,`refReturn`,`bShowInRowAuth`,`iRowAuthBillId`,`cStyle`,`bRowAuthControlled`) values (@id30,@id4,@id10,@id17,@id24,'SA','code','code','料品维度编码','料品维度编码','330','255',1,null,null,0,0,0,null,null,null,null,null,0,0,null,1,null,'255',null,'255',null,1,0,1,null,1,null,null,null,null,1,1,0,0,0,'sa.basearchive.InventoryDimension',null,null,'Input',null,null,null,null,null,null);
+set @id31=@id30+1;
+insert into billitem_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`iBillTplGroupId`,`cSubId`,`cFieldName`,`cName`,`cCaption`,`cShowCaption`,`iOrder`,`iMaxLength`,`iFieldType`,`bEnum`,`cEnumString`,`isDeleted`,`bMustSelect`,`bHidden`,`cRefType`,`cRefId`,`cRefRetID`,`cDataRule`,`iFunctionType`,`bSplit`,`bExtend`,`iNumPoint`,`bCanModify`,`cSourceType`,`iMaxShowLen`,`cMemo`,`iColWidth`,`cSumType`,`iAlign`,`bNeedSum`,`bShowIt`,`bFixed`,`bFilter`,`cDefaultValue`,`cFormatData`,`cUserId`,`iTabIndex`,`bIsNull`,`bPrintCaption`,`bJointQuery`,`bPrintUpCase`,`bSelfDefine`,`cDataSourceName`,`cOrder`,`bCheck`,`cControlType`,`cEnumType`,`refReturn`,`bShowInRowAuth`,`iRowAuthBillId`,`cStyle`,`bRowAuthControlled`) values (@id31,@id4,@id10,@id17,@id24,'SA','name','name','料品维度名称','料品维度名称','331','255',1,null,null,0,0,0,null,null,null,null,null,0,0,null,1,null,'255',null,'255',null,1,0,1,null,1,null,null,null,null,1,1,0,0,0,'sa.basearchive.InventoryDimension',null,null,'Input',null,null,null,null,null,null);
+set @id32=@id31+1;
+insert into billitem_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`iBillTplGroupId`,`cSubId`,`cFieldName`,`cName`,`cCaption`,`cShowCaption`,`iOrder`,`iMaxLength`,`iFieldType`,`bEnum`,`cEnumString`,`isDeleted`,`bMustSelect`,`bHidden`,`cRefType`,`cRefId`,`cRefRetID`,`cDataRule`,`iFunctionType`,`bSplit`,`bExtend`,`iNumPoint`,`bCanModify`,`cSourceType`,`iMaxShowLen`,`cMemo`,`iColWidth`,`cSumType`,`iAlign`,`bNeedSum`,`bShowIt`,`bFixed`,`bFilter`,`cDefaultValue`,`cFormatData`,`cUserId`,`iTabIndex`,`bIsNull`,`bPrintCaption`,`bJointQuery`,`bPrintUpCase`,`bSelfDefine`,`cDataSourceName`,`cOrder`,`bCheck`,`cControlType`,`cEnumType`,`refReturn`,`bShowInRowAuth`,`iRowAuthBillId`,`cStyle`,`bRowAuthControlled`) values (@id32,@id4,@id10,@id17,@id24,'SA','isPriceModle','isPriceModle','是否满足价格模型','是否满足价格模型','332','255',1,1,null,0,0,0,null,null,null,null,null,0,0,null,1,null,'255',null,'255',null,1,0,1,null,1,null,null,null,null,1,1,0,0,0,'sa.basearchive.InventoryDimension',null,null,'switch','pu_boolean',null,null,null,null,null);
+set @id33=@id32+1;
+insert into billitem_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`iBillTplGroupId`,`cSubId`,`cFieldName`,`cName`,`cCaption`,`cShowCaption`,`iOrder`,`iMaxLength`,`iFieldType`,`bEnum`,`cEnumString`,`isDeleted`,`bMustSelect`,`bHidden`,`cRefType`,`cRefId`,`cRefRetID`,`cDataRule`,`iFunctionType`,`bSplit`,`bExtend`,`iNumPoint`,`bCanModify`,`cSourceType`,`iMaxShowLen`,`cMemo`,`iColWidth`,`cSumType`,`iAlign`,`bNeedSum`,`bShowIt`,`bFixed`,`bFilter`,`cDefaultValue`,`cFormatData`,`cUserId`,`iTabIndex`,`bIsNull`,`bPrintCaption`,`bJointQuery`,`bPrintUpCase`,`bSelfDefine`,`cDataSourceName`,`cOrder`,`bCheck`,`cControlType`,`cEnumType`,`refReturn`,`bShowInRowAuth`,`iRowAuthBillId`,`cStyle`,`bRowAuthControlled`) values (@id33,@id4,@id10,@id17,@id24,'SA','isDiscount','isDiscount','是否满足折扣','是否满足折扣','333','255',1,1,null,0,0,0,null,null,null,null,null,0,0,null,1,null,'255',null,'255',null,1,0,1,null,1,null,null,null,null,1,1,0,0,0,'sa.basearchive.InventoryDimension',null,null,'switch','pu_boolean',null,null,null,null,null);
+set @id34=@id33+1;
+insert into billitem_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`iBillTplGroupId`,`cSubId`,`cFieldName`,`cName`,`cCaption`,`cShowCaption`,`iOrder`,`iMaxLength`,`iFieldType`,`bEnum`,`cEnumString`,`isDeleted`,`bMustSelect`,`bHidden`,`cRefType`,`cRefId`,`cRefRetID`,`cDataRule`,`iFunctionType`,`bSplit`,`bExtend`,`iNumPoint`,`bCanModify`,`cSourceType`,`iMaxShowLen`,`cMemo`,`iColWidth`,`cSumType`,`iAlign`,`bNeedSum`,`bShowIt`,`bFixed`,`bFilter`,`cDefaultValue`,`cFormatData`,`cUserId`,`iTabIndex`,`bIsNull`,`bPrintCaption`,`bJointQuery`,`bPrintUpCase`,`bSelfDefine`,`cDataSourceName`,`cOrder`,`bCheck`,`cControlType`,`cEnumType`,`refReturn`,`bShowInRowAuth`,`iRowAuthBillId`,`cStyle`,`bRowAuthControlled`) values (@id34,@id4,@id10,@id17,@id24,'SA','isPrice','isPrice','是否满足价格','是否满足价格','334','255',1,1,null,0,0,0,null,null,null,null,null,0,0,null,1,null,'255',null,'255',null,1,0,1,null,1,null,null,null,null,1,1,0,0,0,'sa.basearchive.InventoryDimension',null,null,'switch','pu_boolean',null,null,null,null,null);
+set @id35=@id34+1;
+insert into billitem_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`iBillTplGroupId`,`cSubId`,`cFieldName`,`cName`,`cCaption`,`cShowCaption`,`iOrder`,`iMaxLength`,`iFieldType`,`bEnum`,`cEnumString`,`isDeleted`,`bMustSelect`,`bHidden`,`cRefType`,`cRefId`,`cRefRetID`,`cDataRule`,`iFunctionType`,`bSplit`,`bExtend`,`iNumPoint`,`bCanModify`,`cSourceType`,`iMaxShowLen`,`cMemo`,`iColWidth`,`cSumType`,`iAlign`,`bNeedSum`,`bShowIt`,`bFixed`,`bFilter`,`cDefaultValue`,`cFormatData`,`cUserId`,`iTabIndex`,`bIsNull`,`bPrintCaption`,`bJointQuery`,`bPrintUpCase`,`bSelfDefine`,`cDataSourceName`,`cOrder`,`bCheck`,`cControlType`,`cEnumType`,`refReturn`,`bShowInRowAuth`,`iRowAuthBillId`,`cStyle`,`bRowAuthControlled`) values (@id35,@id4,@id10,@id17,@id24,'SA','id','id',null,null,'335','255',1,null,null,0,1,1,null,null,null,null,null,0,0,null,1,null,'255',null,'255',null,1,0,1,null,1,null,null,null,null,1,1,0,0,0,'sa.basearchive.InventoryDimension',null,null,'Input',null,null,null,null,null,null);
+set @id36=@id35+1;
+insert into billitem_base(`id`,`iBillId`,`iBillEntityId`,`iTplId`,`iBillTplGroupId`,`cSubId`,`cFieldName`,`cName`,`cCaption`,`cShowCaption`,`iOrder`,`iMaxLength`,`iFieldType`,`bEnum`,`cEnumString`,`isDeleted`,`bMustSelect`,`bHidden`,`cRefType`,`cRefId`,`cRefRetID`,`cDataRule`,`iFunctionType`,`bSplit`,`bExtend`,`iNumPoint`,`bCanModify`,`cSourceType`,`iMaxShowLen`,`cMemo`,`iColWidth`,`cSumType`,`iAlign`,`bNeedSum`,`bShowIt`,`bFixed`,`bFilter`,`cDefaultValue`,`cFormatData`,`cUserId`,`iTabIndex`,`bIsNull`,`bPrintCaption`,`bJointQuery`,`bPrintUpCase`,`bSelfDefine`,`cDataSourceName`,`cOrder`,`bCheck`,`cControlType`,`cEnumType`,`refReturn`,`bShowInRowAuth`,`iRowAuthBillId`,`cStyle`,`bRowAuthControlled`) values (@id36,@id4,@id10,@id17,@id24,'SA','pubts','pubts',null,null,'336','255',1,null,null,0,0,1,null,null,null,null,null,0,0,null,1,null,'255',null,'255',null,1,0,1,null,1,null,null,null,null,1,1,0,0,0,'sa.basearchive.InventoryDimension',null,null,'Input',null,null,null,null,null,null);
+
+
+
+
+
+delete from bill_toolbar where billnumber='sa_basearchive_inventoryDimension';
+delete from bill_toolbaritem where billnumber='sa_basearchive_inventoryDimension';
+delete from bill_command where billnumber='sa_basearchive_inventoryDimension';
+
+select ifnull(max(id),0)+1 into @id68 from bill_toolbar;
+insert into bill_toolbar(`id`,`billnumber`,`name`,`ismain`,`parent`,`align`,`subid`,`system`) values (@id68,'sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension',1,null,'top','SA',1);
+
+select ifnull(max(id),0)+1 into @id73 from bill_toolbaritem;
+insert into bill_toolbaritem(`id`,`billnumber`,`toolbar`,`name`,`command`,`type`,`style`,`text`,`imgsrc`,`parent`,`order`,`subid`,`system`) values (@id73,'sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension','btnDelete','cmdDelete','button',0,'删除',null,null,'13','SA',1);
+set @id74=@id73+1;
+insert into bill_toolbaritem(`id`,`billnumber`,`toolbar`,`name`,`command`,`type`,`style`,`text`,`imgsrc`,`parent`,`order`,`subid`,`system`) values (@id74,'sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension','btnSave','cmdSave','button',0,'保存',null,null,'14','SA',1);
+set @id75=@id74+1;
+insert into bill_toolbaritem(`id`,`billnumber`,`toolbar`,`name`,`command`,`type`,`style`,`text`,`imgsrc`,`parent`,`order`,`subid`,`system`) values (@id75,'sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension','btnEdit','cmdEdit','button',0,'编辑',null,null,'15','SA',1);
+set @id76=@id75+1;
+insert into bill_toolbaritem(`id`,`billnumber`,`toolbar`,`name`,`command`,`type`,`style`,`text`,`imgsrc`,`parent`,`order`,`subid`,`system`) values (@id76,'sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension','btnAbandon','cmdAbandon','button',0,'放弃',null,null,'15','SA',1);
+
+select ifnull(max(id),0)+1 into @id82 from bill_command;
+insert into bill_command(`id`,`name`,`action`,`billnumber`,`target`,`ruleid`,`svcurl`,`httpmethod`,`subid`,`system`) values (@id82,'cmdEdit','edit','sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension',null,null,'GET','SA',1);
+set @id83=@id82+1;
+insert into bill_command(`id`,`name`,`action`,`billnumber`,`target`,`ruleid`,`svcurl`,`httpmethod`,`subid`,`system`) values (@id83,'cmdSave','save','sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension',null,'/bill/save.do','POST','SA',1);
+set @id84=@id83+1;
+insert into bill_command(`id`,`name`,`action`,`billnumber`,`target`,`ruleid`,`svcurl`,`httpmethod`,`subid`,`system`) values (@id84,'cmdDelete','delete','sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension',null,'/bill/dodelete.do','GET','SA',1);
+set @id85=@id84+1;
+insert into bill_command(`id`,`name`,`action`,`billnumber`,`target`,`ruleid`,`svcurl`,`httpmethod`,`subid`,`system`) values (@id85,'cmdAbandon','abandon','sa_basearchive_inventoryDimension','sa_basearchive_inventoryDimension',null,'/bill/abandon.do','POST','SA',1);

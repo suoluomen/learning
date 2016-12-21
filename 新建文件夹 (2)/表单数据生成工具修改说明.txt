@@ -1,0 +1,1 @@
+增加了GetBillItemInforByDB宏，在运行了GetBillItemByXML宏后，billitem_base表信息都已经自动获得，但信息不完整，比如参照字段、枚举字段的参照类型、参照返回值、枚举类型等都没有设置。但数据库中已经有设置好的，GetBillItemInforByDB宏就是根据录入的billno查询数据库，将设置好的信息赋值到Excel界面中。
