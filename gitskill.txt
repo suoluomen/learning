@@ -1,6 +1,14 @@
 git 命令小结
+
+http://gitbook.liuhui998.com/index.html
+
+
 1.git log --pretty=oneline 显示日志信息，没有修改人信息
-2.git reset --hard HEAD^ 往上回退一个版本，上一个版本就是HEAD^，上上一个版本就是HEAD^^，当然往上100个版本写100个^比较容易数不过来，所以写成HEAD~100
+2.git reset --hard HEAD^ 往上回退一个版本，上一个版本就是HEAD^，
+上上一个版本就是HEAD^^，当然往上100个版本写100个^比较容易数不过来，所以写成HEAD~100，hard是不可恢复的
+如果你现在的工作目录(work tree)里搞的一团乱麻, 但是你现在还没有把它们提交; 你可以通过下面的命令, 让工作目录回到上次提交时的状态
+git reset --hard HEAD
+
 3.git reset --hard 3628164  3628164是版本号的缩写
 4.git reflog 查看每一次命令
 
@@ -55,3 +63,5 @@ stash@{0}: WIP on dev: 6224937 add merge
 建立本地分支和远程分支的关联，使用git branch --set-upstream branch-name origin/branch-name；
 
 从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。
+
+12.git revert HEAD 撤销最后一次commit提交，撤销上一次提交，git revert HEAD^ 撤销的版本号。
