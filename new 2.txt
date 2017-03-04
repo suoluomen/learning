@@ -1,0 +1,23 @@
+http://localhost:98/AgentEarlyWarnController/getList
+
+
+select * from `user`
+
+SELECT a.*,COUNT(a.`登陆账号`) FROM 
+(SELECT  ifnull(c.`cName`,0) as '客户名称' ,ifnull(u.`cUserName`,0) as '登陆账号',ifnull(c.`cPhone`,0) as '客户电话',ifnull(c.`cEmail`,0) as '客户邮箱'   FROM `requestlog` a ,corpration c ,USER u 
+	WHERE a.`iCorpId` = c.`id` AND a.`iUserId` = u.`id` AND a.`cUserName` IS NOT NULL AND a.cName = '用户登录'  UNION ALL
+SELECT  ifnull(c.`cName`,0) as '客户名称' ,ifnull(u.`cUserName`,0) as '登陆账号',ifnull(c.`cPhone`,0) as '客户电话',ifnull(c.`cEmail`,0) as '客户邮箱'   FROM `requestlogof7to30day` a ,corpration c ,USER u 
+	WHERE a.`iCorpId` = c.`id` AND a.`iUserId` = u.`id` AND a.`cUserName` IS NOT NULL AND a.cName = '用户登录' )a  GROUP BY a.`登陆账号`;
+
+
+SELECT COUNT(DISTINCT iCorpId) FROM requestlog WHERE	cAction = "Secure.authenticate" AND iUserId > 0;
+
+
+客户名称	账户	手机号	邮箱	最后一次登录时间	访问次数	开通时间	最后一次续费时间	欠费时间	失效时间	版本	伙伴	操作
+select a.`cFullName` as '客户名称',a.`cUserName` as '账户',a.`cMobile` as '手机号',a.`cEmail` as '邮箱',a.`dCreatedTime` as '开通时间' ,b.`cOverdueDate` as '失效时间' 
+from `user` a,`corplicense` b;
+
+select * from user;
+select * from corprationlogistics;
+select * from corplicense;
+select * from corpapp;
