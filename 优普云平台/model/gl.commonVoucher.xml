@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="scm.base.xml"/>
+	</references>
+
+	<component name="commonVoucher" moduleName="gl" title="常用凭证组件">
+		<class name="CommonVoucher" title="常用凭证" tableName="gl_commonVoucher">
+			<attributes>
+				<attribute name="comVouNum" title="常用凭证代号" type="String" iLength="20"/>
+				<attribute name="comVouText" title="常用凭证说明" type="String" iLength="20"/>
+				<attribute name="isGenerate" title="是否已生成" type="Boolean" />
+				
+			</attributes>
+		</class>
+		
+		<class name="CommonVoucherDetail" title="常用凭证明细" tableName="gl_commonVoucher_details">
+			<attributes>
+				<attribute name="owner" columnName="owner" title="所属订单" type="CommonVoucher" />
+			</attributes>
+		</class>
+		<class name="CommonVoucherCustomItem" title="常用凭证自定义项" tableName="gl_commonVoucher_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="凭证id" type="CommonVoucher" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="CommonVoucherDetailCustomItem" title="常用凭证明细自定义项" tableName="gl_commonVoucher_details_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="凭证id" type="CommonVoucherDetail" isKey="true" />
+
+		   </attributes>
+		</class>
+		<realizations>
+		</realizations>
+		<generalizations>
+			<generalization parent="gl.voucher.Voucher" child="CommonVoucher" />
+			<generalization parent="gl.voucher.Entry" child="CommonVoucherDetail" />	
+			<generalization parent="gl.voucher.VoucherCustomItem" child="CommonVoucherCustomItem" />
+			<generalization parent="gl.voucher.EntryCustomItem" child="CommonVoucherDetailCustomItem" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="owner" typeB="CommonVoucher" roleA="entries" typeA="CommonVoucherDetail"/>
+			<association type="composition" roleB="id" typeB="CommonVoucher" roleA="headItem" typeA="CommonVoucherCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="CommonVoucherDetail" roleA="bodyItem" typeA="CommonVoucherDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+
+</components>

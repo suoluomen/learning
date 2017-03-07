@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="scm.base.xml"/>
+	</references>
+	<component name="itf" moduleName="ap" title="应付公用接口组件">
+		<interface name="IAPVender" title="供应商信息">
+			<attributes>
+				<attribute name="vendor" title="供应商" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<!--  
+				<attribute name="simpleName"  title="简称" columnName="simple_name" type="String" iLength="100" note = "供应商简称"/>
+				<attribute name="bankDeposit" title="供应商银行名称" columnName="bank_deposit" type="String" iLength="100"/>
+				<attribute name="bank" title="供应商开户银行" columnName="bank_id" type="aa.bank.Bank"/>
+				<attribute name="vendorContactMobile" title="供应商联系人手机号" columnName="vendor_contact_mobile" type="String" iLength="20"/>
+				-->
+				<attribute name="paymentvendor" title="付款供应商" type="aa.vendor.Vendor" columnName="paymentvendor_id"/>
+				<attribute name="settlement" title="结算方式" columnName="settlement_id" type="aa.common.Settlement" note="结算方式"/>
+				<attribute name="vendorContact" title="供应商联系人" columnName="vendor_contact_id" type="aa.vendor.VendorContact"/>
+				<attribute name="paymentTerm" title="付款条件" columnName="payment_term_id" type="aa.pay.Payment" note="付款条件"/>
+			</attributes>
+		</interface>
+		<interface name="IAPAccountRule" title="立账规则信息">
+			<attributes>
+				<attribute name="purchaseAccountRule" title="立账规则" columnName="pchs_acc_rule_id" type="aa.arapaccountrule.ARAPAccountRule" note="采购立账规则"/>
+				<attribute name="baseDate" title="立账日" type="Date" isRequired="true"/>
+				<attribute name="dueDays" title="账期" type="Short" miniValue="0" maxiValue="36500"/>
+				<attribute name="endDate" title="到期日" type="DateTime"/>
+			</attributes>
+		</interface>
+		<interface name="IAPInventoryLine" title="明细存货信息">
+			<attributes>
+				<!--  注掉的是数据表中不存在，只在画面显示的
+				<attribute name="invCode" title="存货编码" type="String" iLength="255"  />
+				<attribute name="invName" title="存货名称" type="String" isGlobalization="true" iLength="255" />
+				
+				<attribute name="invModel" title="型号"  type="String" iLength="255" />
+				-->
+				<attribute name="invSpecification" title="规格"  type="String" iLength="120" /> 
+				<attribute name="invvendor" title="料品供应商对照id" type="aa.relation.VendorAndInventory" columnName="invvendor_id"/>
+				<!-- 存货带入主计量
+				<attribute name="uom" title="基本计量单位" columnName="uom_id" type="aa.uom.UOM" />
+				<attribute name="uompu" title="采购记量单位" columnName="puuom_id" type="aa.uom.UOM" />
+				<attribute name="priceuompu" title="采购计价单位" columnName="pupriceuom_id" type="aa.uom.UOM" />
+				<attribute name="uomqty" title="基本计量数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="uompuqty" title="采购单位数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="priceuompuqty" title="计价单位数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="puCvrRate" title="采购单位换算率" type="Decimal" iScale="2" iPrecision="19" />
+				<attribute name="pricePuCvrRate" title="计价单位换算率" type="Decimal" iScale="2" iPrecision="19" />
+				-->
+				<attribute name="department" title="部门"  columnName="department_id" type="aa.dept.Department" note="grouppu"/>
+				<attribute name="person" title="业务员" columnName="person_id" type="aa.person.Person" />
+			</attributes>
+		</interface>
+		<interface name="IAPItemLine" title="明细项目信息">
+			<attributes>
+				<attribute name="itemid" title="项目id" type="String" iLength="20"  />
+				<attribute name="itemcode" title="项目编码" type="String" iLength="20"  />
+				<attribute name="itemname" title="项目名称" type="String" isGlobalization="true" iLength="20"  />
+			</attributes>
+		</interface>
+		<interface name="IAPReturnLine" title="明细回写信息">
+			<attributes>
+				<attribute name="totalVeriPayOriAmo" title="累计付款核销金额（原币）" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="totalVeriPayLocAmo" title="累计付款核销金额（本币）" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="expenseDate" title="结算日期" type="DateTime"/>
+				<attribute name="totalNum" title="累计结算数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="totalAmo" title="累计结算金额" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="remark" title="备注" type="String" iLength="1000"/>
+			</attributes>
+		</interface>
+	</component>
+	<component name="abs" moduleName="ap" title="应付公用基类组件">
+		<class name="APVouch" title="应付单据基类">
+		</class>
+		<class name="APVouchLine" title="应付单据行基类">
+			<attributes>
+				<attribute name="sourceid" title="上游单据主表id" type="Long"/>
+				<attribute name="sourceautoid" title="上游单据子表id" type="Long"/>
+				<attribute name="source" title="上游单据类型" type="String" iLength="30"/>
+				<attribute name="upcode" title="上游单据号" type="String" iLength="60"/>
+				<attribute name="makeRule" columnName="makerule_id" title="生单规则" type="Long" version="1.0.0824001" />
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalInfo" client="APVouch"/>
+			<realization supplier="base.itf.IClosing" client="APVouch"/>
+			<realization supplier="base.itf.ILock" client="APVouch"/>
+			<realization supplier="base.itf.IChange" client="APVouch"/>
+			<realization supplier="base.itf.IInvalid" client="APVouch"/>
+			<realization supplier="base.itf.ILineClosing" client="APVouchLine"/>
+			<realization supplier="base.itf.FreeItem" client="APVouchLine"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="voucher.base.Vouch" child="APVouch" />
+			<generalization parent="voucher.base.VouchLine" child="APVouchLine" />
+		</generalizations>
+	</component>
+</components>

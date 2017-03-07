@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+	</references>
+	<component name="domain" moduleName="md" title="领域元数据组件">
+		<class name="BaseElement" title="元数据基类">
+			<attributes>
+				<attribute name="id" title="ID" type="String" iLength="40" isKey="true" />
+				<attribute name="version" title="版本" type="String" iLength="20" />
+			</attributes>
+		</class>
+		<class name="Component" title="组件" tableName="md_component">
+			<attributes>
+				<attribute name="name" title="名称" type="String" iLength="50" unionKey="name,moduleName" />
+				<attribute name="moduleName" title="模块名称" type="String" iLength="50" />
+				<attribute name="title" title="标题" type="String" iLength="50" isGlobalization="true" />
+				<attribute name="proj" title="工程" type="String" iLength="50" note="代码生成目标工程，默认为name" />
+			</attributes>
+		</class>
+		<class name="Type" title="类型" tableName="md_class">
+			<attributes>
+				<attribute name="owner" title="所属组件" type="Component" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="title" title="标题" type="String" iLength="50" isGlobalization="true" />
+				<attribute name="tableName" title="表名" type="String" iLength="50" />
+				<attribute name="type" title="类型" type="String" iLength="50" note="class,enum,interface,datatype" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<class name="Property" title="属性" tableName="md_property">
+			<attributes>
+				<attribute name="owner" title="所属类型" type="Type" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="columnName" title="列名" type="String" iLength="50" />
+				<attribute name="title" title="标题" type="String" iLength="50" isGlobalization="true" />
+				<attribute name="type" title="类型" type="Type" />
+				<attribute name="columnType" title="数据类型" type="String" iLength="10" note="text, varchar, int ..." />
+				<attribute name="isKey" title="是否主键" type="Boolean" />
+				<attribute name="isUnique" title="是否唯一" type="Boolean" />
+				<attribute name="isRequired" title="是否非空" type="Boolean" />
+				<attribute name="isSyncKey" title="是否同步" type="Boolean" />
+				<attribute name="isGlobalization" title="是否多语" type="Boolean" />
+				<attribute name="isCode" title="是否编码" type="Boolean" />
+				<attribute name="isName" title="是否名称" type="Boolean" />
+				<attribute name="iLength" title="长度" type="Integer" />
+				<attribute name="iPrecision" title="精度" type="Integer" />
+				<attribute name="iScale" title="小数位" type="Integer" />
+				<attribute name="defaultValue" title="默认值" type="String" iLength="50" />
+				<attribute name="format" title="格式化" type="String" iLength="50" />
+				<attribute name="validate" title="校验器" type="String" iLength="255" note="phone,tel,qq,email,regex" />
+				<attribute name="mode" title="持久化模式" type="String" iLength="50" note="None, Insert, Update, All" />
+				<attribute name="unionKey" title="联合键" type="String" iLength="255" note="联合主键" />
+				<attribute name="filterKey" title="过滤键" type="String" iLength="255" note="联合过滤，例如：join 项目 on 项目大类" />
+				<attribute name="miniValue" title="最小值" type="String" iLength="50" />
+				<attribute name="maxiValue" title="最大值" type="String" iLength="50" />
+				<attribute name="note" title="说明" type="String" iLength="255" />
+				<attribute name="component" columnName="component_id" title="组件" type="Component" note="冗余字段" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<class name="EnumerationLiteral" title="枚举值" tableName="md_enumvalue">
+			<attributes>
+				<attribute name="owner" title="所属类型" type="Type" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="title" title="标题" type="String" iLength="50" isGlobalization="true" />
+				<attribute name="value" title="值" type="String" iLength="50" />
+				<attribute name="component" columnName="component_id" title="组件" type="Component" note="冗余字段" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<class name="Association" title="关联关系" tableName="md_association">
+			<attributes>
+				<attribute name="owner" title="所属组件" type="Component" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="type" title="类型" type="String" iLength="12" note="association, composition" />
+				<attribute name="typeA" title="类型A" type="Type" />
+				<attribute name="roleA" title="角色A" type="Property" />
+				<attribute name="typeB" title="类型B" type="Type" />
+				<attribute name="roleB" title="角色B" type="Property" />
+				<attribute name="roleAMulti" title="角色A多重性" type="String" iLength="10" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<class name="Generalization" title="继承关系" tableName="md_generalization">
+			<attributes>
+				<attribute name="owner" title="所属组件" type="Component" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="parent" title="父类" type="Type" />
+				<attribute name="child" title="子类" type="Type" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<class name="Realization" title="实现关系" tableName="md_realization">
+			<attributes>
+				<attribute name="owner" title="所属组件" type="Component" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="supplier" title="接口" type="Type" />
+				<attribute name="client" title="实现类" type="Type" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<class name="Operation" title="方法" tableName="md_operation">
+			<attributes>
+				<attribute name="owner" title="所属类型" type="Type" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="title" title="标题" type="String" iLength="50" />
+				<attribute name="scope" title="范围" type="String" iLength="10" note="Instance, Class" />
+				<attribute name="accessor" title="可见性" type="String" iLength="10" note="Public, Protected, Private" />
+				<attribute name="method" title="方法" type="String" iLength="10" note="GET, POST, PUT, DELETE, PATCH" />
+				<attribute name="impl" title="泛型类型" type="Type" />
+				<attribute name="tplName" title="模板" type="String" iLength="255" />
+				<attribute name="component" columnName="component_id" title="组件" type="Component" note="冗余字段" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<class name="Parameter" title="参数" tableName="md_parameter">
+			<attributes>
+				<attribute name="owner" title="所属类型" type="Operation" />
+				<attribute name="name" title="名称" type="String" iLength="50" />
+				<attribute name="title" title="标题" type="String" iLength="50" />
+				<attribute name="type" title="类型" type="Type" />
+				<attribute name="kind" title="方向" type="String" iLength="10" note="In, Out, Return" />
+				<attribute name="component" columnName="component_id" title="组件" type="Component" note="冗余字段" />
+				<attribute name="iSequence" title="顺序" type="Integer" />
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="BaseElement" child="Component" />
+			<generalization parent="BaseElement" child="Type" />
+			<generalization parent="BaseElement" child="Property" />
+			<generalization parent="BaseElement" child="EnumerationLiteral" />
+			<generalization parent="BaseElement" child="Association" />
+			<generalization parent="BaseElement" child="Generalization" />
+			<generalization parent="BaseElement" child="Realization" />
+			<generalization parent="BaseElement" child="Operation" />
+			<generalization parent="BaseElement" child="Parameter" />
+		</generalizations>
+		<associations>
+			<association type="composition" typeA="Type" roleA="classes" typeB="Component" roleB="owner" roleAMulti="1..n" />
+			<association type="composition" typeA="Property" roleA="attributes" typeB="Type" roleB="owner" roleAMulti="1..n" />
+			<association type="composition" typeA="Operation" roleA="operations" typeB="Type" roleB="owner" roleAMulti="1..n" />
+			<association type="composition" typeA="Parameter" roleA="parameters" typeB="Operation" roleB="owner" roleAMulti="1..n" />
+			<association type="composition" typeA="Association" roleA="associations" typeB="Component" roleB="owner" roleAMulti="1..n" />
+			<association type="composition" typeA="Generalization" roleA="generalizations" typeB="Component" roleB="owner" roleAMulti="1..n" />
+			<association type="composition" typeA="Realization" roleA="realizations" typeB="Component" roleB="owner" roleAMulti="1..n" />
+		</associations>
+	</component>
+</components>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="scm.base.xml"/>
+		<reference file="ap.xml"/>
+	</references>
+	<component name="payable" moduleName="ap" title="应付单组件">
+		<class name="Payable" title="应付单" tableName="ap_payable">
+			<attributes>
+				<attribute name="busType" title="业务类型"  type="String" iLength="20"/>
+				<attribute name="billType" title="单据类型"  type="String" iLength="20"/>
+				<attribute name="billDirection" title="单据方向"  type="String" iLength="20"/>
+				<attribute name="invoiceType" title="发票类型"  type="String" iLength="20"/>
+				<attribute name="invoiceDate" title="发票日期" type="DateTime"/>
+				<attribute name="purchasingType" title="采购类型" type="aa.purchase.PurchasingType" columnName="purchasingType_id"/>
+
+				<!--  
+				<attribute name="remark" title="备注" type="String" iLength="255"/> 	-->
+				<!--是否存货期初。是否应付期初-->
+				<attribute name="ifInvBegin" title="是否存货期初"  type="String" iLength="20"/>
+				<attribute name="ifPayableBegin" title="是否应付期初"  type="String" iLength="20"/>
+				
+			</attributes>
+		</class>
+		
+		<class name="PayableDetail" title="应付单明细" tableName="ap_payable_details">
+			<attributes>
+				<attribute name="belongPayable" title="所属应付单" type="Payable" columnName="payable_id"/>
+				<attribute name="originBizOrg" title="来源业务组织" type="base.org.Organization" />
+				<attribute name="isgift" title="赠品" type="Boolean"/>
+				<attribute name="attachment" title="附件" type="String" iLength="255"/>
+				<!--  
+				<attribute name="batchnum" title="批号" type="String" iLength="30"/>
+				-->
+			</attributes>
+		</class>
+		
+		<class name="PayableCustomItem" title="应付单自定义项" tableName="ap_payable_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="应付单id" type="Payable" isKey="true" />
+		   </attributes>
+		</class>
+		
+		<class name="PayableDetailCustomItem" title="应付单明细自定义项" tableName="ap_payableDetail_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="应付单明细id" type="PayableDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="PayableCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="PayableDetailCustomItem" />
+			<realization supplier="ap.itf.IAPVender" client="Payable" />
+			<realization supplier="ap.itf.IAPAccountRule" client="Payable" />
+			<realization supplier="ap.itf.IAPInventoryLine" client="PayableDetail" />
+			<realization supplier="ap.itf.IAPItemLine" client="PayableDetail" />
+			<realization supplier="ap.itf.IAPReturnLine" client="PayableDetail" />
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="Payable" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="PayableDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongPayable" typeB="Payable" roleA="payableDetails" typeA="PayableDetail"/>	
+			<association type="composition" roleB="id" typeB="Payable" roleA="headItem" typeA="PayableCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="PayableDetail" roleA="bodyItem" typeA="PayableDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+</components>

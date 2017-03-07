@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="base.xml"/>
+	</references>
+	<component name="enums" moduleName="scm" title="供应链公共组件" proj="base">
+		<enum name="Bustype" title="业务类型">
+			<item name="common" title="普通采购" value="0"/>
+			<item name="direct" title="直运采购" value="1"/>
+			<item name="commission" title="受托代销" value="2"/>
+			<item name="subcontract" title="委外加工" value="3"/>
+			<item name="agent" title="代管采购" value="4"/>
+			<item name="fixed" title="固定资产" value="5"/>
+		</enum>
+	</component>
+	
+	<component name="base" moduleName="scm" title="供应链公共组件">
+		<class name="SCMVouch" title="供应链单据基类">
+		</class>
+		<class name="SCMVouchLine" title="供应链单据行基类">
+			<attributes>
+				<attribute name="sourceid" title="上游单据主表id" type="Long"/>
+				<attribute name="sourceautoid" title="上游单据子表id" type="Long"/>
+				<attribute name="source" title="上游单据类型" type="String" iLength="30"/>
+				<attribute name="upcode" title="上游单据号" type="String" iLength="60"/>
+				<attribute name="makeRule" columnName="makerule_id" title="生单规则" type="Long" version="1.0.0824001" />
+			</attributes>
+		</class>
+		<class name="SCMVouchLineInv"  title="供应链单据行带存货信息基类">
+			<attributes>
+				<attribute name="inventory" columnName="inventory_id" title="料品id" type="aa.inv.Inventory" />
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalInfo" client="SCMVouch"/>
+			<realization supplier="voucher.base.ICurrencyInfo" client="SCMVouch"/>
+			<realization supplier="base.itf.IClosing" client="SCMVouch"/>
+			<realization supplier="base.itf.ILock" client="SCMVouch"/>
+			<realization supplier="base.itf.IChange" client="SCMVouch"/>
+			<realization supplier="base.itf.IInvalid" client="SCMVouch"/>
+			<realization supplier="voucher.base.INatMoneyInfoForSum" client="SCMVouch"/>
+			<realization supplier="voucher.base.IOriMoneyInfoForSum" client="SCMVouch"/>
+			<realization supplier="voucher.base.IQtyInfo" client="SCMVouch"/>
+			<realization supplier="voucher.base.IUOMInfo" client="SCMVouchLine"/>
+			<realization supplier="voucher.base.INatMoneyInfo" client="SCMVouchLine"/>
+			<realization supplier="voucher.base.IOriMoneyInfo" client="SCMVouchLine"/>
+			<realization supplier="voucher.base.IPriceUOMInfo" client="SCMVouchLine"/>
+			<realization supplier="base.itf.ILineClosing" client="SCMVouchLine"/>
+			<realization supplier="base.itf.FreeItem" client="SCMVouchLineInv"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="voucher.base.Vouch" child="SCMVouch" />
+			<generalization parent="voucher.base.VouchLine" child="SCMVouchLine" />
+			<generalization parent="SCMVouchLine" child="SCMVouchLineInv" />
+		</generalizations>
+	</component>
+</components>

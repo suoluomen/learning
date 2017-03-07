@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="voucher.base.xml"/>
+		<reference file="gl.item.xml"/>
+	</references>
+
+	<component name="voucher" moduleName="gl" title="总账凭证组件">
+		<class name="Voucher" title="凭证" tableName="gl_voucher">
+			<attributes>
+				<attribute name="voucherCategory" title="凭证类别" type="aa.certificatecategory.CertificateCategory" />
+				<attribute name="attachmentCount" title="附单据数" type="String" iLength="20"/>
+				<attribute name="period" title="制单期间" type="Short" />
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="bookkeeper" title="记账人" type="String" iLength="20"/>
+				<attribute name="cashierSignatory" title="记账人" type="String" iLength="20"/>
+				<attribute name="directorsSignatory" title="主管签字人" type="String" iLength="20"/>
+				<attribute name="glleadcode" title="业务凭证线索号" type="String" iLength="20"/>
+				<attribute name="busiSysName" title="业务系统名称" type="String" iLength="20"/>
+				<attribute name="errReason" title="错误原因" type="String" iLength="20"/>
+				<attribute name="reverdocument" title="冲销凭证信息" type="String" iLength="20"/>
+				<attribute name="financeOrg" title="财务组织id" type="base.org.Organization" columnName="financeOrg_id" />
+				<attribute name="voucherIdenty" title="凭证标志" type="String" iLength="20"/>
+			</attributes>
+		</class>
+		
+		<class name="Entry" title="凭证分录" tableName="gl_entry">
+			<attributes>
+				<attribute name="belongVoucher" columnName="voucher_id" title="所属凭证" type="Voucher" />
+				<attribute name="abstracts" title="摘要" type="String" iLength="60" />
+				<attribute name="account" title="科目" type="aa.accountingsubjects.AccountingSubjects" columnName='account_id'/>
+				<attribute name="settlements" title="结算方式id" type="aa.common.Settlement" columnName='settlements_id'/>
+				<attribute name="billnum" title="票据号" type="String" iLength="255"/>
+				<attribute name="busdata" title="业务日期" type="Date"/>
+				<attribute name="auxItem" title="辅助项" type="String" iLength="255" />
+				<attribute name="debitAmount" title="借方金额(本币)" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="creditAmount" title="贷方金额(本币)" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="debitOriAmount" title="借方金额(原币)" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="creditOriAmount" title="贷方金额(原币)" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="exch" title="币种" type="aa.currency.Currency" />
+				<attribute name="exchRate" title="汇率" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="price" title="单价" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="cashFlowProject" title="现金流量项目id" type="aa.common.Settlement" columnName='cashflow_id'/>
+				<attribute name="cashDirect" title="现金流量方向" type="Short" />
+				<attribute name="cashFlow" title="现金流量金额" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="debitQuantity" title="借方数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="creditQuantity" title="贷方数量" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</class>
+		
+		<class name="VoucherCustomItem" title="凭证自定义项" tableName="gl_voucher_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="凭证id" type="Voucher" isKey="true" />
+		   </attributes>
+		</class>
+		
+		<class name="EntryCustomItem" title="凭证分录自定义项" tableName="gl_entry_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="分录id" type="Entry" isKey="true" />
+		   </attributes>
+		</class>
+		
+		<realizations>
+			<realization supplier="base.itf.IApprovalInfo" client="Voucher" />
+			<realization supplier="gl.item.AccountingDimension" client="Entry" />
+			<realization supplier="base.itf.CustomItem" client="VoucherCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="EntryCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="voucher.base.Vouch" child="Voucher" />
+			<generalization parent="base.entity.BizObject" child="Entry" />	
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongVoucher" typeB="Voucher" roleA="entries" typeA="Entry"/>
+			<association type="composition" roleB="id" typeB="Voucher" roleA="vouchItem" typeA="VoucherCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="Entry" roleA="bodyItem" typeA="EntryCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+		
+
+</components>

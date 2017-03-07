@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="voucher.base.xml"/>
+	</references>
+	<component name="match" moduleName="ap" title="核销组件">
+		<class name="Match" title="核销单" tableName="ap_match">
+			<attributes>
+				<attribute name="natCurrency" title="本位币" type="aa.currency.Currency" />
+			</attributes>
+		</class>
+		
+		<class name="MatchDetail" title="核销单明细" tableName="ap_match_details">
+			<attributes>
+				<attribute name="belongMatch" title="所属核销单" type="Match" columnName="match_id"/>
+				<attribute name="bill" title="单据"  type="String" iLength="20"/>
+				<!--现在用上游单据类型和单据号代替
+				<attribute name="billType" title="单据类型" type="String" iLength="30"/>
+				<attribute name="billCode" title="单据号" type="String" iLength="60"/>
+				-->
+				<attribute name="sourceRowNo" title="单据行号" type="Integer" isCode="true" />
+				<attribute name="vouchdate" title="单据日期" type="Date" isRequired="true"  />
+				<attribute name="ownerOrg" title="所属组织" type="base.org.Organization" />
+				<attribute name="settleCurrency" title="结算币种" type="aa.currency.Currency" />
+				<attribute name="matchAmo" title="核销金额" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="paymentPurpose" title="付款用途"  type="String" iLength="100"/>
+			</attributes>
+		</class>
+		
+		<class name="MatchCustomItem" title="核销单自定义项" tableName="ap_match_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="核销单id" type="Match" isKey="true" />
+		   </attributes>
+		</class>
+		
+		<class name="MatchDetailCustomItem" title="核销单明细自定义项" tableName="ap_matchDetail_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="核销单明细id" type="MatchDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="MatchCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="MatchDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="ap.abs.APVouch" child="Match" />
+			<generalization parent="ap.abs.APVouchLine" child="MatchDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongMatch" typeB="Match" roleA="matchDetails" typeA="MatchDetail"/>	
+			<association type="composition" roleB="id" typeB="Match" roleA="headItem" typeA="MatchCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="MatchDetail" roleA="bodyItem" typeA="MatchDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	<component name="matchScheme" moduleName="ap" title="应付付款核销方案组件">
+		<class name="MatchScheme" title="核销方案" tableName="ap_matchScheme">
+			<attributes>
+				<attribute name="matchOrderType" title="核销顺序"  type="String" iLength="20"/>
+			</attributes>
+        </class>
+		<class name="MatchRelation" title="核销关系" tableName="ap_matchRelation">
+			<attributes>
+				<attribute name="belongMatchScheme" title="所属核销方案" type="MatchScheme" columnName="matchScheme_id"/>
+				<attribute name="matchOrderNo" title="核销顺序" type="Integer" isCode="true" />
+				<attribute name="matchRelation" title="核销关系" type="String" iLength="100"/>
+				<attribute name="isAllow" title="是否允许"  type="Boolean" /> 
+			</attributes>
+        </class>
+		<class name="MatchItem" title="匹配项目" tableName="ap_matchItem">
+			<attributes>
+				<attribute name="belongMatchScheme" title="所属核销方案" type="MatchScheme" columnName="matchScheme_id"/>
+				<attribute name="itemNo" title="项目序号" type="Integer" isCode="true" />
+				<attribute name="matchItem" title="匹配项目" type="String" iLength="100"/>
+				<attribute name="isMatch" title="是否匹配"  type="Boolean" /> 
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="MatchScheme" />
+        </generalizations>
+		<associations>
+			<association type="composition" roleB="belongMatchScheme" typeB="MatchScheme" roleA="matchRelationDetails" typeA="MatchRelation"/>
+			<association type="composition" roleB="belongMatchScheme" typeB="MatchScheme" roleA="matchItemDetails" typeA="MatchItem"/>
+		</associations>
+    </component>
+</components>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="archive.base.xml"/>
+	</references>
+
+	<component name="voucher" moduleName="at" title="会计平台组件">
+		<class name="VoucherTemplate" title="凭证模板" tableName="at_vouchertemplate">
+			<attributes>
+			    <attribute name="voucherCategory" title="凭证类别" type="aa.certificatecategory.CertificateCategory" />
+				<attribute name="sourceBill" title="来源单据" type="String"  iLength="20"/>
+				<attribute name="desc" title="描述" type="String" iLength="120"/>
+				<attribute name="vouchdate" title="凭证日期" type="Date"  />
+			</attributes>
+		</class>
+		
+		<class name="VoucherTemplateEntry" title="凭证模板分录" tableName="at_vouchertemplateentry">
+			<attributes>
+				<attribute name="belongTemplate" columnName="template_id" title="所属模板" type="VoucherTemplate" />
+				<attribute name="abstracts" title="摘要code" type="String" iLength="120" />
+				<attribute name="abstractsName" title="摘要" type="String" iLength="120" />
+		       <attribute name="creditflow" title="借贷方向" type="String" iLength="20" />
+				<attribute name="entryType" title="分类类型" type="at.entry.EntryType" />
+				<attribute name="account" title="科目code" type="String" iLength="120"/>
+				<attribute name="accountName" title="科目" type="String" iLength="120"/>
+				<attribute name="amount" title="金额(本币)code" type="String" iLength="120"/>
+				<attribute name="amountName" title="金额(本币)" type="String" iLength="120"/>
+				<attribute name="oriAmount" title="金额(原币)code" type="String" iLength="120"/>
+				<attribute name="oriAmountName" title="金额(原币)" type="String" iLength="120"/>
+				<attribute name="exch" title="币种code" type="String" iLength="120"/>
+				<attribute name="exchName" title="币种" type="String" iLength="120"/>
+				<attribute name="exchRate" title="汇率code" type="String" iLength="120"/>
+				<attribute name="exchRateName" title="汇率" type="String" iLength="120"/>
+				<attribute name="price" title="单价code" type="String" iLength="120"/>
+				<attribute name="priceName" title="单价" type="String" iLength="120"/>
+				<attribute name="quantity" title="数量code" type="String" iLength="120"/>
+				<attribute name="quantityName" title="数量" type="String" iLength="120"/>
+				
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="VoucherTemplate" />
+			<generalization parent="base.entity.BizObject" child="VoucherTemplateEntry" />	
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongTemplate" typeB="VoucherTemplate" roleA="entries" typeA="VoucherTemplateEntry"/>
+		</associations>
+	</component>
+	<component name="entry" moduleName="at" title="会计平台组件">
+		<class name="EntryType" title="分录类型" tableName="at_entrytype">
+			<attributes>
+				<attribute name="desc" title="描述" type="String" iLength="120"/>
+			</attributes>
+		</class>
+		
+		<class name="EntryTypeAccount" title="科目取值" tableName="at_entrytypeaccount">
+			<attributes>
+				<attribute name="belongType" columnName="type_id" title="所属分录类型" type="EntryType" />
+				<attribute name="factorDesc" title="科目影响因素描述" type="String" iLength="250"/>
+				<attribute name="account" title="科目取值" type="aa.accountingsubjects.AccountingSubjects"/>
+				<attribute name="priority" title="优先级" type="Short" />
+			</attributes>
+		</class>
+		<class name="AccountFactor" title="科目影响因素" tableName="at_accountfactor">
+			<attributes>
+				<attribute name="belongType" columnName="type_id" title="所属分录类型" type="EntryType" />
+				<attribute name="belongAccount" columnName="account_id" title="所属科目取值" type="EntryTypeAccount" />
+				<attribute name="leftBracket" title="左括号" type="String" iLength="1"/>
+				<attribute name="factor" title="影响因素"  type="String" iLength="200" />
+				<attribute name="factorName" title="影响因素名称"  type="String" iLength="200" />
+				<attribute name="operator" title="操作符"  type="String" iLength="50" />
+				<attribute name="value" title="值"  type="String" iLength="150" />
+				<attribute name="rightBracket" title="右括号" type="String" iLength="1"/>
+				<attribute name="logic" title="逻辑操作符" type="String" iLength="10"/>
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="EntryType" />
+			<generalization parent="base.entity.BizObject" child="EntryTypeAccount" />	
+			<generalization parent="base.entity.BizObject" child="AccountFactor" />	
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongType" typeB="EntryType" roleA="accounts" typeA="EntryTypeAccount"/>
+			<association type="composition" roleB="belongAccount" typeB="EntryTypeAccount" roleA="factors" typeA="AccountFactor" roleAMulti="0..n" />
+		</associations>
+	</component>	
+
+</components>

@@ -1,0 +1,1440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+    <references>
+        <reference file="java.xml"/>
+        <reference file="base.xml"/>
+        <reference file="archive.base.xml"/>
+    </references>
+  <component name="currency" moduleName="aa" title="公共档案组件">
+		<class name="Currency" title="币种" tableName="aa_currency">
+			<attributes>
+  				<attribute name="currencySymbol" title="币符" type="String"  iLength="6" />
+				<attribute name="amountAccuracy" title="金额精度" type="Short" defaultValue="2" />
+				<attribute name="priceAccuracy" title="单价精度" type="Short" defaultValue="2" />
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="Currency" />
+		</generalizations>
+	</component>
+	<component name="ratesSetting" moduleName="aa" title="公共档案组件">
+		<class name="RatesSetting" title="汇率设置" tableName="aa_ratessetting">
+			<attributes>
+				<attribute name="originalCurrency" title="原币" type="aa.currency.Currency" />
+				<attribute name="targetCurrency" title="目标币" type="aa.currency.Currency" />
+				<attribute name="conversionMode" title="折算方式" type="String" iLength="500" />
+				<attribute name="accuracyRates" title="汇率精度" type="Short" defaultValue="4" />
+			</attributes>
+		</class>
+		<class name="RatesSettingDetail" title="汇率设置明细" tableName="aa_ratessetting_detail">
+			<attributes>
+				<attribute name="startDate" title="开始日期" type="DateTime"  />
+				<attribute name="endDate" title="截止日期" type="DateTime" />
+				<attribute name="exchangeRate" title="汇率" type="Decimal" iScale="2" iPrecision="19" />
+				<attribute name="ratesSetting" columnName="ratesSetting" title="汇率设置" type="aa.ratesSetting.RatesSetting" note="lefttree" />
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="RatesSetting" />
+			<generalization parent="base.entity.BizObject" child="RatesSettingDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="ratesSetting" typeB="RatesSetting" roleA="rd" typeA="RatesSettingDetail"/>
+		</associations>
+	</component>
+	<component name="transceiverType" moduleName="aa" title="公共档案组件">
+		<class name="TransceiverType" title="出入库类型" tableName="aa_transceivertype">
+			<attributes>
+					<attribute name="parent" columnName="parent_id" title="上级出入库类型" type="TransceiverType" />
+					<attribute name="transceiverFlag" title="出库/入库" type="String" iLength="500"  />
+					<attribute name="remark" title="备注" type="String" iLength="500"  />
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.ITree" client="TransceiverType" />
+		</realizations>
+		<generalizations>
+			<generalization parent="archive.base.OrgArchive" child="TransceiverType" />
+		</generalizations>
+	</component>
+    
+  <component name="uom" moduleName="aa" title="公共档案组件">
+        <class name="UOMGroup" title="计量单位组" tableName="aa_uom_group">
+          <attributes>
+          <attribute name="cvrType" title="换算类型" type="String" iLength="20" isRequired="true" />
+          </attributes>
+        </class>
+        <class name="UOMDimension" title="量纲" tableName="aa_uom_dimension">
+        </class>
+        <class name="UOM" title="计量单位" tableName="aa_uom">
+            <attributes>
+                <attribute name="dimension"  columnName='dimension_id' title="量纲" type="UOMDimension" note="lefttree"/>
+                <attribute name="precision" title="精度" type="Integer"  miniValue="1"  maxiValue="20"  />
+                <attribute name="errOfRound" title="舍入类型" type="String"  iLength="20" />
+            </attributes>
+        </class>
+        <class name="UOMGroupSet" title="计量单位组设置" tableName="aa_uom_groupset">
+         <attributes>
+             <attribute name="uom" columnName="uom_id" title="计量单位"  type="aa.uom.UOM"/>
+             <attribute name="uomGroup" columnName="uomgroup_id" title="计量单位组" type="aa.uom.UOMGroup" note="lefttree"/>
+             <attribute name ="baseUom" title="基本单位" type="Boolean"/>
+             <attribute name="cvrRate" title="换算率" type="Decimal" iScale="2" iPrecision="19" />
+             <attribute name="cvrPrecision" title="换算率精度" type="Integer"   miniValue="1"  maxiValue="20" />
+             <attribute name="calcRule" title="计算规则" type="String" iLength="20" />
+         </attributes>
+        </class>
+       <generalizations>
+            <generalization parent="archive.base.Archive" child="UOMGroup" />
+            <generalization parent="archive.base.Archive" child="UOM" />
+            <generalization parent="archive.base.Archive" child="UOMDimension"/>
+            <generalization parent="base.entity.BizObject" child="UOMGroupSet" />
+        </generalizations>
+        <realizations>
+            <realization supplier="base.itf.ITree" client="UOMDimension" />
+            <realization supplier="base.itf.ITree" client="UOMGroup" />
+            <realization supplier="base.itf.IAuditInfo" client="UOM"/>
+        </realizations>
+        <associations>
+             <association type="composition" roleB="uomGroup" typeB="UOMGroup" roleA="uomgroupsets" typeA="UOMGroupSet"/>
+        </associations>
+    </component>
+     
+    <component name="inv" moduleName="aa" title="存货组件">
+        <class name="InventoryClass" title="存货分类" tableName="aa_inventoryclass">
+        	<attributes>
+         		<attribute name="parent" columnName="parent_id" title="上级分类" type="aa.inv.InventoryClass" />
+          		<attribute name="showPic" title="图片" type="String" iLength="255" />
+          		<attribute name="productTypes" title="商品类型" type="aa.productType.ProductType"  note="参照商品类型档案"/>
+          		<attribute name="bFree1" title="启用自由项1" type="Boolean" />
+		  		<attribute name="bFree2" title="启用自由项2" type="Boolean" />
+		  <attribute name="bFree3" title="启用自由项3" type="Boolean" />
+		  <attribute name="bFree4" title="启用自由项4" type="Boolean" />
+		  <attribute name="bFree5" title="启用自由项5" type="Boolean" />
+		  <attribute name="bFree6" title="启用自由项6" type="Boolean" />
+		  <attribute name="bFree7" title="启用自由项7" type="Boolean" />
+	      <attribute name="bFree8" title="启用自由项8" type="Boolean" />
+		  <attribute name="bFree9" title="启用自由项9" type="Boolean" />
+		  <attribute name="bFree10" title="启用自由项10" type="Boolean"/>
+         </attributes>
+        </class>
+        <class name="Inventory" title="存货" tableName="aa_inventory">
+            <attributes>
+                <attribute name="code" title="存货编码" type="String" iLength="255" isUnique="true" isCode="true" />
+				<attribute name="name" title="存货名称" type="String" isGlobalization="true" iLength="255" isUnique="true" isName="true" />
+                <attribute name="belongClass" title="存货分类" columnName="class_id" type="InventoryClass"  note="lefttree"/>
+                <attribute name="helpCode" title="助记码"  type="String" iLength="120" />
+                <attribute name="specification" title="规格"  type="String" iLength="120" /> 
+                <attribute name="barCode" title="条形码"  type="String" iLength="120" />  
+                <attribute name="description" title="描述"  type="String" iLength="255" />
+                <attribute name="model" title="型号"  type="String" iLength="255" /> 
+                <attribute name="uomGroup" columnName="uomGroup_id" title="计量单位组" type="aa.uom.UOMGroup" />
+                <attribute name="uom" title="主计量单位" columnName="uom_id" type="aa.uom.UOM" /> 
+                <attribute name="uomsa" title="销售计量单位" columnName="sauom_id" type="aa.uom.UOM" />
+                <attribute name="uompu" title="采购记量单位" columnName="puuom_id" type="aa.uom.UOM" />
+                <attribute name="uomku" title="库存计量单位" columnName="kuuom_id" type="aa.uom.UOM" />
+                <attribute name="uompd" title="生产计量单位" columnName="pduom_id" type="aa.uom.UOM" />
+                <attribute name="uomco" title="成本计量单位" columnName="couom_id" type="aa.uom.UOM" />
+                <attribute name="uomce" title="零售计量单位" columnName="ceuom_id" type="aa.uom.UOM" />
+                <attribute name="itemProperty" title="料品形态属性"  type="String" iLength="20" />
+                <attribute name="isSale" title="允许销售" type="Boolean" />
+                <attribute name="isDistribution" title="允许分销" type="Boolean" note="不显示"/>                
+                <attribute name="isPurchase" title="允许采购" type="Boolean" /> 
+                <attribute name="isAssets" title="允许资产" type="Boolean"  note="不显示"/>
+                <attribute name="isProduce" title="允许生产" type="Boolean"  note="不显示"/>
+                <attribute name="isStock" title="允许库存" type="Boolean" />
+                <attribute name="isService" title="是否服务" type="Boolean" note="不显示"/>
+                <attribute name="showPic" title="图片显示" type="Boolean" />
+                
+                <attribute name="kuWarehouse" title="默认仓库" columnName="warehose_id" type="aa.wh.Warehouse"  note="groupku"/>
+                <attribute name="kuLocator" title="默认货位" columnName="locator_id" type="String" iLength="20" />
+                <attribute name="kuPerson"    title="仓管员" columnName="kuperson_id"  type="aa.person.Person"/>
+                <attribute name="kuInExcessCap"  title="入库超额上限（%）" type="Decimal"  iScale="2" iPrecision="19" />
+                <attribute name="kuOutExcessCap" title="出库超额上限（%）" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="kuMinusStock"   title="允许负库存" type="String" iLength="255" note="" />
+                <attribute name="kuSaftStock" title="安全库存" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="kuMaxStock" title="最高库存" type="Decimal" iScale="2" iPrecision="19" />
+                 <attribute name="kuMinStock" title="最低库存" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="kuBatchManage" title="批次管理" type="Boolean" />
+                <attribute name="kuInventoryCycles" title="盘点周期" type="Integer"  note="不显示"/>
+                <attribute name="kuCyclesUnit" title="盘点周期单位" type="String" iLength="20"  note="不显示"/>
+                <attribute name="kuCyclesDay" title="第 天" type="String" iLength="20" note="不显示"/>
+                
+                
+                <attribute name="saDepartment" title="销售部门" columnName="saDepartment_id" type="aa.dept.Department" note="groupsa"/>
+                <attribute name="saPerson" title="销售员" columnName="saPerson_id" type="aa.person.Person" />
+                <attribute name="saOutputTax" title="销项税率"  type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="priceuomsa" title="销售计价单位" columnName="sapriceuom_id" type="aa.uom.UOM" />
+                <attribute name="saReferPrice" title="参考售价" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="saMinPrice" title="最低售价" type="Decimal" iScale="2"  iPrecision="19" />
+                <attribute name="saRetailPrice" title="零售价格" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="saminOrder" title="最小订量" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="saMaxOrder" title="最大订量" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="saOutUpper"  title="销售出库上限（%）" type="Decimal"  iScale="2" iPrecision="19" />
+                <attribute name="saOutDownLine" title="销售出库下限（%）" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="saWholesale" title="批发" type="Boolean" note="销售渠道"/>
+                <attribute name="saRetails" title="零售" type="Boolean" note="销售渠道"/>
+                <attribute name="saB2B" title="B2B" type="Boolean" note="销售渠道"/>
+                <attribute name="saB2C" title="B2C" type="Boolean" note="销售渠道"/>
+
+                 <attribute name="puDepartment" title="采购部门"  columnName="puDepartment_id" type="aa.dept.Department" note="grouppu"/>
+                <attribute name="puPerson" title="采购人员" columnName="puPerson_id" type="aa.person.Person" />
+                <attribute name="puVendor" title="供货单位" columnName="puvendor_id" type="aa.vendor.Vendor" />
+                <attribute name="puInTaxRate" title="进项税率"  type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="puMaxInTax" title="最高进价" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="puArrivalUpper"  title="收货上限（%）" type="Decimal"  iScale="2" iPrecision="19" />
+                <attribute name="puArrivalDownLine" title="收货下限（%）" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="priceuompu" title="采购计价单位" columnName="pupriceuom_id" type="aa.uom.UOM" />
+                 <attribute name="puminOrder" title="最小订量" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="puMaxOrder" title="最大订量" type="Decimal" iScale="2" iPrecision="19" />
+                <attribute name="puOrderQuantity" title="订购批量" type="Decimal" iScale="2" iPrecision="19" note="不显示" />
+                <attribute name="puAdvanceDate" title="提前期（天）" type="Integer" />
+                
+                <attribute name="coValuationMethod" title="计价方式" type="String" iLength="20" note="groupco,不显示" />
+                <attribute name="coPrice" title="计划价/售价" type="Decimal" iScale="2" iPrecision="19"  note="co"/>
+                <attribute name="coReferCost" title="参考成本" type="Decimal" iScale="2" iPrecision="19"  note="co"/>
+                <attribute name="coLatestCost" title="最新成本"  type="Decimal" iScale="2" iPrecision="19"  note="采购结算时回写,co" />
+                
+                 <attribute name="cePrice" title="建议零售价"  type="Decimal" iScale="2" iPrecision="19"  note="groupce" />
+                 <attribute name="ceType" title="售卖方式"  type="String" iLength="20" />
+                 <attribute name="ceChangePrice" title="允许开单改价"  type="Boolean" />
+                
+                
+                               
+                <attribute name="weGW" title="毛重" type="Decimal" iScale="2" iPrecision="19"  note="groupother"/>
+                <attribute name="weNetWeight" title="净重" type="Decimal" iScale="2" iPrecision="19"  />
+                <attribute name="uomwe" title="重量单位" columnName="weuom_id" type="aa.uom.UOM" />
+                <attribute name="siLong" title="长" type="Decimal" iScale="2" iPrecision="19"  />
+                <attribute name="siWidth" title="宽" type="Decimal" iScale="2" iPrecision="19"  />
+                <attribute name="siHigh" title="高" type="Decimal" iScale="2" iPrecision="19"  />
+                <attribute name="siArea" title="面积" type="Decimal" iScale="6" iPrecision="19" />
+                <attribute name="siVolume" title="体积" type="Decimal" iScale="6" iPrecision="19"  />
+                <attribute name="uomsi" title="尺寸单位" columnName="siuom_id" type="aa.uom.UOM" />
+                
+                <attribute name="effectiveDate" title="生效日期" type="Date" />
+              
+            </attributes>
+        </class>
+
+         <class name="InventoryCustomItem" title="存货自定义项" tableName="aa_inventory_customitem">
+			<attributes>
+				<attribute name="inventory" columnName="inventory_id" title="存货id" type="Inventory" isKey="true" />
+		   </attributes>
+		</class>
+        <class name="InventoryFreeItem" title="存货自由项" tableName="aa_inventory_freeitem">
+			<attributes>
+				<attribute name="inventory" columnName="inventory_id" title="存货id" type="Inventory" />
+                <attribute name="puPriceFree1" title="采购定价自由项1" type="Boolean"/>
+                <attribute name="saPriceFree1" title="销售定价自由项1" type="Boolean"/>
+                <attribute name="accountFree1" title="核算成本自由项1" type="Boolean"/>
+                <attribute name="puPriceFree2" title="采购定价自由项2" type="Boolean"/>
+                <attribute name="saPriceFree2" title="销售定价自由项2" type="Boolean"/>
+                <attribute name="accountFree2" title="核算成本自由项2" type="Boolean"/>
+                <attribute name="puPriceFree3" title="采购定价自由项3" type="Boolean"/>
+                <attribute name="saPriceFree3" title="销售定价自由项3" type="Boolean"/>
+                <attribute name="accountFree3" title="核算成本自由项3" type="Boolean"/>
+                <attribute name="puPriceFree4" title="采购定价自由项4" type="Boolean"/>
+                <attribute name="saPriceFree4" title="销售定价自由项4" type="Boolean"/>
+                <attribute name="accountFree4" title="核算成本自由项4" type="Boolean"/>
+                <attribute name="puPriceFree5" title="采购定价自由项5" type="Boolean"/>
+                <attribute name="saPriceFree5" title="销售定价自由项5" type="Boolean"/>
+                <attribute name="accountFree5" title="核算成本自由项5" type="Boolean"/>
+                <attribute name="puPriceFree6" title="采购定价自由项6" type="Boolean"/>
+                <attribute name="saPriceFree6" title="销售定价自由项6" type="Boolean"/>
+                <attribute name="accountFree6" title="核算成本自由项6" type="Boolean"/>
+                <attribute name="puPriceFree7" title="采购定价自由项7" type="Boolean"/>
+                <attribute name="saPriceFree7" title="销售定价自由项7" type="Boolean"/>
+                <attribute name="accountFree7" title="核算成本自由项7" type="Boolean"/>
+                <attribute name="puPriceFree8" title="采购定价自由项8" type="Boolean"/>
+                <attribute name="saPriceFree8" title="销售定价自由项8" type="Boolean"/>
+                <attribute name="accountFree8" title="核算成本自由项8" type="Boolean"/>
+                <attribute name="puPriceFree9" title="采购定价自由项9" type="Boolean"/>
+                <attribute name="saPriceFree9" title="销售定价自由项9" type="Boolean"/>
+                <attribute name="accountFree9" title="核算成本自由项9" type="Boolean"/>
+                <attribute name="puPriceFree10" title="采购定价自由项10" type="Boolean"/>
+                <attribute name="saPriceFree10" title="销售定价自由项10" type="Boolean"/>
+                <attribute name="accountFree10" title="核算成本自由项10" type="Boolean"/>
+                <attribute name="bFree1" title="启用自由项1" type="Boolean" />
+				<attribute name="bFree2" title="启用自由项2" type="Boolean" />
+				<attribute name="bFree3" title="启用自由项3" type="Boolean" />
+				<attribute name="bFree4" title="启用自由项4" type="Boolean" />
+				<attribute name="bFree5" title="启用自由项5" type="Boolean" />
+				<attribute name="bFree6" title="启用自由项6" type="Boolean" />
+				<attribute name="bFree7" title="启用自由项7" type="Boolean" />
+				<attribute name="bFree8" title="启用自由项8" type="Boolean" />
+				<attribute name="bFree9" title="启用自由项9" type="Boolean" />
+				<attribute name="bFree10" title="启用自由项10" type="Boolean"/>
+		   </attributes>
+		</class>
+        <class name="InventoryAidClass" title="存货辅助分类值" tableName="aa_inventory_aidclass">
+			<attributes>
+                <attribute name="code" title="编码" type="String" iLength="60" isUnique="true" isCode="true" />
+				<attribute name="name" title="名称" type="String" isGlobalization="true" iLength="60" isUnique="true" isName="true" />
+                <attribute name="invAidClassSet" columnName="invaidclassset_id"  title="辅助分类id" type="InvAidClassSet" note="filter" />
+                <attribute name="showName" title="显示名称" type="String" isGlobalization="true" iLength="60"/>
+                 <attribute name="parent" columnName="parent_id" title="辅助分类" type="aa.inv.InventoryAidClass" />
+                <attribute name="productTypes" title="商品类型" type="aa.productType.ProductType"  note="参照商品类型档案"/>
+                <attribute name="remark" title="备注" type="String" iLength="255" />
+                <attribute name="showPic" title="图片" type="String" iLength="255" />
+		   </attributes>
+		</class>
+        
+        <class name="InvAidClassSet" title="存货辅助分类" tableName="aa_inventory_aidclassSet">
+			<attributes>
+                <attribute name="code" title="编码" type="String" iLength="60" isUnique="true" isCode="true" />
+				<attribute name="name" title="名称" type="String" isGlobalization="true" iLength="60" isUnique="true" isName="true" />
+                <attribute name="showName" title="显示名称" type="String" isGlobalization="true" iLength="60"/>
+                <attribute name="multSelect" title="分类值是否多选" type="Boolean"/>
+                <attribute name="enabled" title="启用" type="Boolean" defaultValue="false"/>
+                <attribute name="remark" title="备注" type="String" iLength="255" />
+                <attribute name="isSale" title="销售" type="Boolean" />
+                <attribute name="isB2C" title="B2C商城" type="Boolean" />                
+                <attribute name="isPurchase" title="采购" type="Boolean" /> 
+                <attribute name="isB2B" title="B2B" type="Boolean" />
+                <attribute name="isReceiptPay" title="收付" type="Boolean" />
+                <attribute name="isStock" title="库存" type="Boolean" />
+                <attribute name="isInvAccount" title="存货核算" type="Boolean" />
+		   </attributes>
+		</class>
+        
+        
+        <class name="InvFreeItemContrapose" title="自由项取值范围" tableName="aa_inventory_FreeItemContrapose">
+			<attributes>
+              <attribute name="inventory" columnName="inventory_id" title="存货id" type="Inventory"/>
+               <attribute name="invFreeId" title="自由项id" type="String" iLength="60" />
+                <attribute name="invFreeCode" title="自由项编码" type="String" iLength="60" />
+               <attribute name="invFreeName" title="自由项名称" type="String" iLength="60" />
+		   </attributes>
+		</class>   
+        <class name="InventorySKU" title="料品SKU" tableName="aa_inventory_inventorysku">
+            <attributes>
+				<attribute name="inventory" columnName="inventory_id" title="存货id" type="Inventory"/>
+                <attribute name="delete"  title="是否删除" type="Boolean"/>
+            </attributes>    
+        </class> 
+        <class name="InvAidClasses" title="存货对应辅助分类值" tableName="aa_inventory_aidclasses">
+			<attributes>
+                <attribute name="id"  title="id" type="Long" isKey="true" />
+				<attribute name="inventory" columnName="inventory_id" title="存货" type="Inventory"  />
+                <attribute name="invAidClassSet" columnName="invaidclassset_id"  title="辅助分类" type="InvAidClassSet"  />
+                <attribute name="inventoryAidClass" columnName="inventoryaidclass_id" title="存货辅助分类值" type="InventoryAidClass"  />
+		   </attributes>
+		</class>
+       <realizations>
+            <realization supplier="base.itf.ITree" client="InventoryClass" />
+            <realization supplier="base.itf.ITree" client="InventoryAidClass" />
+            <realization supplier="base.itf.IStopping" client="Inventory" />
+            <realization supplier="base.itf.IStopping" client="InvAidClassSet" />
+            <realization supplier="base.itf.IAuditInfo" client="Inventory" />
+            <realization supplier="base.itf.CustomItem" client="InventoryCustomItem" />
+            <realization supplier="base.itf.FreeItem" client="InventorySKU" />
+        </realizations>
+        <generalizations>
+            <generalization parent="archive.base.OrgArchive" child="InventoryClass" />
+            <generalization parent="archive.base.OrgArchive" child="Inventory" />
+            <generalization parent="archive.base.OrgArchive" child="InventoryAidClass" />
+            <generalization parent="base.entity.BizObject" child="InvFreeItemContrapose" />
+			<generalization parent="base.entity.BizObject" child="InventoryFreeItem" />
+            <generalization parent="base.entity.BizObject" child="InventorySKU" />
+            <generalization parent="base.entity.BizObject" child="InvAidClassSet" />
+        </generalizations>
+         <associations>
+             <association type="composition" roleB="inventory" typeB="Inventory" roleA="inventoryCustomItems" typeA="InventoryCustomItem" roleAMulti="1" />
+             <association type="composition" roleB="inventory" typeB="Inventory" roleA="inventoryFreeItems" typeA="InventoryFreeItem" roleAMulti="0..n" />
+             <association type="composition" roleB="inventory" typeB="Inventory" roleA="inventorySKUs" typeA="InventorySKU" roleAMulti="0..n" />
+              <association type="composition" roleB="inventory" typeB="Inventory" roleA="invAidClasses" typeA="InvAidClasses" roleAMulti="0..n" />
+              <association type="composition" roleB="inventory" typeB="Inventory" roleA="invFreeItemContrapose" typeA="InvFreeItemContrapose" roleAMulti="0..n" />
+        </associations>
+    </component>
+ 	<component name="arapaccountrule" moduleName="aa" title="立账依据组件">
+        <class name="ARAPAccountRule" title="立账依据" tableName="aa_arapaccountrule">
+            <attributes>
+				<attribute name="code" title="规则编码" type="String" iLength="10" isUnique="true"/> 
+				<attribute name="name" title="规则名称" type="String" iLength="40" isRequired="true"/>	
+				<attribute name="description" title="规则说明" type="String" iLength="100" />					
+				<attribute name="isARRule" title="应收规则" type="Boolean"/>
+				<attribute name="applyTo" title="立账依据" type="String" iLength="50" isRequired="true"/>
+				<attribute name="baseDate" title="立账基准日" type="String" iLength="50" isRequired="true"/>
+				<attribute name="effectiveType" title="立账方式" type="String" iLength="50"/> 
+				<attribute name="deviationEffectMonths" title="偏离月" type="Short" miniValue="0" maxiValue="120"/> 
+				<attribute name="deviationEffectDays" title="偏离天数" type="Short" miniValue="0" maxiValue="36500"/>
+				<attribute name="fixedEffectMonths" title="延后月" type="Short" miniValue="0" maxiValue="120"/>				
+				<attribute name="fixedEffectDay1" title="固定日1" type="Short" miniValue="0" maxiValue="31"/>
+				<attribute name="fixedEffectDay2" title="固定日2" type="Short" miniValue="0" maxiValue="31"/>
+				<attribute name="fixedEffectDay3" title="固定日3" type="Short" miniValue="0" maxiValue="31"/>
+				<attribute name="fixedEffectDay4" title="固定日4" type="String" iLength="50"/>
+				<attribute name="dueType" title="账期方式" type="String" iLength="50"/> 
+				<attribute name="dueDays" title="账期" type="Short" miniValue="0" maxiValue="36500"/>
+				<attribute name="fixedDueMonths" title="延后月" type="Short" miniValue="0" maxiValue="120"/>
+				<attribute name="fixedDueDay1" title="固定日1" type="Short" miniValue="0" maxiValue="31"/>
+				<attribute name="fixedDueDay2" title="固定日2" type="Short" miniValue="0" maxiValue="31"/>
+				<attribute name="fixedDueDay3" title="固定日3" type="Short" miniValue="0" maxiValue="31"/>
+				<attribute name="fixedDueDay4" title="固定日4" type="String" iLength="50"/>	
+            </attributes>
+        </class>
+        <generalizations>
+			<generalization parent="archive.base.Archive" child="ARAPAccountRule" />
+        </generalizations>
+    </component>    
+    <component name="common" moduleName="aa" title="公用">
+        <class name="Settlement" title="结算方式" tableName="aa_settlement">
+			<attributes>
+				<attribute name="settletype" title="结算类型" columnName="settle_type" type="String" iLength="16" note = "结算类型"/>
+				<!-- 
+				<attribute name="paymentChannel" title="支付渠道" columnName="payment_channel" type="String" iLength="16" note = "支付渠道"/>
+				<attribute name="isSuitRetail" title="适用零售" columnName="is_suit_retail" type="Boolean"  note = "适用零售"/>
+				 -->
+			</attributes>
+        </class>     
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="Settlement" />
+            <!--<generalization parent="archive.base.Archive" child="RecvAccountRule" />-->
+        </generalizations>
+    </component>
+    <component name="sale" moduleName="aa" title="销售类型">
+	    <class name="SaleType" title="销售类型" tableName="aa_saletype">
+	    	<attributes>
+	    		<attribute name="bizType" title="业务类型" columnName="biztype" type="String" iLength="64" isRequired="true" note = "业务类型，枚举：普通销售，默认普通销售，不可改"/> 
+	    		<attribute name="accounting" title="销售成本核算" columnName="accounting" type="String" iLength="64" isRequired="true" note = "枚举：应收单，非空，默认应收单，不可改"/> 
+	    		<attribute name="needOrder" title="必有订单" columnName="need_order" type="Boolean"  isRequired="true" note = "默认是，可改"/> 
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="255" note = "备注"/> 	
+				<attribute name="IsDefault" title="默认" columnName="is_default" type="Boolean" isRequired="true" note = "非空" />	
+				<attribute name="TransceiverType" title="出库类别" columnName="transceiver_type" type="aa.transceiverType.TransceiverType" note="出库类别"/>	    	
+	    	</attributes>
+	    </class>
+	    <generalizations>
+            <generalization parent="archive.base.Archive" child="SaleType" />
+        </generalizations>
+        <realizations>
+        	<realization supplier="base.itf.ITree" client="SaleType" />
+        </realizations>
+    </component>
+    <component name="customer" moduleName="aa" title="客户组件">
+        <class name="CustomerClass" title="客户分类" tableName="aa_customerclass">
+        	<attributes>
+				<attribute name="code" title="编码" columnName="code" type="String" iLength="100" isUnique ="true" note = "分类编码" />	
+				<attribute name="name" title="名称" columnName="name" type="String" iLength="255" note = "分类名称" />	
+			</attributes>			
+        </class>
+        <class name="CustomerLevel" title="客户级别" tableName="aa_customerlevel">
+        	<attributes>
+        		<attribute name="Pricing" title="订价依据" columnName="is_pricing" type="Boolean" note = "订价依据" />	
+			</attributes>		        
+        </class>
+        <class name="Customer" title="客户" tableName="aa_customer">
+            <attributes>
+            <!-- 头 -->
+				<attribute name="code" title="编码" columnName="code" type="String" iLength="100" isUnique ="true" note = ""/>	
+				<attribute name="name" title="名称" columnName="name" type="String" iLength="255" note = ""/>	
+				<attribute name="simpleName" title="简称" columnName="simple_name" type="String" iLength="100" note=""/>	
+				<attribute name="helpCode" title="助记码" columnName="help_code" type="String" iLength="100" note = "助记码"/>	
+            <!-- 基本信息 -->
+                <attribute name="belongClass" title="客户分类" columnName="class_id" type="CustomerClass" />
+                <attribute name="matchVendor" title="对应供应商" columnName="vendor_id" type="aa.vendor.Vendor" />
+                <attribute name="country" title="国家" columnName="country_id" type="aa.area.Country" /> 
+				<attribute name="areaClass" title="地区分类"  type="aa.area.AreaClass" columnName="areaclass" note="" /> 
+				<attribute name="defaultContact" title="默认联系人" columnName="default_contact" type="CustomerContact" iLength="64" note="默认联系人"/>	
+				<attribute name="legalPerson" title="法人" columnName="legal_person" type="String" iLength="64" note="法人"/>	
+				<attribute name="telephone" title="电话" columnName="telephone" type="String" iLength="64" note="电话"/>
+				<attribute name="fax" title="传真" columnName="fax" type="String" iLength="64" note="传真"/>
+				<attribute name="postcode" title="邮编" columnName="postcode" type="String" iLength="64" note="邮编"/>
+				<attribute name="email" columnName="email" title="电子邮件" type="String" iLength="50" note="电子邮件"/>
+				<attribute name="website" columnName="website" title="网址" type="String" iLength="50" note="网址"/>
+				<attribute name="province" title="省"  type="aa.admindivisions.AdminDivisions" columnName="province" note="basic" /> 
+				<attribute name="city" title="市"  type="aa.admindivisions.AdminDivisions" columnName="city" note="basic" /> 
+				<attribute name="area" title="区"  type="aa.admindivisions.AdminDivisions" columnName="area" note="basic" /> 
+				<attribute name="street" title="街道"  type="aa.admindivisions.AdminDivisions" columnName="street" note="basic" /> 
+				<attribute name="address" columnName="address" title="详细地址" type="String" iLength="255" note="所选省市区街道带入到详细地址中"/>
+				<attribute name="longitude" title="经度"  type="String" iLength="500" note="basic" /> 
+				<attribute name="latitude" title="纬度"  type="String" iLength="500" note="basic" /> 
+				<!-- 业务信息 -->		
+				<attribute name="currency" title="币种" columnName="currency_id" type="aa.currency.Currency" />
+				<attribute name="taxNum" title="税号" columnName="tax_num" type="String" iLength="64" note="税号"/>
+				<attribute name="taxRate" title="税率" columnName="tax_rate" type="Decimal" iPrecision="19" iScale="4"  note="税率"/>
+				<attribute name="creditCode" title="统一社会信用代码" columnName="credit_code" type="String" iLength="64" note="统一社会信用代码"/>
+				<attribute name="enterpriseType" title="企业类型" columnName="enterprise_type" type="String" iLength="64" note="合资、独资、国有、私营等"/>
+				<attribute name="organization" columnName="dept_id" title="部门" type="aa.dept.Department" note="basic"/>	
+				<attribute name="person" title="负责人"  type="aa.person.Person" columnName="person" note="basic" />
+				<attribute name="warehouse" title="默认仓库" columnName="wh_id" type="aa.wh.Warehouse" note=""/>
+				<attribute name="level" title="客户级别" columnName="level_id" type="aa.customer.CustomerLevel" note=""/>
+				<attribute name="priceIdentity" title="价格标识" columnName="price_identity" type="String" iLength="64" note="枚举：含税、无税，默认含税"/>
+				<attribute name="orderScope" title="订货范围" columnName="order_scope" type="String" iLength="64" note="客户订货范围控制,[不控制，按参数控制]"/>
+				<attribute name="saleAccountRule" title="销售立账规则" columnName="pchs_acc_rule_id" type="aa.arapaccountrule.ARAPAccountRule" note="销售立账规则"/>
+				<attribute name="otherAccountRule" title="其他应收立账规则" columnName="pay_acc_rule_id" type="aa.arapaccountrule.ARAPAccountRule" note="其他应收立账规则"/>
+				<attribute name="paymentTerm" title="付款条件" columnName="payment_term_id" type="aa.pay.Payment" note="付款条件"/>
+				<attribute name="inviteCode" title="邀请码" columnName="invite_code" type="String" iLength="64" note="邀请码"/>
+			</attributes>
+        </class>
+        <class name="CustomerCustomItem" title="客户自定义项" tableName="aa_customer_customitem">
+			<attributes>
+				<attribute name="customer" columnName="customer_id" title="客户id" type="Customer" isKey="true" />
+		   </attributes>
+		</class>
+        <class name="CustomerDeposit" title="客户开户银行" tableName="aa_customer_desposit">
+        	<attributes>
+            	<attribute name="bank" title="所属银行" columnName="bank_id" type="aa.bank.Bank" note="所属银行"/>
+            	<attribute name="bankDeposit" title="开户银行" columnName="bank_deposit" type="String" iLength="64" note="开户银行"/>
+            	<attribute name="bankAccount" title="银行账号" columnName="bank_account" type="String" iLength="64" note="银行账号"/>
+            	<attribute name="accountName" title="账户名称" columnName="account_name" type="String" iLength="64" note="账户名称"/>
+            	<attribute name="isDefault" title="是否默认" columnName="is_default" type="Boolean" note="是或否，默认为否，只能有一个默认值"/>
+            </attributes>
+        </class>
+        <class name="CustomerHierarchy" title="客户层级关系" tableName="aa_customer_hierarchy">
+        	<attributes>
+            	<attribute name="relatedCustomer" title="相关客户" columnName="rel_customer_id" type="aa.customer.Customer" note="客户"/>
+            	<attribute name="isBilling" title="默认立账单位" columnName="is_billing" type="Boolean" note="是或否，默认为否，只能有一个默认值"/>
+            	<attribute name="relation" title="关系类型" columnName="relation" type="String" iLength="64" note="上级单位、下级单位、空。客户编码等于主表客户编码时为空，其他情况不能为空"/>
+            </attributes>
+        </class>
+        <class name="CustomerContact" title="联系人" tableName="aa_customer_contact">
+        	<attributes>
+        		<!-- 基本信息 -->
+            	<attribute name="call" title="称呼" columnName="call" type="String" iLength="64" note="称呼"/>
+                <attribute name="gender" columnName="gender" title="性别" type="String" iLength="16" note="性别"/>
+                <attribute name="birthday" columnName="birthday" title="生日" type="Date" note="生日"/>
+                <attribute name="nativePlace" columnName="native_place" title="籍贯" type="String" iLength="20" note="籍贯"/>
+                <attribute name="superior" title="直接上级" columnName="superior_id" type="CustomerContact" note="直接上级"/>
+                <attribute name="person" title="负责人"  type="aa.person.Person" columnName="person" note="basic" />
+                <attribute name="isDefault" columnName="is_default" title="默认" type="Boolean"  note="默认"/>
+                <attribute name="duty" columnName="duty" title="职务" type="String" iLength="20" note="职务"/>
+                <attribute name="hobby" columnName="hobby" title="个人爱好" type="String" iLength="20" note="爱好"/>
+                <!-- 联系信息 -->
+                <attribute name="officePhone" columnName="office_phone" title="办公电话" type="String" iLength="20" note="办公电话"/>
+                <attribute name="homePhone" columnName="home_phone" title="家庭电话" type="String" iLength="20" note="家庭电话"/>
+                <attribute name="mobile" columnName="mobile" title="移动电话" type = "String" iLength="20" note ="移动电话"/>
+                <attribute name="QQ" columnName="qq" title="QQ号" type="String" iLength="20" note="QQ号"/>
+                <attribute name="wechat" columnName="wechat" title="微信号" type="String" iLength="20" note="微信号"/>
+                <attribute name="email" columnName="email" title="电子邮件" type="String" iLength="50" note="电子邮件"/>
+                <attribute name="officeAD" columnName="office_ad" title="工作地址" type="String" iLength="20" note="工作地址"/>
+                <attribute name="homeAD" columnName="home_ad" title="家庭地址" type="String" iLength="20" note="家庭地址"/>
+                <attribute name="family" columnName="family" title="家庭成员" type="String" iLength="20" note="家庭成员"/>
+                <attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" note = "备注"/>  
+                <attribute name="loginAccount" title="登录账号" columnName="login_account" type="String" iLength="100" note = "登录账号"/>  
+                <attribute name="password" title="密码" columnName="password" type="String" iLength="100" note = "密码"/>  
+                <!-- 照片 -->
+                <attribute name="avatar" title="头像" columnName="avatar" type="String" iLength="255" note = "仅可上传一张"/>
+                <!-- 收货地址 -->
+            </attributes>
+        </class>
+        <class name="CustomerAd" title="客户地址" tableName = "aa_customer_ad">
+        	<attributes>
+				<attribute name="province" title="省"  type="aa.admindivisions.AdminDivisions" columnName="province" note="basic" /> 
+				<attribute name="city" title="市"  type="aa.admindivisions.AdminDivisions" columnName="city" note="basic" /> 
+				<attribute name="area" title="区"  type="aa.admindivisions.AdminDivisions" columnName="area" note="basic" /> 
+				<attribute name="street" title="街道"  type="aa.admindivisions.AdminDivisions" columnName="street" note="basic" /> 
+				<attribute name="address" columnName="address" title="详细地址" type="String" iLength="255" note="所选省市区街道带入到详细地址中"/>
+				<attribute name="longitude" title="经度"  type="String" iLength="500" note="basic" /> 
+				<attribute name="latitude" title="纬度"  type="String" iLength="500" note="basic" /> 
+				<attribute name="isDefault" title="是否默认" columnName="is_default" type="Boolean" note="是或否，默认为否，只能有一个默认值"/>
+				<attribute name="contact" title="联系人"  type="aa.customer.CustomerContact" columnName="contact" note="basic" /> 
+				<attribute name="phone" columnName="phone" title="联系人固定电话" type="String" iLength="20" note="固定电话"/>
+                <attribute name="mobile" columnName="mobile" title="联系人移动电话" type = "String" iLength="20" note ="移动电话"/>
+                <attribute name="fax" title="传真" columnName="fax" type="String" iLength="64" note="传真"/>
+				<attribute name="email" columnName="email" title="电子邮件" type="String" iLength="50" note="电子邮件"/>
+        	</attributes>
+        </class>
+        <class name="CustomerInventory" title="客户料品对照表" tableName = "aa_customer_inv">
+	        <attributes>
+	        	<attribute name="customer" title="客户" columnName="customer_id" type="Customer" note="客户"/>
+	        	<attribute name="inventory" title="料品" columnName="inventory_id" type="aa.inv.Inventory" note="料品"/>
+	        	<attribute name="code" title="客户料品编码" columnName="code" type="String" iLength="64" note="客户料品编码"/>
+	        	<attribute name="name" title="客户料品名称" columnName="name" type="String" iLength="64" note="客户料品名称"/>
+	        	<attribute name="model" title="客户料品型号" columnName="model" type="String" iLength="64" note="客户料品型号"/>
+	        	<attribute name="minQuantity" title="起订量" columnName="min_qty" type="Short" />
+	        	<attribute name="maxQuantity" title="最大订货量" columnName="max_qty" type="Short" />
+	        	<attribute name="priceUom" title="计价单位" columnName="price_uom_id" type="aa.uom.UOM" />
+	        	<!-- SKU -->
+	        </attributes>
+        </class>
+        <realizations>
+            <realization supplier="base.itf.ITree" client="CustomerClass" />
+            <realization supplier="base.itf.IStopping" client="Customer" />
+            <realization supplier="base.itf.CustomItem" client="CustomerCustomItem" />
+        </realizations>
+        <generalizations>
+        	<generalization parent="archive.base.Archive" child="CustomerLevel" />
+            <generalization parent="archive.base.Archive" child="CustomerClass" />
+            <generalization parent="archive.base.Archive" child="Customer" />
+            <generalization parent="base.entity.BizObject" child="CustomerDeposit" />
+            <generalization parent="base.entity.BizObject" child="CustomerHierarchy" />
+            <generalization parent="archive.base.Archive" child="CustomerContact" />
+            <generalization parent="archive.base.Archive" child="CustomerAd" />
+            <generalization parent="archive.base.Archive" child="CustomerInventory" />
+        </generalizations>
+        <associations>
+        	 <association type="composition" roleB="customer" typeB="Customer" roleA="customItems" typeA="CustomerCustomItem" roleAMulti="1" />	
+             <association type="composition" roleB="customer" typeB="Customer" roleA="contacts" typeA="CustomerContact" roleAMulti="0..n" />
+             <association type="composition" roleB="customer" typeB="Customer" roleA="hierarchies" typeA="CustomerHierarchy" roleAMulti="0..n" />
+             <association type="composition" roleB="customer" typeB="Customer" roleA="deposits" typeA="CustomerDeposit" roleAMulti="0..n" />
+             <association type="composition" roleB="customer" typeB="Customer" roleA="addresses" typeA="CustomerAd" roleAMulti="0..n" />
+             <!--
+             <association type="composition" roleB="customer_id" typeB="CustomerInventory" roleA="inventories" typeA="Customer" roleAMulti="0..n" />
+             <association type="composition" roleB="inventory_id" typeB="CustomerInventory" roleA="customers" typeA="aa.inv.Inventory" roleAMulti="0..n" />
+              -->
+        </associations>
+    </component>
+    <component name="vendor" moduleName="aa" title="供应商组件">
+        <class name="VendorClass" title="供应商分类" tableName="aa_vendorclass">
+        	<attributes>
+				<attribute name="code" title="编码" columnName="code" type="String" iLength="100" isUnique ="true" note = "分类编码"/>	
+				<attribute name="name" title="名称" columnName="name" type="String" iLength="255" note = "分类名称"/>	
+        	</attributes>
+        </class>
+        <class name="Vendor" title="供应商" tableName="aa_vendor">
+            <attributes>
+            	<!-- 基本 -->
+                <attribute name="belongClass" title="供应商分类" columnName="class_id" type="VendorClass" /> 
+                <attribute name="simpleName" title="简称" columnName="simple_name" type="String" iLength="100" note = "供应商简称"/>
+                <attribute name="helpCode" title="助记码" columnName="help_code" type="String" iLength="100" note = "助记码"/>		
+                  
+				<attribute name="currency" title="币种" columnName="currency_id" type="aa.currency.Currency" /> 
+                <attribute name="registeredCapital" title="注册资金" columnName="registered_capital" type="Decimal" iPrecision="19" iScale="0" note="注册资金"/>	
+				<attribute name="turnover" title="营业额" columnName="turnover" type="Decimal" iPrecision="19" iScale="0"  note="营业额"/>	
+				<attribute name="legalPerson" title="法人" columnName="legal_person" type="String" iLength="64" note="法人"/>	
+				<attribute name="staff" title="员工人数" columnName="staff" type="Integer" note="员工人数"/>	
+				<attribute name="foundingDate" title="成立日期" columnName="founding_date" type="Date" note="成立日期"/>	
+				<attribute name="ICRC" title="工商注册码" columnName="icrc" type="String" iLength="64" note="工商注册码"/>	
+				<attribute name="taxNum" title="税号" columnName="tax_num" type="String" iLength="64" note="税号"/>	
+				<attribute name="officalAD" title="办公地址" columnName="offical_ad" type="String" iLength="255" note="办公地址"/>	
+				<attribute name="registerAD" title="注册地址" columnName="register_ad" type="String" iLength="255" note="注册地址"/>	 
+				<attribute name="matchCustomer" title="对应客户" columnName="customer_id" type="aa.customer.Customer" />  
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" note = "备注"/>  
+				<attribute name="province" title="省"  type="aa.admindivisions.AdminDivisions" columnName="province" note="basic" /> 
+				<attribute name="city" title="市"  type="aa.admindivisions.AdminDivisions" columnName="city" note="basic" /> 
+				<attribute name="area" title="区"  type="aa.admindivisions.AdminDivisions" columnName="area" note="basic" /> 
+				<attribute name="street" title="街道"  type="aa.admindivisions.AdminDivisions" columnName="street" note="basic" /> 
+	   
+				<attribute name="isPurchase" title="采购" columnName="is_purchase" type="Boolean" defaultValue="0" note=""/>  
+				<attribute name="isService" title="服务" columnName="is_service" type="Boolean" defaultValue="0" note=""/> 
+				<!-- 联系 -->
+				<attribute name="clerk" title="业务员" columnName="clerk_id" type="aa.person.Person" note=""/>	 
+				<attribute name="chargeDept" title="分管部门" columnName="dept_id" type="aa.dept.Department" note=""/>
+				
+				<attribute name="shippingAddress" title="收货地址" columnName="shiping_address" type="String" iLength="255"  note=""/>
+				<attribute name="shipingWarehouse" title="到货仓库" columnName="shipping_wh_id" type="aa.wh.Warehouse" note=""/>  
+				<!-- 信用 -->
+				<attribute name="transCurrency" title="币种" columnName="trans_currency_id" type="aa.currency.Currency" /> 
+				<attribute name="taxRate" title="税率" columnName="tax_rate" type="Decimal" iPrecision="19" iScale="4"  note="税率"/>
+				<attribute name="isTaxPrice" title="单价含税" columnName="is_tax_price" type="Boolean"  note="含税单价"/>
+				<attribute name="scopeControl" title="订货范围控制" columnName="scopeControl" type="Boolean" defaultValue="0" note="供应商订货范围控制"/>  
+				<attribute name="isAccountMng" title="账期管理" columnName="is_account_mng" type="Boolean"  note="账期管理"/>
+				<!-- attribute name="deliveryModel" title="收货方式" columnName="delivery_model_id" type="aa.ship.ShipWay" note="用于采购收货单中发运方式"/ -->
+				<attribute name="settlement" title="结算方式" columnName="settlement_id" type="aa.common.Settlement" note="结算方式"/>
+				<attribute name="paymentTerm" title="付款条件" columnName="payment_term_id" type="aa.pay.Payment" note="付款条件"/>
+				<attribute name="purchaseAccountRule" title="采购立账规则" columnName="pchs_acc_rule_id" type="aa.arapaccountrule.ARAPAccountRule" note="采购立账规则"/>
+				<attribute name="payableAccountRule" title="其他应付立账规则" columnName="pay_acc_rule_id" type="aa.arapaccountrule.ARAPAccountRule" note="其他应付立账规则"/>
+				
+				<!--交易卡片 -->
+				<attribute name="payableBalance" title="应付余额"  type="Decimal" iPrecision="19" iScale="4"  note="系统计算，不可修改"/>
+				<attribute name="lastDealDate" title="最后交易日期"  type="Date"  note="系统计算，不可修改"/>
+				<attribute name="lastDealAmount" title="最后交易金额"  type="Decimal" iPrecision="19" iScale="4"  note="系统计算，不可修改"/>
+				<attribute name="lastPayDate" title="最后付款日期"  type="Date"  note="系统计算，不可修改"/>
+				<attribute name="lastPayAmount" title="最后付款金额"  type="Decimal" iPrecision="19" iScale="4"  note="系统计算，不可修改"/>
+				<!-- 其他卡片 -->
+				<attribute name="developmentDate" title="发展日期"  type="Date" columnName="dvlp_date" note="发展日期"/>
+            </attributes>
+        </class>
+        <class name="VendorCustomItem" title="供应商自定义项" tableName="aa_vendor_customitem">
+			<attributes>
+				<attribute name="vendor" columnName="vendor_id" title="供应商id" type="Vendor" isKey="true" />
+		   </attributes>
+		</class>
+        <class name="VendorContact" title="联系人" tableName="aa_vendor_contact">
+        	<attributes>
+                <attribute name="gender" columnName="gender" title="性别" type="String" iLength="16" note="性别"/>
+                <attribute name="isDefault" columnName="is_default" title="默认值" type="Boolean"  note="默认值"/>
+                <attribute name="birthday" columnName="birthday" title="生日" type="Date" note="生日"/>
+                <attribute name="nativePlace" columnName="native_place" title="籍贯" type="String" iLength="20" note="籍贯"/>
+                <attribute name="duty" columnName="duty" title="职务" type="String" iLength="20" note="职务"/>
+                <attribute name="hobby" columnName="hobby" title="爱好" type="String" iLength="20" note="爱好"/>
+                <attribute name="phone" columnName="phone" title="固定电话" type="String" iLength="20" note="固定电话"/>
+                <attribute name="mobile" columnName="mobile" title="移动电话" type = "String" iLength="20" note ="移动电话"/>
+                <attribute name="email" columnName="email" title="电子邮件" type="String" iLength="50" note="电子邮件"/>
+                <attribute name="QQ" columnName="qq" title="QQ号" type="String" iLength="20" note="QQ号"/>
+                <attribute name="postcode" columnName="postcode" title="邮编" type="String" iLength="20" note="邮编"/>
+                <attribute name="officeAD" columnName="office_ad" title="工作地址" type="String" iLength="20" note="工作地址"/>
+                <attribute name="homeAD" columnName="home_ad" title="家庭地址" type="String" iLength="20" note="家庭地址"/>
+            </attributes>
+        </class>
+        
+        <class name="VendorDeposit" title="供应商开户银行" tableName="aa_vendor_desposit">
+        	<attributes>
+            	<attribute name="bank" title="所属银行" columnName="bank_id" type="aa.bank.Bank" note="银行"/>
+            	<attribute name="bankDeposit" title="开户银行" columnName="bank_deposit" type="String" iLength="64" note="开户银行"/>
+            	<attribute name="bankAccount" title="银行账号" columnName="bank_account" type="String" iLength="64" note="银行账号"/>
+            	<attribute name="bccountName" title="账户名称" columnName="account_name" type="String" iLength="64" note="账户名称"/>
+            	<attribute name="isDefault" title="是否默认" columnName="is_default" type="Boolean" note="是或否，默认为否，只能有一个默认值"/>
+            </attributes>
+        </class>
+        
+        <class name="VendorHierarchy" title="供应商层级关系" tableName="aa_vendor_hierarchy">
+        	<attributes>
+            	<attribute name="relatedVendor" title="相关供应商" columnName="rel_vendor_id" type="Vendor" note="供应商"/>
+            	<attribute name="isDelivery" title="默认发货单位" columnName="is_delivery" type="Boolean" note="是或否，默认为否，只能有一个默认值"/>
+            	<attribute name="isPayer" title="默认收款单位" columnName="is_payer" type="Boolean" note="是或否，默认为否，只能有一个默认值"/>
+            	<attribute name="relation" title="关系类型" columnName="relation" type="String" iLength="64" note="上级单位、下级单位、空。当供应商编码=主表供应商编码时，才可为空。"/>
+            </attributes>
+        </class>
+        <realizations>
+            <realization supplier="base.itf.ITree" client="VendorClass" />
+            <realization supplier="base.itf.IStopping" client="Vendor" />
+            <realization supplier="base.itf.IAuditInfo" client="Vendor" />
+            <realization supplier="base.itf.CustomItem" client="VendorCustomItem" />
+        </realizations>
+        <generalizations>
+            <generalization parent="archive.base.OrgArchive" child="VendorClass" />
+            <generalization parent="archive.base.OrgArchive" child="Vendor" />
+            <generalization parent="archive.base.Archive" child="VendorContact" />
+            <generalization parent="base.entity.BizObject" child="VendorDeposit" />
+            <generalization parent="base.entity.BizObject" child="VendorHierarchy" />
+        </generalizations>
+        <associations>
+            <association type="composition" roleB="vendor" typeB="Vendor" roleA="customItems" typeA="VendorCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="vendor" typeB="Vendor" roleA="hierarchys" typeA="VendorHierarchy"/>
+			<association type="composition" roleB="vendor" typeB="Vendor" roleA="deposits" typeA="VendorDeposit"/>
+			<association type="composition" roleB="vendor" typeB="Vendor" roleA="contacts" typeA="VendorContact"/>
+		</associations>
+    </component>
+    <component name="dept" moduleName="aa" title="部门组件">
+        <class name="Department" title="部门" tableName="aa_department">
+		<attributes> 
+				<attribute name="nameEN" title="英文名称"  type="String" iLength="200"/>  
+				<attribute name="personid" title="负责人"  type="aa.person.Person" columnName="person_id"/>
+				<attribute name="leaderid" title="分管领导"  type="aa.person.Person" columnName="leader_id"/>
+				<attribute name="deptDuty" title="部门职责"  type="String" iLength="200"/>  
+				<attribute name="address" title="地址"  type="String" iLength="255"/>  
+				<attribute name="phone" title="电话"  type="String" iLength="255"/>  
+				<attribute name="useOrg" title="创建组织"  type="base.org.Organization" columnName="useOrg"/> 
+				<attribute name="foundDate" title="成立日期" type="Date"/>
+				<attribute name="remark" title="备注"  type="String" iLength="255"/>  
+    	</attributes>
+        </class>
+		<class name="DepartmentCustomItem" title="部门自定义项" tableName="aa_department_customitem">
+			<attributes>
+				<attribute name="department" columnName="department_id" title="部门id" type="Department" isKey="true" />
+		   </attributes>
+		</class>
+        <realizations>
+            <realization supplier="base.itf.ITree" client="Department" />
+            <realization supplier="base.itf.IStopping" client="Department" />
+			<realization supplier="base.itf.IAuditInfo" client="Department" />
+			<realization supplier="base.itf.CustomItem" client="DepartmentCustomItem" />
+        </realizations>
+        <generalizations>
+		    <generalization parent="archive.base.OrgArchive" child="Department" />
+        </generalizations>
+		<associations>
+           <association type="composition" roleB="department" typeB="Department" roleA="departmentCustomItems" typeA="DepartmentCustomItem" roleAMulti="1" />
+	    </associations>
+    </component>
+    <component name="person" moduleName="aa" title="人员组件">
+         <class name="Person" title="人员" tableName="aa_person">
+            <attributes>
+			    <attribute name="createorgid" title="创建组织"  type="base.org.Organization" columnName="createorg_id"/> 
+				<attribute name="userid" title="对应用户"  type="aa.user.User" columnName="user_id"/> 
+				<attribute name="issaler" title="是否业务员"  type="Boolean" defaultValue="true"/> 
+				<attribute name="cardname1" title="证件名称1"  type="String"  iLength="255" />
+				<attribute name="cardnumber1" title="证件号码1"  type="String" iLength="60"/> 
+				<attribute name="cardname2" title="证件名称2"  type="String"  iLength="255" />
+				<attribute name="cardnumber2" title="证件号码2"  type="String" iLength="60"/> 
+				<attribute name="gender" title="性别"  type="String"  iLength="255" /> 
+				<attribute name="birthday" title="出生日期"  type="DateTime" /> 
+				<attribute name="marrige" title="婚否"  type="Boolean"/> 
+				<attribute name="address" title="地址"  type="String"  iLength="255"/> 
+				<attribute name="telephone" title="电话"  type="String"   iLength="255"/> 
+				<attribute name="phone" title="手机"  type="String" iLength="255"/> 
+				<attribute name="QQ" title="QQ"  type="String" iLength="255"/> 
+				<attribute name="weixin" title="微信"  type="String" iLength="255"/> 
+				<attribute name="mail1" title="邮箱1"  type="String" iLength="255" /> 
+				<attribute name="mail2" title="邮箱2"  type="String" iLength="255" /> 	
+ 				<attribute name="deptid" title="隶属部门"  type="aa.dept.Department" columnName="dept_id" note="lefttree"/> 		
+                <attribute name="picture" title="员工照片"  type="String" iLength="255" /> 						
+            </attributes>
+        </class>
+		<class name="EmployInfo" title="任职信息" tableName="aa_personemployinfo">
+		    <attributes>
+			    <attribute name="person" columnName="person" title="人员id"  type="aa.person.Person" />
+			    <attribute name="emporgid" title="任职组织"  type="base.org.Organization" columnName="emporg_id"/> 
+				<attribute name="empdeptid" title="任职部门"  type="aa.dept.Department" columnName="empdept_id" /> 
+				<attribute name="ismainjob" title="是否主职"  type="Boolean" defaultValue="false"/>
+				<attribute name="entrydate" title="入职时间"  type="DateTime" /> 
+ 				<attribute name="issalesperson" title="是否营业员"  type="Boolean" defaultValue="false"/> 
+			</attributes>
+		</class>
+        <generalizations>
+			<generalization parent="archive.base.Archive" child="Person" />
+			<generalization parent="archive.base.Archive" child="EmployInfo" />
+        </generalizations>
+		<associations>
+			<association type="composition" roleB="person" typeB="Person" roleA="ei" typeA="EmployInfo" roleAMulti="0..n"/>
+		</associations>
+    </component>
+	<component name="user" moduleName="aa" title="用户组件">
+         <class name="User" title="用户" tableName="aa_user">
+            <attributes>
+				<attribute name="corp_id" title="企业标识"  type="String"   iLength="255"/> 
+			    <attribute name="accountnumber" title="账号"  type="String" iLength="255"/> 
+				<attribute name="username" title="姓名"  type="String"  iLength="255" />				
+				<attribute name="mail" title="邮箱"  type="String" iLength="255"/> 
+				<attribute name="phone" title="手机"  type="String"  iLength="255" /> 				
+				<attribute name="personid" title="对应人员"  type="aa.person.Person" columnName="person_id"/>
+				<attribute name="language" title="默认语言"  type="String" iLength="255"/> 
+				<attribute name="enablestatus" title="启用状态"  type="Boolean"/> 
+				<attribute name="remark" title="备注"  type="String"   iLength="255"/> 		
+            </attributes>
+        </class>
+		<class name="UserRole" title="角色分配信息" tableName="aa_auth_usertorole">
+		    <attributes>
+			    <attribute name="userid" title="用户id"  type="aa.user.User" columnName="userid"/> 
+				<attribute name="groupid" title="组织"  type="base.org.Organization" columnName="groupid"/> 
+				<attribute name="roleid" title="角色"  type="aa.role.Role" columnName="roleid"/> 
+			</attributes>
+		</class>
+        <generalizations>
+			<generalization parent="archive.base.Archive" child="User" />
+			<generalization parent="base.entity.BizObject" child="UserRole" />
+        </generalizations>
+		<realizations>
+            <realization supplier="base.itf.IStopping" client="User" />
+			<realization supplier="base.itf.IAuditInfo" client="User" />
+        </realizations>
+		<associations>
+			<association type="composition" roleB="userid" typeB="User" roleA="roles" typeA="UserRole" roleAMulti="0..n"/>
+		</associations>
+    </component>
+	<component name="role" moduleName="aa" title="角色组件">
+         <class name="Role" title="角色" tableName="aa_role">
+            <attributes>
+				<attribute name="remark" title="备注"  type="String"   iLength="255"/> 	
+            </attributes>
+        </class>
+		
+        <generalizations>
+			<generalization parent="archive.base.Archive" child="Role" />
+        </generalizations>
+		<realizations>
+        </realizations>
+		<associations>
+		   <association type="composition" roleB="roleid" typeB="Role" roleA="users" typeA="aa.user.UserRole" roleAMulti="0..n"/>
+		</associations>
+    </component>
+		<component name="userorgtorole" moduleName="aa" title="用户组织角色对应表">
+         <class name="UserOrgToRole" title="用户组织角色对应" tableName="aa_auth_usertorole">
+            <attributes>
+                <attribute name="userid" title="用户"  type="aa.user.User" columnName="userid"/> 
+				<attribute name="groupid" title="组织"  type="base.org.Organization" columnName="groupid"/> 
+				<attribute name="roleid" title="角色"  type="aa.role.Role" columnName="roleid"/> 
+            </attributes>
+        </class>
+        <generalizations>
+			<generalization parent="base.entity.BizObject" child="UserOrgToRole" />
+        </generalizations>
+		<realizations>
+
+        </realizations>
+		<associations>
+
+		</associations>
+    </component>
+	
+	<component name="reasonc" moduleName="aa" title="原因码类型组件">
+        <class name="ReasonCategory" title="原因码类型" tableName="aa_reasoncategory">      
+            <attributes>	
+            </attributes>				
+        </class>
+		<realizations>
+            <realization supplier="base.itf.ITree" client="ReasonCategory" />
+		</realizations>
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="ReasonCategory" />
+        </generalizations>
+    </component>
+	<component name="reasona" moduleName="aa" title="原因码档案组件">
+        <class name="ReasonArchive" title="原因码档案" tableName="aa_reasonarchive">      
+            <attributes>
+				<attribute name="reasoncategory" title="所属类型"  type="aa.reasonc.ReasonCategory" columnName="reasoncategory_id" note="lefttree"/> 
+				<attribute name="reasondescription" title="原因描述"  type="String" iLength="255"/> 
+				<attribute name="reasonmark" title="备注"  type="String" iLength="255"/> 
+            </attributes>				
+        </class>
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="ReasonArchive" />
+        </generalizations>
+    </component>
+	<component name="pay" moduleName="aa" title="付款条件组件">
+		<class name="Payment" title="付款条件" tableName="aa_payment">
+			<attributes>
+				<attribute name="discountshow" title="折扣表示"  type="String" iLength="255" />
+				<attribute name="discountbasis" title="折扣依据"  type="String" iLength="255" />
+				<attribute name="discountday1" title="优惠天数1"  type="String" iLength="255"/>
+				<attribute name="discountpercent1" title="折扣表示1"  type="String" iLength="255" />
+				<attribute name="discountday2" title="优惠天数2"  type="String" iLength="255"/>
+				<attribute name="discountpercent2" title="折扣表示2"  type="String" iLength="255" />
+				<attribute name="discountday3" title="优惠天数3"  type="String" iLength="255"/>
+				<attribute name="discountpercent3" title="折扣表示3"  type="String" iLength="255" />
+				<attribute name="discountday4" title="优惠天数4"  type="String" iLength="255"/>
+				<attribute name="discountpercent4" title="折扣表示4"  type="String" iLength="255" />
+				<attribute name="discountday5" title="优惠天数5"  type="String" iLength="255"/>
+				<attribute name="discountpercent5" title="折扣表示5"  type="String" iLength="255" />
+			</attributes>
+		</class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="Payment" />
+		</generalizations>
+		<realizations>
+        </realizations>
+	</component>
+	  <component name="ship" moduleName="aa" title="发运方式">
+        <class name="ShipWay" title="发运方式" tableName="aa_shipway">      
+            <attributes>
+				<attribute name="code" title="编码" type="String" iLength="20" isUnique="true" isCode="true" isRequired="true" />
+				<attribute name="name" title="名称" type="String" isGlobalization="true" iLength="20" isUnique="true" isName="true" isRequired="true" />
+				<attribute name="shipwayEn" title="发运方式英文名称"  type="String"  iLength="255" />
+            </attributes>				
+        </class>
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="ShipWay" />
+        </generalizations>
+    </component>
+	
+    <component name="purchase" moduleName="aa" title="采购类型">
+        <class name="PurchasingType" title="采购类型" tableName="aa_purchasingType">  
+			<attributes>
+				<attribute name="transceiverType" title="出入库类型" type="aa.transceiverType.TransceiverType" />
+				<attribute name="remark" title="备注" type="String" iLength="500"  />
+				<attribute name="isdefault" title="默认" type="Boolean" />
+				<attribute name="parent" columnName="parent_id" title="上级采购类型" type="aa.purchase.PurchasingType" /> 
+			</attributes>		
+        </class>
+		<realizations>
+			<realization supplier="base.itf.ITree" client="PurchasingType" />
+		</realizations>
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="PurchasingType" />
+        </generalizations>
+    </component>
+    <component name="wh" moduleName="aa" title="仓库组件">
+        <class name="Warehouse" title="仓库" tableName="aa_warehouse">
+			  <attributes>
+			    <!-- 基本 -->
+				<attribute name="remark" title="备注"  type="String" iLength="500" note="basic" /> 
+				<attribute name="department" title="部门"  type="aa.dept.Department" columnName="department" note="basicvisible" /> 
+				<attribute name="person" title="负责人"  type="aa.person.Person" columnName="person" note="basicvisible" />
+				<attribute name="province" title="省"  type="aa.admindivisions.AdminDivisions" columnName="province" note="basic" /> 
+				<attribute name="city" title="市"  type="aa.admindivisions.AdminDivisions" columnName="city" note="basic" /> 
+				<attribute name="area" title="区"  type="aa.admindivisions.AdminDivisions" columnName="area" note="basic" /> 
+				<attribute name="street" title="街道"  type="aa.admindivisions.AdminDivisions" columnName="street" note="basic" /> 
+				<attribute name="address" title="详细地址"  type="String" iLength="500" note="basicvisible" /> 
+				<attribute name="longitude" title="经度"  type="String" iLength="500" note="basic" /> 
+				<attribute name="latitude" title="纬度"  type="String" iLength="500" note="basic" /> 
+				<attribute name="phone" title="电话"  type="String" iLength="500" note="basicvisible" /> 
+				<!-- 业务 -->
+				<attribute name="cargoManage" title="货位管理"  type="Boolean" note="business"  /> 
+				<attribute name="allowNegInv" title="允许负库存"  type="Boolean" note="bu"  /> 
+				<attribute name="costingOper" title="参与成本计算"  type="Boolean" note="bu"  /> 
+				<attribute name="amountOper" title="参与可用量计算"  type="Boolean" note="bu"  /> 
+				<attribute name="storeWarehouse" title="门店仓"  type="Boolean" note="bu"   /> 	
+				<attribute name="ecommerceWarehouse" title="电商仓"  type="Boolean" note="bu"  /> 
+            </attributes>
+        </class>
+		<realizations>
+            <realization supplier="base.itf.IAuditInfo" client="Warehouse" />
+            <realization supplier="base.itf.IStopping" client="Warehouse" />
+		</realizations>
+        <generalizations>
+            <generalization parent="archive.base.OrgArchive" child="Warehouse" />
+        </generalizations>
+    </component>
+    <component name="item" moduleName="aa" title="项目组件">
+        <class name="ItemClass" title="项目分类" tableName="aa_itemclass">
+			<attributes>
+				<attribute name="parent" columnName="parent_id" title="上级项目分类" type="aa.item.ItemClass" />
+			</attributes>
+        </class>
+        <class name="Item" title="项目" tableName="aa_item">
+            <attributes>
+                <attribute name="belongClass" title="项目分类" columnName="class_id" type="ItemClass" note="lefttree" />
+				<attribute name="person" title="负责人" columnName="person_id" type="aa.person.Person" />
+				<attribute name="department" title="负责部门" columnName="department_id" type="aa.dept.Department" />
+				<attribute name="startDate" title="开工日期" type="DateTime" />
+				<attribute name="endDate" title="完工日期" type="DateTime" />
+				<attribute name="isSettlement" title="是否结算" type="Boolean" />
+            </attributes>
+        </class>
+        <class name="DynamicItem" title="动态项目" tableName="aa_dynamic_item">
+            <attributes>
+                <attribute name="belongClass" title="项目分类" columnName="class_id" type="ItemClass" />
+            </attributes>
+        </class>
+        <class name="DynamicItem01" title="动态项目01" tableName="aa_dynamic_item_01">
+            <attributes>
+                <attribute name="id" title="动态项目" type="DynamicItem" isKey="true" />
+           </attributes>
+        </class>
+        <class name="DynamicItem02" title="动态项目02" tableName="aa_dynamic_item_02">
+            <attributes>
+                <attribute name="id" title="动态项目" type="DynamicItem" isKey="true" />
+           </attributes>
+        </class>
+        <realizations>
+            <realization supplier="base.itf.ITree" client="ItemClass" />
+            <realization supplier="base.itf.CustomItem" client="DynamicItem01" />
+            <realization supplier="base.itf.CustomItem" client="DynamicItem02" />
+        </realizations>
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="ItemClass" />
+            <generalization parent="archive.base.Archive" child="DynamicItem" />
+            <generalization parent="archive.base.OrgArchive" child="Item" />
+        </generalizations>
+        <associations>
+            <association type="composition" roleB="id" typeB="DynamicItem" roleA="item01" typeA="DynamicItem01" roleAMulti="1" />
+            <association type="composition" roleB="id" typeB="DynamicItem" roleA="item02" typeA="DynamicItem02" roleAMulti="1" />
+        </associations>
+    </component>
+    <component name="bank" moduleName="aa" title="银行组件">
+        <class name="Bank" title="银行档案" tableName="aa_bank">
+            <attributes>
+                <attribute name="liquidationNum" title="清算行号" type="String" iLength="20" />
+            </attributes>
+        </class>
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="Bank" />
+        </generalizations> 
+    </component>
+        <component name="area" moduleName="aa" title="地区组件">
+        <class name="Country" title="国家档案" tableName="aa_country">
+        </class>
+        <class name="AreaClass" title="地区分类" tableName="aa_areaclass">
+			<attributes>
+				<attribute name="parent" columnName="parent_id" title="上级地区分类"  type="aa.area.AreaClass" /> 
+			</attributes>
+        </class>
+        <generalizations>
+            <generalization parent="archive.base.Archive" child="Country" />
+             <generalization parent="archive.base.OrgArchive" child="AreaClass" />
+        </generalizations> 
+        <realizations>
+          <realization supplier="base.itf.ITree" client="AreaClass" />
+        </realizations>
+    </component>
+	<component name="admindivisions" moduleName="aa" title="行政区划组件">
+		<class name="AdminDivisions" title="行政区划" tableName="aa_admindivisions">
+			<attributes>
+				<attribute name="adminAbbr" title="行政区简称"  type="String" iLength="500" /> 
+				<attribute name="adminJianpin" title="行政区简拼"  type="String" iLength="500" /> 
+				<attribute name="parent" columnName="parent_id" title="上级行政区" type="aa.admindivisions.AdminDivisions" /> 
+				<attribute name="enable" title="是否停用"  type="Boolean" defaultValue="0" />
+				<attribute name="remark" title="备注"  type="String" iLength="500" />
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="AdminDivisions" />
+        </generalizations> 
+		<realizations>
+          <realization supplier="base.itf.ITree" client="AdminDivisions" />
+        </realizations>
+    </component>
+	<component name="cargospace" moduleName="aa" title="货位组件">
+		<class name="CargoSpace" title="货位" tableName="aa_cargospace">
+			<attributes>
+				<attribute name="parent" columnName="parent_id" title="上级货位" type="aa.cargospace.CargoSpace" />
+				<attribute name="warehouse" columnName="warehouse_id" title="所属仓库" type="aa.wh.Warehouse" isRequired="true" /> 
+				<attribute name="maximumvolume" title="最大体积" type="Short" /> 
+				<attribute name="maximumweight" title="最大重量" type="Short" /> 
+				<attribute name="barcode" title="对应条形码"  type="String" iLength="500" isUnique="true" />
+				<attribute name="remark" title="备注"  type="String" iLength="500" />
+			</attributes>
+		</class>
+		<generalizations>
+            <generalization parent="archive.base.OrgArchive" child="CargoSpace" />
+        </generalizations>
+		<realizations>
+          <realization supplier="base.itf.ITree" client="CargoSpace" />
+        </realizations>
+	</component>
+	<component name="cargoinventory" moduleName="aa" title="货位料品对照组件">
+		<class name="CargoInventory" title="货位料品对照" tableName="aa_cargoinventory">
+			<attributes>
+				<attribute name="cargospace" columnName="cargospace_id" title="货位" type="aa.cargospace.CargoSpace" note="lefttree" />
+				<attribute name="inventory" columnName="inventory_id" title="存货" type="aa.inv.Inventory" />
+				<attribute name="prioritization" title="优先顺序" type="Short" /> 
+			</attributes>
+		</class>
+		<!--
+		<class name="CargoInvFreeItem" title="存货规格取值" tableName="aa_cargoinv_freeitem">
+			<attributes>
+				<attribute name="cargoinv" columnName="cargoinv_id" title="货位料品对照" type="aa.cargoinventory.CargoInventory"  />
+				<attribute name="freeItemClassCode" title="规格类别编码" type="String" iLength="500" />
+				<attribute name="freeItemValue" title="规格取值" type="String" iLength="500" />
+			</attributes>
+		</class>
+		-->
+		<generalizations>
+            <generalization parent="archive.base.OrgArchive" child="CargoInventory" />
+			<!--
+			<generalization parent="base.entity.BizObject" child="CargoInvFreeItem" />
+			-->
+        </generalizations>
+		<!--
+		<associations>
+			<association type="composition" roleB="cargoinv" typeB="CargoInventory" roleA="ifi" typeA="CargoInvFreeItem"/>
+		</associations>
+		-->
+	</component>
+	<component name="warehouseinventory" moduleName="aa" title="仓库料品对照组件">
+		<class name="WarehouseInventory" title="仓库料品对照" tableName="aa_warehouseinventory">
+			<attributes>
+				<attribute name="warehouse" columnName="warehouse_id" title="仓库" type="aa.wh.Warehouse" />
+				<attribute name="inventory" columnName="inventory_id" title="存货" type="aa.inv.Inventory" />
+				<attribute name="safetystock" title="安全库存" type="Short" />
+				<attribute name="higheststock" title="最高库存" type="Short" />
+				<attribute name="loweststock" title="最低库存" type="Short" />
+			</attributes>
+		</class>
+		<!--
+		<class name="WhInvFreeItem" title="存货规格取值" tableName="aa_whinv_freeitem">
+			<attributes>
+				<attribute name="whinv" columnName="whinv_id" title="仓库料品对照" type="aa.warehouseinventory.WarehouseInventory"  />
+				<attribute name="freeItemClassCode" title="规格类别编码" type="String" iLength="500" />
+				<attribute name="freeItemValue" title="规格取值" type="String" iLength="500" />
+			</attributes>
+		</class>
+		-->
+		<generalizations>
+            <generalization parent="archive.base.OrgArchive" child="WarehouseInventory" />
+			<!--
+			<generalization parent="base.entity.BizObject" child="WhInvFreeItem" />
+			-->
+        </generalizations>
+		<!--
+		<associations>
+			<association type="composition" roleB="whinv" typeB="WarehouseInventory" roleA="wif" typeA="WhInvFreeItem"/>
+		</associations>
+		-->
+	</component>
+	<component name="incomeexpenditure" moduleName="aa" title="收支项目">
+		<class name="IncomeExpenditure" title="收支项目" tableName="aa_incomeexpenditure">
+			<attributes>
+				<attribute name="direction" title="方向"  type="Short" isRequired="true" />
+			</attributes>
+		</class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="IncomeExpenditure" />
+        </generalizations>
+	</component>
+	<component name="accountingsubjects" moduleName="aa" title="会计科目">
+		<class name="AccountingSubjects" title="会计科目" tableName="aa_accountingsubjects">
+			<attributes>
+				<attribute name="mnemonic" title="助记码"  type="String" iLength="500" note="basic" />
+				<attribute name="subjectSystem" columnName="subjectSystem" title="科目体系"  type="aa.accountingsubjects.SubjectSystem" />
+				<attribute name="accountType" columnName="accountType" title="科目类型"  type="aa.accountingsubjects.AccountSubType" note="lefttree" />
+				<attribute name="balanceDirection" title="余额方向"  type="String" iLength="500" isRequired="true" note="basic" />
+				<attribute name="countSubjects" columnName="countSubjects_id" title="汇总会计科目"  type="aa.accountingsubjects.AccountingSubjects" />
+				<attribute name="cashAccount" title="现金科目"  type="Boolean" defaultValue="0" note="basic" />
+				<attribute name="bankAccount" title="银行科目"  type="Boolean" defaultValue="0" note="basic" />
+				<attribute name="cashFlow" title="现金流量项目"  type="Boolean" defaultValue="0" note="basic" />
+				<attribute name="journal" title="日记账"  type="Boolean" defaultValue="0" note="basic" />
+				<attribute name="deposit" title="封存"  type="Boolean" defaultValue="0" note="basic" />
+				<attribute name="currencyAccount" title="启用币种核算"  type="Boolean" defaultValue="0" note="currency" />
+				<attribute name="currency" columnName="currency_id" title="默认币种"  type="aa.currency.Currency" note="currency" />
+				<attribute name="numberAccount" title="启用数量辅助核算"  type="Boolean" defaultValue="0" note="number" />
+				<attribute name="uom" columnName="uom_id" title="默认单位"  type="aa.uom.UOM" note="number" />
+				<attribute name="parent" columnName="parent" title="上级会计科目"  type="aa.accountingsubjects.AccountingSubjects" />
+			</attributes>
+		</class>
+		<class name="AccountSubType" title="会计科目类型" tableName="aa_accountsubtype">
+			<attributes>
+				<attribute name="subjectSystem" columnName="subjectSystem" title="科目体系"  type="aa.accountingsubjects.SubjectSystem" />
+				<attribute name="balanceDirection" title="余额方向"  type="String" iLength="500" />
+			</attributes>
+		</class>
+		<class name="SubjectSystem" title="科目体系" tableName="aa_subjectsystem">
+		</class>
+		<class name="AuxiliaryItem" title="辅助项" tableName="aa_as_accountdimension">
+			<attributes>
+				<attribute name="accountingsubjects" columnName="accountingsubjects_id" title="会计科目"  type="aa.accountingsubjects.AccountingSubjects" note="lefttree" />
+				<attribute name="accountingdimension" columnName="accountingdimension_id" title="核算维度"  type="aa.accountingdimension.AccountingDimension" />
+				<attribute name="isAccounting" title="是否核算"  type="Boolean" defaultValue="0" />
+				<attribute name="isRequired" title="是否必录"  type="Boolean" defaultValue="0" />
+			</attributes>
+		</class>
+		<class name="LevelSetting" title="级次设置" tableName="aa_levelsetting">
+			<attributes>
+				<attribute name="levelNo1" title="第1级"  type="Short" />
+				<attribute name="levelNo2" title="第2级"  type="Short" />
+				<attribute name="levelNo3" title="第3级"  type="Short" />
+				<attribute name="levelNo4" title="第4级"  type="Short" />
+				<attribute name="levelNo5" title="第5级"  type="Short" />
+				<attribute name="levelNo6" title="第6级"  type="Short" />
+				<attribute name="levelNo7" title="第7级"  type="Short" />
+				<attribute name="levelNo8" title="第8级"  type="Short" />
+				<attribute name="levelNo9" title="第9级"  type="Short" />
+				<attribute name="levelNo10" title="第10级"  type="Short" />
+				<attribute name="levelNo11" title="第11级"  type="Short" />
+				<attribute name="levelNo12" title="第12级"  type="Short" />
+				<attribute name="levelNo13" title="第13级"  type="Short" />
+			</attributes>
+		</class>
+		<generalizations>
+            <generalization parent="archive.base.OrgArchive" child="AccountingSubjects" />
+			<generalization parent="archive.base.Archive" child="AccountSubType" />
+			<generalization parent="archive.base.Archive" child="SubjectSystem" />
+			<generalization parent="base.entity.BizObject" child="AuxiliaryItem" />
+			<generalization parent="base.entity.BizObject" child="LevelSetting" />
+        </generalizations>
+		<realizations>
+            <realization supplier="base.itf.ITree" client="AccountSubType" />
+			<realization supplier="base.itf.ITree" client="AccountingSubjects" />
+        </realizations>
+		<associations>
+			<association type="composition" roleB="accountingsubjects" typeB="AccountingSubjects" roleA="ai" typeA="AuxiliaryItem" roleAMulti="0..n"/>
+		</associations>
+	</component>
+	<component name="accountingperiod" moduleName="aa" title="会计期间">
+		<class name="AccountingPeriod" title="会计期间" tableName="aa_accountingperiod">
+			<attributes>
+				<attribute name="year" title="年度"  type="Short" />
+				<attribute name="startDate" title="开始日期"  type="DateTime" />
+				<attribute name="endDate" title="结束日期"  type="DateTime" />
+			</attributes>
+		</class>
+		<class name="AccountingPeriodDetail" title="会计期间明细" tableName="aa_accountingperiod_detail">
+			<attributes>
+				<attribute name="accountingperiod" columnName="accountingperiod_id" title="会计期间"  type="aa.accountingperiod.AccountingPeriod" note="lefttree" />
+				<attribute name="periodNo" title="期间编号" type="Short" />
+				<attribute name="startDate" title="开始日期"  type="DateTime" />
+				<attribute name="endDate" title="结束日期"  type="DateTime" />
+			</attributes>
+		</class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="AccountingPeriod" />
+			<generalization parent="base.entity.BizObject" child="AccountingPeriodDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="accountingperiod" typeB="AccountingPeriod" roleA="apd" typeA="AccountingPeriodDetail"/>
+		</associations>
+	</component>
+	<component name="agingperiod" moduleName="aa" title="区间设置">
+		<class name="AgingPeriod" title="区间设置" tableName="aa_agingperiod">
+			<attributes>
+				<attribute name="timeUnit" title="期间单位"  type="String" iLength="500" defaultValue="1" />
+				<attribute name="description" title="说明"  type="String" iLength="500" />
+				<attribute name="isDefault" title="是否默认"  type="Boolean" defaultValue="0" />
+				<attribute name="periodType" columnName="periodType_id" title="区间类型"  type="PeriodType" note="lefttree" />
+			</attributes>
+		</class>
+		<class name="PeriodType" title="区间类型" tableName="aa_periodtype">
+		</class>
+		<class name="AgingPeriodDetail" title="区间设置明细" tableName="aa_agingperiod_detail">
+			<attributes>
+				<attribute name="agingperiod" columnName="agingperiod_id" title="区间设置"  type="aa.agingperiod.AgingPeriod" note="lefttree" />
+				<attribute name="periodNo" title="期间编号"   type="String" iLength="500" />
+				<attribute name="startDays" title="开始天数"  type="Short" />
+				<attribute name="endDays" title="结束天数"  type="Short" />
+				<attribute name="periodNum" title="期间数"  type="Short" />
+			</attributes>
+		</class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="AgingPeriod" />
+			<generalization parent="archive.base.Archive" child="PeriodType" />
+			<generalization parent="base.entity.BizObject" child="AgingPeriodDetail" />
+		</generalizations>
+		<realizations>
+			<realization supplier="base.itf.ITree" client="PeriodType" />
+        </realizations>
+		<associations>
+			<association type="composition" roleB="agingperiod" typeB="AgingPeriod" roleA="apd" typeA="AgingPeriodDetail"/>
+		</associations>
+	</component>
+	<component name="cashflow" moduleName="aa" title="现金流量组件">
+		<class name="CashFlowSystem" title="现金流量体系" tableName="aa_cashflowsystem">
+		</class>
+		<class name="CashFlowType" title="现金流量分类" tableName="aa_cashflowtype">
+			<attributes>
+				<attribute name="cashSystem" columnName="cashSystem" title="现金流量体系"  type="aa.cashflow.CashFlowSystem" />
+				<attribute name="parent" columnName="parent" title="现金流量分类"  type="aa.cashflow.CashFlowType" />
+			</attributes>
+        </class>
+		<class name="CashFlow" title="现金流量" tableName="aa_cashflow">
+			<attributes>
+				<attribute name="cashFlowType" columnName="cashFlowType" title="现金流量分类"  type="aa.cashflow.CashFlowType" note='lefttree' />
+				<attribute name="direction" title="方向"  type="String" iLength="500" /> 
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="CashFlowType" />
+			<generalization parent="archive.base.Archive" child="CashFlow" />
+			<generalization parent="archive.base.Archive" child="CashFlowSystem" />
+        </generalizations> 
+		<realizations>
+          <realization supplier="base.itf.ITree" client="CashFlowType" />
+        </realizations>
+    </component>
+	<component name="accountingdimension" moduleName="aa" title="核算维度组件">
+		<class name="AccountingDimension" title="核算维度" tableName="aa_accountingdimension">
+			<attributes>
+				<attribute name="archiveType" title="档案类型"  type="String" iLength="500" defaultValue="basic" /> 
+				<attribute name="archive" title="对应档案"  type="aa.archivelist.ArchiveList" /> 
+				<attribute name="systemPreset" title="系统预置"  type="Boolean" /> 
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="AccountingDimension" />
+        </generalizations> 
+    </component>
+	<component name="certificatecategory" moduleName="aa" title="凭证类别组件">
+		<class name="CertificateCategory" title="凭证类别" tableName="aa_certificcategory">
+			<attributes>
+				<attribute name="ccShortName" title="凭证字"  type="String" iLength="500" /> 
+				<attribute name="limitType" title="限制类型"  type="String" iLength="500" /> 
+			</attributes>
+        </class>
+		<class name="CcSubject" title="凭证限制科目" tableName="aa_cc_subject">
+			<attributes>
+				<attribute name="cc" columnName="cc_id" title="凭证类别"  type="CertificateCategory" />
+				<attribute name="as" columnName="as_id" title="限制科目"  type="aa.accountingsubjects.AccountingSubjects" />
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="CertificateCategory" />
+			<generalization parent="base.entity.BizObject" child="CcSubject" />
+        </generalizations> 
+		<associations>
+			<association type="composition" roleB="cc" typeB="CertificateCategory" roleA="cs" typeA="CcSubject"/>
+		</associations>
+    </component>
+	<component name="account" moduleName="aa" title="帐薄组件">
+		<class name="Account" title="帐薄" tableName="aa_account">
+			<attributes>
+				<attribute name="description" title="说明"  type="String" iLength="500"  /> 
+				<attribute name="type" title="类型"  type="String" iLength="500"  /> 
+				<attribute name="accountingperiod" columnName="accountingperiod_id" title="会计期间" type="aa.accountingperiod.AccountingPeriod" />
+				<attribute name="subjectSystem" columnName="subjectSystem_id" title="科目体系"  type="aa.accountingsubjects.SubjectSystem" />
+				<attribute name="currency" columnName="currency_id" title="本位币" type="aa.currency.Currency" />
+				<attribute name="status" title="帐薄状态"  type="String" iLength="500"  /> 
+				<attribute name="statusDate" title="状态日期"  type="DateTime" /> 
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.OrgArchive" child="Account" />
+        </generalizations> 
+    </component>
+	<component name="bankaccount" moduleName="aa" title="银行账户组件">
+		<class name="BankAccount" title="银行账户" tableName="aa_bankaccount">
+			<attributes>
+				<attribute name="bank" title="所属银行" columnName="bank_id" type="aa.bank.Bank" isRequired="true" />
+				<attribute name="accountId" title="帐号"  type="String" iLength="500" isRequired="true" /> 
+				<attribute name="bankName" title="开户银行名称"  type="String" iLength="500" isRequired="true" /> 
+				<attribute name="accountName" title="账户名称"  type="String" iLength="500" isRequired="true" /> 
+				<attribute name="customerNo" title="银行客户编号"  type="String" iLength="500" /> 
+				<attribute name="orgNumber" title="银行机构号"  type="String" iLength="500" /> 
+				<attribute name="lineNumber" title="银行联行号"  type="String" iLength="500" /> 
+				<attribute name="bankAddress" title="开户银行地址"  type="String" iLength="500" /> 
+				<attribute name="province" title="省"  type="aa.admindivisions.AdminDivisions" /> 
+				<attribute name="city" title="市"  type="aa.admindivisions.AdminDivisions" /> 
+				<attribute name="accountType" title="账户类型"  type="String" iLength="500" isRequired="true" defaultValue="basic" /> 
+				<attribute name="currency" title="币种" columnName="currency_id" type="aa.currency.Currency" isRequired="true" />
+				<attribute name="defaultAccount" title="默认账号"  type="Boolean" /> 
+				<attribute name="activationDate" title="开户日期"  type="DateTime" /> 
+				<attribute name="disable" title="暂封"  type="Boolean" /> 
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="base.entity.BizObject" child="BankAccount" />
+        </generalizations> 
+    </component>
+	<component name="archivelist" moduleName="aa" title="档案列表组件">
+		<class name="ArchiveList" title="档案" tableName="aa_archivelist">
+			<attributes>
+				<attribute name="archiveType" title="档案类型"  type="String" iLength="500" /> 
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="ArchiveList" />
+        </generalizations> 
+    </component>
+	<component name="relation" moduleName="aa" title="对照表组件">
+        <class name="VendorAndInventory" title="供应商料品对照表" tableName="aa_relation_vendorandinventory">
+            <attributes>
+				<attribute name="supplyType" title="供应类型"  type="String" iLength="50" isRequired="true"/>
+				<attribute name="belongVendor" title="供应商" columnName="vendorId" type="aa.vendor.Vendor" isRequired="true"/>
+				<attribute name="belongInventory" title="料品" columnName="inventoryId" type="aa.inv.Inventory" isRequired="true"/>
+				<attribute name="code" title="供应商料品编码"  type="String" iLength="40" isUnique="true"/> 
+				<attribute name="name" title="供应商料品名称"  type="String" iLength="100"/> 
+				<attribute name="belongDepartment" title="采购部门" columnName="departmentId" type="aa.dept.Department"/>
+				<attribute name="belongPerson" title="采购员" columnName="personId" type="aa.person.Person"/>
+				<attribute name="belongUOM" title="计量单位" columnName="uomId" type="aa.uom.UOM" isRequired="true"/>			
+				<attribute name="batchSupplyQty" title="供应批量"  type="Decimal" iScale="2"/>
+				<attribute name="minSupplyQty" title="单次最小供货量"  type="Decimal" iScale="2"/>
+				<attribute name="maxSupplyQty" title="单次最大供货量"  type="Decimal" iScale="2"/>				
+				<attribute name="timeInAdvance" title="提前期"  type="Integer" isRequired="true" defaultValue="0"/>				
+				<attribute name="highestPurchasePrice" title="最高进价"  type="Decimal" iScale="2"/>
+            </attributes>
+        </class>
+        <generalizations>
+			<generalization parent="archive.base.Archive" child="VendorAndInventory" />
+        </generalizations>
+    </component>
+<component name="productType" moduleName="aa" title="商品类型组件">
+		<!-- 基本信息 -->
+		<class name="ProductType" title="商品类型" tableName="aa_productType">   
+			<attributes>
+				<attribute name="is_deleted" title="是否删除" type="Boolean" />
+			</attributes>
+		</class>
+		<class name="ProductTypeProps" title="商品类型扩展属性" tableName="aa_productType_Props">
+			<attributes>
+			    <attribute name="belongProductType" title="所属商品类型id" type="ProductType" columnName="productType_id"/>				
+				<attribute name="props_name" title="扩展属性名" type="String" iLength="100"/>
+				<attribute name="props_alias" title="属性别名" type="String" iLength="200"/>
+				<attribute name="props_type" title="展示类型" type="String" iLength="20"/>
+				<attribute name="search_type" title="搜索方式" type="String" iLength="20"/>
+				<attribute name="is_show" title="是否显示" type="Boolean"/>
+				<attribute name="orderNumber" title="排序" type="Short" iLength="10"/>
+				<attribute name="is_deleted" title="是否删除" type="Boolean"/>
+			</attributes>
+		</class>
+		<class name="ProductTypePropsValue" title="商品类型扩展属性值" tableName="aa_productType_PropsValue">
+			<attributes>
+				<attribute name="belongProductType" title="所属商品类型id" type="ProductType" columnName="productType_id"/>
+			    <attribute name="belongProductTypeProps" title="所属商品类型扩展属性id" type="ProductTypeProps" columnName="productTypeProps_id"/>
+				<attribute name="propsValue_name" title="商品类型扩展属性可选值" type="String" iLength="100"/>
+				<attribute name="orderNumber" title="排序" type="Short" iLength="10"/>
+				<attribute name="is_deleted" title="是否删除" type="Boolean"/>
+			</attributes>
+		</class>
+		
+		<class name="ProductTypeParameter" title="商品参数组表" tableName="aa_productType_Parameter">
+			<attributes>
+			    <attribute name="belongProductType" title="所属商品类型id" type="ProductType" columnName="productType_id"/>
+  				<attribute name="isdeleted" columnName="is_deleted" title="是否删除" type="Boolean" note="是否删除，1-删除，0-未删除"/>
+				<attribute name="orderNumber" title="排序" type="Short" iLength="10"/>
+				<attribute name="isfilter" columnName="is_filter" title="是否加入分类查询条件" type="Boolean" note="是否加入分类查询条件，1-加入，0-不加入"/>
+			</attributes>
+		</class>
+		<class name="ProductTypeParameterValue" title="商品参数表" tableName="aa_productType_ParameterValue">
+			<attributes>
+  				<attribute name="belongProductType" title="所属商品类型id" type="ProductType" columnName="productType_id"/>
+				<attribute name="belongProductTypeParameter" title="所属商品参数组id" type="ProductTypeParameter" columnName="productTypeParameter_id"/>
+				<attribute name="isdeleted" title="是否删除" type="Boolean" note="是否删除，1-删除，0-未删除"/>
+				<attribute name="orderNumber" title="排序" type="Short" iLength="10"/>
+				<attribute name="parameterValue_name" title="参数名称" type="String" iLength="200"/>
+				<attribute name="isfilter" columnName="is_filter" title="是否加入分类查询条件" type="Boolean" note="是否加入分类查询条件，1-加入，0-不加入"/>
+			</attributes>
+		</class>		
+		<realizations>
+		</realizations>
+		<generalizations>			
+			<generalization parent="archive.base.Archive" child="ProductType"/>
+			<generalization parent="base.entity.BizObject" child="ProductTypeProps"/>
+			<generalization parent="base.entity.BizObject" child="ProductTypePropsValue"/>
+			<generalization parent="archive.base.Archive" child="ProductTypeParameter"/>
+			<generalization parent="base.entity.BizObject" child="ProductTypeParameterValue"/>
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongProductType" typeB="ProductType" roleA="productTypePropss" typeA="ProductTypeProps"/>		
+		    <association type="composition" roleB="belongProductTypeProps" typeB="ProductTypeProps" roleA="productTypePropsValues" typeA="ProductTypePropsValue"/>			
+			<association type="composition" roleB="belongProductType" typeB="ProductType" roleA="productTypeParameters" typeA="ProductTypeParameter"/>
+			<association type="composition" roleB="belongProductTypeParameter" typeB="ProductTypeParameter" roleA="productTypeParameterValues" typeA="ProductTypeParameterValue"/>
+		</associations>
+	</component>
+    </components>

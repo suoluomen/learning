@@ -1,0 +1,27 @@
+play命令
+
+play deps --sync  更新play所需要的库文件，清除没有使用的文件
+
+play help   可以查看帮助文档的命令
+
+Agent.find(query, params).fetch(pageindex, pagesize);   查找数据库信息
+
+Agent.find(query, params).first() 查找一条信息
+
+Agent.count()  查找个数
+
+Map<String,Object> data=new HashMap<String,Object>();  定义一个hashMap保存查找的信息
+
+
+String hql="update Agent a set a.iDeleted=1 where a.id in (?) and iCorpId=?";
+		Query query=JPA.em().createNativeQuery(hql);
+		query.setParameter(1, agentids);
+		query.setParameter(2,iCorpId);
+		int result=query.executeUpdate();
+		if(result>0){
+			return true;
+		}
+		return false;
+更新数据库信息结构，使用JPA.em().createNativeQuery函数
+
+

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="voucher.base.xml"/>
+	</references>
+
+	<component name="balance" moduleName="gl" title="余额组件">
+		<class name="Balance" title="余额表" tableName="gl_balance">
+			<attributes>
+				<attribute name="period" title="期间" type="Short" />
+				<attribute name="account" title="科目" type="aa.accountingsubjects.AccountingSubjects" />
+				<attribute name="direction" title="方向" type="Short" />
+				<attribute name="beginAmount" title="期初金额(本币)" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="beginOriAmount" title="期初金额(原币)" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="exch" title="币种" type="aa.currency.Currency" />
+				<attribute name="quantity" title="数量" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</class>
+		
+		
+		
+		<realizations>
+		</realizations>
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="Balance" />	
+		</generalizations>
+		<associations>
+			
+		</associations>
+	</component>
+		
+
+</components>

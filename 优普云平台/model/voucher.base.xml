@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="base.xml"/>
+	</references>
+	<!--biz itf component-->
+	<component name="enums" moduleName="voucher" title="单据枚举组件" proj="base">
+		<enum name="Status" title="单据状态">
+			<item name="newopen" title="开立" value="0"/>
+			<item name="confirmed" title="已审核" value="1"/>
+			<item name="closed" title="已关闭" value="2"/>
+			<item name="confirming" title="审核中" value="3"/>
+		</enum>
+	</component>
+	<component name="base" moduleName="voucher" title="单据基础组件">
+		<interface name="IRowNum" title="行号信息">
+			<attributes>
+				<attribute name="rowno" columnName="rowno" title="行号" type="Integer" isCode="true" />
+			</attributes>
+		</interface>
+		<interface name="ICurrencyInfo" title="币种信息">
+			<attributes>
+				<attribute name="exch" title="币种" type="aa.currency.Currency" />
+				<attribute name="exchRate" title="汇率" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="discountTaxType" title="扣税类别" type="Short" />
+			</attributes>
+		</interface>
+		<interface name="IQtyInfo" title="数量信息汇总">
+			<attributes>
+				<attribute name="qtySum" title="总数量" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</interface>
+		<interface name="IUOMInfo" title="计量单位信息">
+			<attributes>
+				<attribute name="invSubUnit" title="辅计量单位" type="aa.uom.UOM" />
+				<attribute name="qty" title="主计量数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="subQty" title="辅计量数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="invExchRate" title="换算率" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</interface>
+		<interface name="IPriceUOMInfo" title="计价单位信息">
+			<attributes>
+				<attribute name="invPriceUnit" title="计价单位" type="aa.uom.UOM" />
+				<attribute name="priceQty" title="计价数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="invPriceExchRate" title="计价换算率" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="baseNatUnitPrice" title="主计量单价" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</interface>
+		<interface name="IOriMoneyInfo" title="原币金额信息">
+			<attributes>
+				<attribute name="oriUnitPrice" title="原币无税单价" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="oriTaxUnitPrice" title="原币含税单价" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="oriMoney" title="原币无税金额" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="oriSum" title="原币价税合计" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="oriTax" title="原币税额" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="taxRate" title="税率" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="taxUnitPriceTag" title="价格标识" type="Boolean" />
+			</attributes>
+		</interface>
+		<interface name="INatMoneyInfo" title="本币金额信息">
+			<attributes>
+				<attribute name="natUnitPrice" title="本币无税单价" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="natTaxUnitPrice" title="本币含税单价" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="natMoney" title="本币无税金额" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="natSum" title="本币价税合计" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="natTax" title="本币税额" type="Decimal" iPrecision="19" iScale="4"/>
+			</attributes>
+		</interface>
+				<interface name="IOriMoneyInfoForSum" title="原币金额汇总">
+			<attributes>
+				<attribute name="oriMoney" title="原币无税金额" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="oriSum" title="原币价税合计" type="Decimal" iPrecision="19" iScale="4"/>
+			</attributes>
+		</interface>
+		<interface name="INatMoneyInfoForSum" title="本币金额汇总">
+			<attributes>
+				<attribute name="natMoney" title="本币无税金额" type="Decimal" iPrecision="19" iScale="4"/>
+				<attribute name="natSum" title="本币价税合计" type="Decimal" iPrecision="19" iScale="4"/>
+			</attributes>
+		</interface>
+		<interface name="IDiscountInfo" title="折扣信息">
+			<attributes>
+				<attribute name="discount" title="折扣" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</interface>
+		<interface name="IAutoCode" title="自动编号">
+			<attributes>
+				<attribute name="code" title="编码" type="String" iLength="20" isUnique="true" isCode="true" />
+			</attributes>
+		</interface>
+		<interface name="IVouchOrg" title="单据组织">
+			<attributes>
+				<attribute name="ownerOrg" title="所属组织" type="base.org.Organization" />
+				<attribute name="financialOrg" title="财务组织" type="base.org.Organization"  />
+			</attributes>
+		</interface>
+			
+		<class name="Vouch" title="单据基类">
+			<attributes>
+				<attribute name="vouchdate" title="单据日期" type="Date" isRequired="true"  />
+				<attribute name="tplid" title="模板id" type="Long"  />
+				<attribute name="status" title="单据状态" type="voucher.enums.Status" />
+			</attributes>
+		</class>
+		<class name="VouchLine" title="单据行基类">
+		</class>
+		<realizations>
+			<realization supplier="IAutoCode" client="Vouch"/>
+			<realization supplier="base.itf.IAuditInfo" client="Vouch"/>
+			<realization supplier="IVouchOrg" client="Vouch"/>
+			<realization supplier="IRowNum" client="VouchLine"/>
+			<realization supplier="base.itf.IAuditInfo" client="VouchLine"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="Vouch" />
+			<generalization parent="base.entity.BizObject" child="VouchLine" />
+		</generalizations>
+	</component>
+</components>

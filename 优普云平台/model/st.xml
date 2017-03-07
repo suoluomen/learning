@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="base.xml"/>
+		<reference file="voucher.base.xml"/>
+	</references>
+	
+	<component name="stbase" moduleName="st" title="库存管理公共组件">
+		<class name="STVouch" title="库存管理单据基类">
+			<attributes>
+				<attribute name="department" columnName="dept_id" title="部门id" type="aa.dept.Department"/>
+				<attribute name="handler" columnName="handler_id" title="经手人id" type="aa.person.Person"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+			</attributes>
+		</class>
+		<class name="STVouchLine" title="库存管理单据行基类">
+			<attributes>
+				<attribute name="inventory" columnName="inventory_id" title="料品id" type="aa.inv.Inventory" />
+				<attribute name="product" columnName="product_id" title="商品id" type="aa.inv.Inventory" />
+				<attribute name="item" columnName="item_id" title="项目id" type="aa.item.Item"/>				
+				<attribute name="sourceId" title="上游单据主表id" type="Long"/>
+				<attribute name="sourceAutoId" title="上游单据子表id" type="Long"/>
+				<attribute name="source" title="上游单据类型" type="String" iLength="30"/>
+				<attribute name="upCode" title="上游单据号" type="String" iLength="60"/>
+				<attribute name="makeRule" columnName="makerule_id" title="生单规则" type="Long" version="1.0.0824001" />				
+				<attribute name="batchNum" title="批号" type="String" iLength="60"/>
+				<attribute name="st_status" title="库存状态" type="Integer"/>
+				<attribute name="lineRemark" title="行备注" type="String" iLength="255"/>
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalInfo" client="STVouch"/>
+			<realization supplier="base.itf.IInvalid" client="STVouch"/>
+			<realization supplier="base.itf.FreeItem" client="STVouchLine"/>
+			<realization supplier="voucher.base.IUOMInfo" client="STVouchLine"/>
+			<realization supplier="base.itf.IAccounting" client="STVouchLine"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="voucher.base.Vouch" child="STVouch" />
+			<generalization parent="voucher.base.VouchLine" child="STVouchLine" />
+		</generalizations>
+	</component>
+	
+	<component name="otherin" moduleName="st" title="其他入库单组件">
+		<class name="OtherIn" title="其他入库单" tableName="ST_OtherIn">
+			<attributes>
+				<attribute name="rdFlag" title="收发标志" type="Short" isRequired="true"/>
+				<attribute name="busType" title="业务类型" type="String" iLength="20" isRequired="true"/>
+				<attribute name="rdType" columnName="rdType_id" title="入库类型id" type="aa.transceiverType.TransceiverType"/>
+				<attribute name="businessOrg" columnName="businessOrg_id" title="业务组织id" type="base.org.Organization"/>
+				<attribute name="warehouse" columnName="warehouse_id" title="仓库id" type="aa.wh.Warehouse" isRequired="true"/>
+				<attribute name="person" columnName="person_id" title="库管员id" type="aa.person.Person"/>
+			</attributes>
+		</class>		
+		<class name="OtherInDetail" title="其他入库单明细" tableName="ST_OtherIn_Detail">
+			<attributes>
+				<attribute name="belongId" columnName="otherIn_id" title="所属其他入库单" type="OtherIn" />
+				<attribute name="transferAutoId" title="调拨单子表id" type="Long"/>
+				<attribute name="pathLossQty" title="途损数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="pathLossNum" title="途损数量-库存单位" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</class>
+		<class name="OtherInCustomItem" title="其他入库单自定义项" tableName="ST_OtherIn_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="其他入库单主表id" type="OtherIn" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="OtherInDetailCustomItem" title="其他入库单明细自定义项" tableName="ST_OtherIn_Detail_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="其他入库单明细id" type="OtherInDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="OtherInCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="OtherInDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="st.stbase.STVouch" child="OtherIn" />
+			<generalization parent="st.stbase.STVouchLine" child="OtherInDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongId" typeB="OtherIn" roleA="otherInDetails" typeA="OtherInDetail"/>
+			<association type="composition" roleB="id" typeB="OtherIn" roleA="headItem" typeA="OtherInCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="OtherInDetail" roleA="bodyItem" typeA="OtherInDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	
+	<component name="otherout" moduleName="st" title="其他出库单组件">
+		<class name="OtherOut" title="其他出库单" tableName="ST_OtherOut">
+			<attributes>
+				<attribute name="rdFlag" title="收发标志" type="Short" isRequired="true"/>
+				<attribute name="busType" title="业务类型" type="String" iLength="20" isRequired="true"/>
+				<attribute name="rdType" columnName="rdType_id" title="出库类型id" type="aa.transceiverType.TransceiverType"/>
+				<attribute name="businessOrg" columnName="businessOrg_id" title="业务组织id" type="base.org.Organization"/>
+				<attribute name="warehouse" columnName="warehouse_id" title="仓库id" type="aa.wh.Warehouse" isRequired="true"/>
+				<attribute name="person" columnName="person_id" title="库管员id" type="aa.person.Person"/>
+				<attribute name="transInOrg" columnName="transInOrg_id" title="调入组织id" type="base.org.Organization"/>
+				<attribute name="transType" title="调拨方式" type="String" iLength="10"/>
+				<attribute name="transInWh" columnName="transInWh_id" title="调入仓库id" type="aa.wh.Warehouse"/>
+				<attribute name="transInDep" columnName="transInDep_id" title="调入部门id" type="aa.dept.Department"/>
+			</attributes>
+		</class>		
+		<class name="OtherOutDetail" title="其他出库单明细" tableName="ST_OtherOut_Detail">
+			<attributes>
+				<attribute name="belongId" columnName="otherOut_id" title="所属其他出库单" type="OtherOut" />
+				<attribute name="transInQty" title="累计调入数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="transInNum" title="累计调入数量-库存单位" type="Decimal" iPrecision="19" iScale="8"/>	
+				<attribute name="pathLossQty" title="累计途损数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="pathLossNum" title="累计途损数量-库存单位" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</class>
+		<class name="OtherOutCustomItem" title="其他出库单自定义项" tableName="ST_OtherOut_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="其他出库单主表id" type="OtherOut" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="OtherOutDetailCustomItem" title="其他出库单明细自定义项" tableName="ST_OtherOut_Detail_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="其他出库单明细id" type="OtherOutDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="OtherOutCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="OtherOutDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="st.stbase.STVouch" child="OtherOut" />
+			<generalization parent="st.stbase.STVouchLine" child="OtherOutDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongId" typeB="OtherOut" roleA="otherOutDetails" typeA="OtherOutDetail"/>
+			<association type="composition" roleB="id" typeB="OtherOut" roleA="headItem" typeA="OtherOutCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="OtherOutDetail" roleA="bodyItem" typeA="OtherOutDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	
+	<component name="transfer" moduleName="st" title="调拨单组件">
+		<class name="Transfer" title="调拨单" tableName="ST_Transfer">
+			<attributes>
+				<attribute name="transType" title="调拨方式" type="String" iLength="10"/>
+				<attribute name="transOutOrg" columnName="transOutOrg_id" title="调出组织id" type="base.org.Organization"/>				
+				<attribute name="transOutWh" columnName="transOutWh_id" title="调出仓库id" type="aa.wh.Warehouse"/>
+				<attribute name="transOutDep" columnName="transOutDep_id" title="调出部门id" type="aa.dept.Department"/>
+				<attribute name="rdOutType" columnName="rdOutType_id" title="出库类型id" type="aa.transceiverType.TransceiverType"/>
+				<attribute name="transInOrg" columnName="transInOrg_id" title="调入组织id" type="base.org.Organization"/>
+				<attribute name="transInWh" columnName="transInWh_id" title="调入仓库id" type="aa.wh.Warehouse"/>
+				<attribute name="transInDep" columnName="transInDep_id" title="调入部门id" type="aa.dept.Department"/>
+				<attribute name="rdInType" columnName="rdInType_id" title="入库类型id" type="aa.transceiverType.TransceiverType"/>
+			</attributes>
+		</class>		
+		<class name="TransferDetail" title="调拨单明细" tableName="ST_Transfer_Detail">
+			<attributes>
+				<attribute name="belongId" columnName="transfer_id" title="所属调拨单" type="Transfer" />
+				<attribute name="transOutQty" title="累计调出数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="transOutNum" title="累计调出数量-库存单位" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="transInQty" title="累计调入数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="transInNum" title="累计调入数量-库存单位" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="pathLossQty" title="累计途损数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="pathLossNum" title="累计途损数量-库存单位" type="Decimal" iPrecision="19" iScale="8"/>
+			</attributes>
+		</class>
+		<class name="TransferCustomItem" title="调拨单自定义项" tableName="ST_Transfer_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调拨单主表id" type="Transfer" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="TransferDetailCustomItem" title="调拨单明细自定义项" tableName="ST_Transfer_Detail_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调拨单明细id" type="TransferDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="TransferCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="TransferDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="st.stbase.STVouch" child="Transfer" />
+			<generalization parent="st.stbase.STVouchLine" child="TransferDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongId" typeB="Transfer" roleA="transferDetails" typeA="TransferDetail"/>
+			<association type="composition" roleB="id" typeB="Transfer" roleA="headItem" typeA="TransferCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="TransferDetail" roleA="bodyItem" typeA="TransferDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	
+	<component name="transform" moduleName="st" title="形态转换单组件">
+		<class name="Transform" title="形态转换单" tableName="ST_Transform">
+			<attributes>
+				<attribute name="transType" title="转换方式" type="String" iLength="10"/>
+				<attribute name="rdOutType" columnName="rdOutType_id" title="出库类型id" type="aa.transceiverType.TransceiverType"/>
+				<attribute name="rdInType" columnName="rdInType_id" title="入库类型id" type="aa.transceiverType.TransceiverType"/>
+			</attributes>
+		</class>		
+		<class name="TransformDetail" title="形态转换单明细" tableName="ST_Transform_Detail">
+			<attributes>
+				<attribute name="belongId" columnName="transform_id" title="所属形态转换单" type="Transform" />
+				<attribute name="groupNO" title="组号" type="Integer"/>
+				<attribute name="whenType" title="类型" type="String" iLength="10"/>
+				<attribute name="warehouse" columnName="warehouse_id" title="仓库id" type="aa.wh.Warehouse" isRequired="true"/>
+			</attributes>
+		</class>
+		<class name="TransformCustomItem" title="形态转换单自定义项" tableName="ST_Transform_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="形态转换单主表id" type="Transform" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="TransformDetailCustomItem" title="形态转换单明细自定义项" tableName="ST_Transform_Detail_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="形态转换单明细id" type="TransformDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="TransformCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="TransformDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="st.stbase.STVouch" child="Transform" />
+			<generalization parent="st.stbase.STVouchLine" child="TransformDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongId" typeB="Transform" roleA="transformDetails" typeA="TransformDetail"/>
+			<association type="composition" roleB="id" typeB="Transform" roleA="headItem" typeA="TransformCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="TransformDetail" roleA="bodyItem" typeA="TransformDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	
+	<component name="initstock" moduleName="st" title="期初单据组件">
+		<class name="InitStock" title="期初单据" tableName="ST_InitStock">
+			<attributes>
+				<attribute name="rdFlag" title="收发标志" type="Short" isRequired="true"/>
+				<attribute name="rdType" columnName="rdType_id" title="入库类型id" type="aa.transceiverType.TransceiverType"/>
+				<attribute name="warehouse" columnName="warehouse_id" title="仓库id" type="aa.wh.Warehouse" isRequired="true"/>
+				<attribute name="department" columnName="dept_id" title="部门id" type="aa.dept.Department"/>
+				<attribute name="handler" columnName="handler_id" title="经手人id" type="aa.person.Person"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+			</attributes>
+		</class>		
+		<class name="InitStockDetail" title="期初单据明细" tableName="ST_InitStock_Detail">
+			<attributes>
+				<attribute name="belongId" columnName="initStock_id" title="所属期初单据" type="InitStock" />
+				<attribute name="inventory" columnName="inventory_id" title="料品id" type="aa.inv.Inventory" />
+				<attribute name="item" columnName="item_id" title="项目id" type="aa.item.Item"/>
+				<attribute name="batchNum" title="批号" type="String" iLength="60"/>
+				<attribute name="st_status" title="库存状态" type="Integer"/>
+				<attribute name="lineRemark" title="行备注" type="String" iLength="255"/>
+			</attributes>
+		</class>
+		<class name="InitStockCustomItem" title="期初单据自定义项" tableName="ST_InitStock_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="期初单据主表id" type="InitStock" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="InitStockDetailCustomItem" title="期初单据明细自定义项" tableName="ST_InitStock_Detail_CustomItem">
+			<attributes>
+				<attribute name="id" columnName="id" title="期初单据明细id" type="InitStockDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalInfo" client="InitStock"/>
+			<realization supplier="base.itf.FreeItem" client="InitStockDetail"/>
+			<realization supplier="voucher.base.IUOMInfo" client="InitStockDetail"/>
+			<realization supplier="base.itf.CustomItem" client="InitStockCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="InitStockDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="voucher.base.Vouch" child="InitStock" />
+			<generalization parent="voucher.base.VouchLine" child="InitStockDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongId" typeB="InitStock" roleA="initStockDetails" typeA="InitStockDetail"/>
+			<association type="composition" roleB="id" typeB="InitStock" roleA="headItem" typeA="InitStockCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="InitStockDetail" roleA="bodyItem" typeA="InitStockDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+</components>

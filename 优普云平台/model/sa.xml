@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="scm.base.xml"/>
+		<reference file="archive.base.xml"/>
+	</references>
+
+	<!--  基本信息 -->
+	<component name="basearchive" moduleName="sa" title="销售基础组件">
+	
+		<!-- 订价因素-->  <!-- archive  -->
+		<class name="OrderFactor" title="订价因素" tableName="sa_base_orderfactor">
+			<attributes>
+				<attribute name="isPriceModle" title="是否适用于价格模型" type="Boolean" />
+				<attribute name="isDiscount" title="是否适用于折扣模型" type="Boolean"/>
+				<attribute name="isPrice" title="是否适用于零售价格模型" type="Boolean" />
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="OrderFactor" />
+		</generalizations>
+		
+		<!-- 料品维度-->  <!-- archive  -->
+		<class name="InventoryDimension" title="料品维度" tableName="sa_base_inventorydimension">
+			<attributes>
+				<attribute name="isPriceModle" title="是否适用于价格模型" type="Boolean" />
+				<attribute name="isDiscount" title="是否适用于折扣模型" type="Boolean"/>
+				<attribute name="isPrice" title="是否适用于零售价格模型" type="Boolean" />
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="InventoryDimension" />
+		</generalizations>
+	</component>
+	
+	
+	<!-- 价格模型组件 -->	
+	<component name="sale" moduleName="sa" title="价格模型组件">
+	
+		<!--  销售价格 -->   <!-- archive  -->
+		<class name="SaleModel" title="销售价格" tableName="sa_sale_salemodel">
+			<attributes>
+				<attribute name="priority" title="优先级" type="Decimal" iPrecision="19" iScale="2"/>
+			</attributes>
+		</class>
+		
+		<class name="SaleModelFactor" title="订价因素" tableName="sa_sale_salemodelfactor">
+			<attributes>
+				<attribute name="blongModelFactor" title="销售价格表模型" columnName="blongModelFactor_id" type="SaleModel"  />
+				<attribute name="factor" title="定价因素ID"  type="sa.basearchive.OrderFactor" columnName="factor_id"   />				
+			</attributes>
+		</class>
+		
+		<class name="SaleModelDimension" title="料品维度" tableName="sa_sale_salemodeldimension">
+			<attributes>				
+				<attribute name="blongModelDimension" title="销售价格表模型" columnName="blongModelDimension_id" type="SaleModel"  />
+				<attribute name="dimension" title="料品维度ID"  type="sa.basearchive.InventoryDimension" columnName="dimension_id"  />
+			</attributes>
+		</class>
+		
+		<realizations>
+            <realization supplier="base.itf.IStopping" client="SaleModel" />
+        </realizations>
+		
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="SaleModel" />
+			<generalization parent="base.entity.BizObject" child="SaleModelFactor" />
+			<generalization parent="base.entity.BizObject" child="SaleModelDimension" />
+		</generalizations>
+		
+		<associations>
+             <association type="composition" roleB="blongModelFactor" typeB="SaleModel" roleA="saleModelFactor" typeA="SaleModelFactor" roleAMulti="0..n" />
+             <association type="composition" roleB="blongModelDimension" typeB="SaleModel" roleA="saleModelDimension" typeA="SaleModelDimension" roleAMulti="0..n" />
+        </associations>	
+		
+		
+		<!-- 销售价格 -->   <!-- voucher  -->	
+		<class name="Sale" title="销售价格" tableName="sa_sale_Sale">
+			<attributes>
+				<attribute name="name" title="销售价格名称" type="String" iLength="40"/>
+				<attribute name="saPriceModel" title="销售价格表模型编码" type="sa.sale.SaleModel" columnName="saPriceModel_id"/>
+				<attribute name="saleOrg" title="销售组织" type="base.org.Organization" columnName="saleOrg_id"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="customerclass" title="客户分类id" type="aa.customer.CustomerClass" columnName="customerclass_id"/>
+				<attribute name="areaclass" title="所属地区id" type="aa.area.AreaClass" columnName="areaclass_id"/>
+				<attribute name="customerlevel" title="客户级别id" type="aa.customer.CustomerLevel" columnName="customerlevel_id"/>
+				<attribute name="department" title="部门id" type="aa.dept.Department" columnName="department_id"/>
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="inventoryclass" title="料品分类id" type="aa.inv.InventoryClass" columnName="inventoryclass_id"/>
+				<attribute name="priceUom" title="计价单位"  type="aa.uom.UOM" columnName="price_uom_id"/>
+				<attribute name="currency" title="币种" columnName="currency_id" type="aa.currency.Currency" />
+				<attribute name="qtylower" title="数量下限" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>				
+				<attribute name="quote" title="报价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="effectivedate" title="生效日期" type="Date"/>
+				<attribute name="expirydate" title="截止日期" type="Date"/>				
+				<attribute name="priceMark" title="价格标识" type="String" iLength="100"/>
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" />  
+				<attribute name="cancelled" title="已作废" type="Boolean"/>				
+				<attribute name="createOrg" title="创建组织" type="base.org.Organization" columnName="createOrg_id"/>	
+				<attribute name="updateTime" title="最后修改时间" type="DateTime" />
+				<attribute name="person" title="最后修改人" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="updatePrice" title="调价单ID" type="String" iLength="100" columnName="updatePrice_id"/>		
+			</attributes>
+		</class>	
+		
+		<class name="SaleUseOrg" title="销售价格使用组织" tableName="sa_sale_SaleUseOrg">
+			<attributes>
+				<attribute name="belongSale" columnName="sale_id" title="所属价格表" type="Sale"/>
+				<attribute name="usedOrg" title="使用组织id" type="base.org.Organization" columnName="usedOrg_id"/>
+			</attributes>
+		</class>
+			
+		<realizations>
+			<realization supplier="base.itf.FreeItem" client="Sale"/>
+		</realizations>
+		<!-- 料品规格1-N 的特殊处理-->
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="Sale" />
+			<generalization parent="base.entity.BizObject" child="SaleUseOrg" />
+		</generalizations>
+		
+		<associations>
+			<association type="composition" roleB="belongSale" typeB="Sale" roleA="saleUseOrg" typeA="SaleUseOrg"/>
+		</associations>
+		
+		
+		<class name="Change" title="销售调价" tableName="sa_sale_change">
+			<attributes>			
+				<attribute name="createOrg" title="创建组织" type="base.org.Organization" columnName="createOrg_id"/>	
+				<attribute name="saPriceModel" title="销售价格表模型编码" type="sa.sale.SaleModel" columnName="saPriceModel_id"/>
+				<attribute name="changeDep" title="调价部门编码" type="aa.dept.Department" columnName="changedep_id"/>
+				<attribute name="priceMark" title="价格标识" type="String" iLength="100"  />
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" />  
+			</attributes>
+		</class>
+		    
+		<class name="ChangeDetail" title="销售调价使用组织" tableName="sa_sale_change_detail">
+			<attributes>
+				<attribute name="belongChange" columnName="change_id" title="所属订单" type="Change" />
+				<attribute name="operationType" title="操作类型" type="String" iLength="100" />  
+				<attribute name="saleOrg" title="销售组织" type="base.org.Organization" columnName="saleOrg_id"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="customerclass" title="客户分类id" type="aa.customer.CustomerClass" columnName="customerclass_id"/>
+				<attribute name="areaclass" title="所属地区id" type="aa.area.AreaClass" columnName="areaclass_id"/>
+				<attribute name="customerlevel" title="客户级别id" type="aa.customer.CustomerLevel" columnName="customerlevel_id"/>
+				<attribute name="department" title="部门id" type="aa.dept.Department" columnName="department_id"/>
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="inventoryclass" title="料品分类id" type="aa.inv.InventoryClass" columnName="inventoryclass_id"/>
+				<attribute name="priceUom" title="计价单位"  type="aa.uom.UOM" columnName="price_uom_id"/>
+				<attribute name="qtylower" title="数量下限" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+				<attribute name="currency" title="币种" columnName="currency_id" type="aa.currency.Currency" />				
+				<attribute name="quote" title="报价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="effectivedate" title="生效日期" type="Date"/>
+				<attribute name="expirydate" title="截止日期" type="Date"/>	
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" />  
+			</attributes>
+		</class>
+		
+		
+		<class name="SaleChangeItem" title="销售调价自定义项" tableName="sa_sale_changeitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调价id" type="Change" isKey="true" />
+		   </attributes>
+		</class>
+		
+		<class name="SaleChangeDetailItem" title="销售调价明细自定义项" tableName="sa_sale_details_changeitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调价id" type="ChangeDetail" isKey="true" />
+		   </attributes>
+		</class>		
+		
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="Change"/>	
+			<realization supplier="base.itf.FreeItem" client="Change"/>
+			<realization supplier="base.itf.CustomItem" client="SaleChangeItem" />
+			<realization supplier="base.itf.CustomItem" client="SaleChangeDetailItem" />
+		</realizations>
+		
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="Change" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="ChangeDetail" />	
+		</generalizations>
+		
+		<associations>
+			<association type="composition" roleB="belongChange" typeB="Change" roleA="changeDetail" typeA="ChangeDetail"/>
+			<association type="composition" roleB="id" typeB="Change" roleA="headItem" typeA="SaleChangeItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="ChangeDetail" roleA="bodyItem" typeA="SaleChangeDetailItem" roleAMulti="1" />
+		</associations>
+	</component>
+	
+	
+	
+	
+	
+	<!--  销售折扣组件 -->
+	<component name="discount" moduleName="sa" title="销售折扣组件">	
+	
+		<!-- 销售折扣模型  -->   <!-- archive  -->
+		<class name="Discountmodel" title="销售折扣模型" tableName="sa_discountmodel">
+			<attributes>
+				<attribute name="priority" title="优先级" type="Decimal" iPrecision="19" iScale="2"/>
+				<attribute name="morediscount" title="允许折上折" type="Boolean"/>
+			</attributes>
+		</class>
+		<class name="DiscountmodelFactor" title="折扣因素" tableName="sa_discountmodel_factor">
+			<attributes>
+               <attribute name="blongdismodelfactor" columnName="discountmodel_id" title="折扣模型id" type="Discountmodel"/>
+               <attribute name="factor" title="定价因素id" type="sa.basearchive.OrderFactor"  columnName="factor_id" />
+		   </attributes>		
+		</class>
+		<class name="DiscountmodelDimension" title="料品维度" tableName="sa_discountmodel_dimension">
+			<attributes>
+               <attribute name="blongdismodeldimension" columnName="discountmodel_id" title="折扣模型id" type="Discountmodel"/>
+               <attribute name="dimension" title="料品维度id" type="sa.basearchive.InventoryDimension"  columnName="dimension_id" />
+		   </attributes>				
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IStopping" client="Discountmodel" />
+		</realizations>
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="Discountmodel" />
+			<generalization parent="base.entity.BizObject" child="DiscountmodelFactor" />
+			<generalization parent="base.entity.BizObject" child="DiscountmodelDimension" />
+		</generalizations>
+		<associations>
+            <association type="composition" roleB="blongdismodelfactor" typeB="Discountmodel" roleA="discountmodelfactors" typeA="DiscountmodelFactor" roleAMulti="0..n" />
+            <association type="composition" roleB="blongdismodeldimension" typeB="Discountmodel" roleA="discountmodeldimensions" typeA="DiscountmodelDimension" roleAMulti="0..n" />
+		</associations>
+		
+		<!-- 销售折扣表  -->   <!-- voucher  -->
+		<class name="Discount" title="销售折扣表" tableName="sa_discount">
+			<attributes>
+				<attribute name="name" title="销售折扣名称" type="String" iLength="40"/>
+				<attribute name="discountmodel" title="折扣表模型id" type="sa.discount.Discountmodel" columnName="discountmodel_id"/>
+				<attribute name="saleOrg" title="销售组织id" type="base.org.Organization" columnName="saleOrg_id"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="customerclass" title="客户分类id" type="aa.customer.CustomerClass" columnName="customerclass_id"/>
+				<attribute name="areaclass" title="所属地区id" type="aa.area.AreaClass" columnName="areaclass_id"/>
+				<attribute name="customerlevel" title="客户级别id" type="aa.customer.CustomerLevel" columnName="customerlevel_id"/>
+				<attribute name="department" title="部门id" type="aa.dept.Department" columnName="department_id"/>
+				<attribute name="saletype" title="销售类型id" type="aa.sale.SaleType" columnName="saletype_id"/>
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="inventoryclass" title="料品分类id" type="aa.inv.InventoryClass" columnName="inventoryclass_id"/>
+				<attribute name="qtylower" title="数量下限" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="discountrate" title="折扣率"  type="Decimal" iPrecision="19" iScale="2"/>
+				<attribute name="effectivedate" title="生效日期" type="Date"/>
+				<attribute name="expirydate" title="截止日期" type="Date"/>
+				<attribute name="cancelled" title="已作废" type="Integer"/>
+				<attribute name="createOrg" title="创建组织id" type="base.org.Organization" columnName="createOrg_id"/>
+				<attribute name="updateTime" title="最后修改时间" type="DateTime" />
+				<attribute name="person" title="最后修改人" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="disdjustdetail" title="调整单子表id" type="Long" columnName="disdjustdetail_id"/>
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="255" />  
+			</attributes>
+		</class>
+		<class name="DiscountUseOrg" title="折扣使用组织" tableName="sa_discount_UseOrg">
+			<attributes>
+				<attribute name="belongDiscount" columnName="discount_id" title="所属价格表" type="Discount" />
+				<attribute name="useOrg" title="使用组织id" type="base.org.Organization" columnName="useOrg_id"/>
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.FreeItem" client="Discount"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="Discount" />
+			<generalization parent="base.entity.BizObject" child="DiscountUseOrg" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongDiscount" typeB="Discount" roleA="discountuseorgs" typeA="DiscountUseOrg"/>
+		</associations>
+		
+		<!--  销售折扣调整单  -->   <!-- voucher  -->
+		<class name="DisAdjust" title="销售折扣调整单" tableName="sa_disadjust">
+			<attributes>
+				<attribute name="discountmodel" title="折扣表模型id" type="sa.discount.Discountmodel" columnName="discountmodel_id"/>
+				<attribute name="department" title="调价部门id" type="aa.dept.Department" columnName="department_id"/>
+				<attribute name="person" title="调价业务员id" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>				
+			</attributes>
+		</class>
+		<class name="DisAdjustDetail" title="销售折扣调整单明细" tableName="sa_disadjustdetail">
+			<attributes>
+				<attribute name="belongDisAdjust" columnName="DisAdjust_id" title="所属调整单" type="DisAdjust" />
+				<attribute name="operation" title="操作类型" type="String" iLength="20"/>
+				<attribute name="saleOrg" title="销售组织id" type="base.org.Organization" columnName="saleOrg_id"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="customerclass" title="客户分类id" type="aa.customer.CustomerClass" columnName="customerclass_id"/>
+				<attribute name="areaclass" title="所属地区id" type="aa.area.AreaClass" columnName="areaclass_id"/>
+				<attribute name="customerlevel" title="客户级别id" type="aa.customer.CustomerLevel" columnName="customerlevel_id"/>
+				<attribute name="department" title="部门id" type="aa.dept.Department" columnName="department_id"/>
+				<attribute name="saletype" title="销售类型id" type="aa.sale.SaleType" columnName="saletype_id"/>
+				<attribute name="inventoryclass" title="料品分类id" type="aa.inv.InventoryClass" columnName="inventoryclass_id"/>
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="priceUOM" title="计价单位id" type="aa.uom.UOM" columnName="priceUOM_id"/>
+				<attribute name="qtylower" title="数量下限" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="discountrate" title="折扣率"  type="Decimal" iPrecision="19" iScale="2"/>
+				<attribute name="discountamount" title="折扣额"  type="Decimal" iPrecision="19" iScale="2"/>
+				<attribute name="discountprice" title="折后价"  type="Decimal" iPrecision="19" iScale="2"/>
+				<attribute name="effectivedate" title="生效日期" type="Date"/>
+				<attribute name="expirydate" title="截止日期" type="Date"/>	
+				<attribute name="updateTime" title="最后修改时间" type="DateTime" />
+				<attribute name="remark" title="备注" type="String" iLength="255"/>	
+			</attributes>
+		</class>
+		<class name="DisAdjustCustomItem" title="销售折扣调整单自定义项" tableName="sa_disadjust_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调整单id" type="DisAdjust" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="DisAdjustDetailCustomItem" title="销售折扣调整单明细自定义项" tableName="sa_disdjustdetail_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调整单id" type="DisAdjustDetail" isKey="true" />
+		   </attributes>
+		</class>		
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="DisAdjust"/>
+			<realization supplier="base.itf.CustomItem" client="DisAdjustCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="DisAdjustDetailCustomItem" />
+			<realization supplier="base.itf.FreeItem" client="DisAdjustDetail"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="DisAdjust" />
+			<generalization parent="base.entity.BizObject" child="DisAdjustDetail" />
+			<!--<generalization parent="scm.base.SCMVouchLineInv" child="DisAdjustDetail" />-->
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongDisAdjust" typeB="DisAdjust" roleA="DisAdjustDetails" typeA="DisAdjustDetail"/>
+			<association type="composition" roleB="id" typeB="DisAdjust" roleA="headItem" typeA="DisAdjustCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="DisAdjustDetail" roleA="bodyItem" typeA="DisAdjustDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	
+	
+	
+	<!-- 零售价格表模型  -->		
+	<component name="retail" moduleName="sa" title="零售价格组件">
+	
+	
+		<!-- 零售价格表模型 -->   <!-- archive  -->
+		<class name="RetailModel" title="零售价格表模型" tableName="sa_retail_retailmodel">
+			<attributes>
+				<attribute name="priority" title="优先级" type="Decimal" iPrecision="19" iScale="2" />
+			</attributes>
+		</class>
+		
+		<class name="RetailOrderFactor" title="订价因素" tableName="sa_retail_retailorderfactor">
+			<attributes>
+				<attribute name="blongModelFactor" title="零售价格表模型" columnName="blongModelFactor_id" type="RetailModel"  />
+				<attribute name="factor" title="定价因素ID"  type="sa.basearchive.OrderFactor" columnName="factor_id"   />				
+			</attributes>
+		</class>
+		
+		<class name="RetailInventDimension" title="料品维度" tableName="sa_retail_inventdimension">
+			<attributes>				
+				<attribute name="blongModelDimension" title="零售价格表模型" columnName="blongModelDimension_id" type="RetailModel"  />
+				<attribute name="dimension" title="料品维度ID"  type="sa.basearchive.InventoryDimension" columnName="dimension_id"  />
+			</attributes>
+		</class>
+		
+		<realizations>
+            <realization supplier="base.itf.IStopping" client="RetailModel" />
+        </realizations>
+		
+		<generalizations>
+			<generalization parent="archive.base.Archive" child="RetailModel" />
+			<generalization parent="base.entity.BizObject" child="RetailOrderFactor" />
+			<generalization parent="base.entity.BizObject" child="RetailInventDimension" />
+		</generalizations>
+		
+		<associations>
+             <association type="composition" roleB="blongModelFactor" typeB="RetailModel" roleA="retailOrderFactor" typeA="RetailOrderFactor" roleAMulti="0..n" />
+             <association type="composition" roleB="blongModelDimension" typeB="RetailModel" roleA="retailInventDimension" typeA="RetailInventDimension" roleAMulti="0..n" />
+        </associations>	
+		
+		
+		<!--  零售价格 -->  <!-- voucher  -->
+		<class name="Retail" title="零售价格" tableName="sa_retail_retail">
+			<attributes>
+				<attribute name="name" title="零售价格名称" type="String" iLength="40"/>
+				<attribute name="saPriceModel" title="零售价格表模型编码" type="sa.retail.RetailModel" iLength="20"/>
+				<attribute name="saleOrg" title="销售组织" type="base.org.Organization" columnName="saleOrg_id"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>			
+				<attribute name="store" title="门店ID" type="String" iLength="20"/>
+				<attribute name="areaclass" title="所属地区id" type="aa.area.AreaClass" columnName="areaclass_id"/>
+				<attribute name="port" title="端口" type="String" iLength="20"/>				
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="inventoryclass" title="料品分类id" type="aa.inv.InventoryClass" columnName="inventoryclass_id"/>				
+				<attribute name="priceUom" title="计价单位"  type="aa.uom.UOM" columnName="price_uom_id"/>
+				<attribute name="currency" title="币种" columnName="currency_id" type="aa.currency.Currency" />							
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="effectivedate" title="生效日期" type="Date"/>
+				<attribute name="expirydate" title="截止日期" type="Date"/>				
+				<attribute name="priceMark" title="价格标识" type="String" iLength="100"/>
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" />  
+				<attribute name="cancelled" title="已作废" type="Boolean"/>				
+				<attribute name="createOrg" title="创建组织" type="base.org.Organization" columnName="createOrg_id"/>	
+				<attribute name="updateTime" title="最后修改时间" type="DateTime" />
+				<attribute name="person" title="最后修改人" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="updatePrice" title="调价单ID" type="String" iLength="100" columnName="updatePrice_id"/>	
+			</attributes>
+		</class>	
+		
+		<class name="RetailUseOrg" title="零售价格使用组织" tableName="sa_retail_UseOrg">
+			<attributes>
+				<attribute name="belongRetail" columnName="retail_id" title="所属价格表" type="Retail"/>
+				<attribute name="usedOrg" title="使用组织id" type="base.org.Organization" columnName="usedOrg_id"/>
+			</attributes>
+		</class>
+			
+		<realizations>
+			<realization supplier="base.itf.FreeItem" client="Retail"/>
+		</realizations>
+		<!-- 料品规格1-N 的特殊处理-->
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="Retail" />
+			<generalization parent="base.entity.BizObject" child="RetailUseOrg" />
+		</generalizations>		
+		<associations>
+			<association type="composition" roleB="belongRetail" typeB="Retail" roleA="retailUseOrg" typeA="RetailUseOrg"/>
+		</associations>
+		
+		<!-- 零售调价 -->  <!-- voucher  -->
+		<class name="Change" title="零售调价" tableName="sa_retail_change">
+			<attributes>			
+				<attribute name="createOrg" title="创建组织" type="base.org.Organization" columnName="createOrg_id"/>	
+				<attribute name="saPriceModel" title="零售价格表模型编码" type="sa.retail.RetailModel" columnName="saPriceModel_id"/>
+				<attribute name="changeDep" title="调价部门编码" type="aa.dept.Department" columnName="changedep_id"/>
+				<attribute name="person" title="调价业务员" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="priceMark" title="价格标识" type="String" iLength="100"/>
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" />  
+			</attributes>
+		</class>
+		
+		<class name="ChangeDetail" title="零售调价使用组织" tableName="sa_retail_change_detail">
+			<attributes>
+				<attribute name="belongChange" columnName="change_id" title="所属订单" type="Change" />
+				<attribute name="operationType" title="操作类型" type="String" iLength="100" />  
+				<attribute name="saleOrg" title="销售组织" type="base.org.Organization" columnName="saleOrg_id"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="store" title="门店ID" type="String" iLength="20"/>
+				<attribute name="areaclass" title="所属地区id" type="aa.area.AreaClass" columnName="areaclass_id"/>
+				<attribute name="port" title="端口" type="String" iLength="20"/>
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="inventoryclass" title="料品分类id" type="aa.inv.InventoryClass" columnName="inventoryclass_id"/>
+				<attribute name="priceUom" title="计价单位"  type="aa.uom.UOM" columnName="price_uom_id"/>
+				<attribute name="currency" title="币种" columnName="currency_id" type="aa.currency.Currency" />		
+				<attribute name="price" title="销售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="effectivedate" title="生效日期" type="Date"/>
+				<attribute name="expirydate" title="截止日期" type="Date"/>	
+				<attribute name="remark" title="备注" columnName="remark" type="String" iLength="100" />
+			</attributes>
+		</class>
+		
+		<class name="RetailChangeItem" title="零售调价自定义项" tableName="sa_retail_changeitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调价id" type="Change" isKey="true" />
+		   </attributes>
+		</class>
+		
+		<class name="RetailChangeDetailItem" title="零售调价明细自定义项" tableName="sa_retail_details_changeitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="调价id" type="ChangeDetail" isKey="true" />
+		   </attributes>
+		</class>		
+		
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="Change"/>	
+			<realization supplier="base.itf.FreeItem" client="Change"/>
+			<realization supplier="base.itf.CustomItem" client="RetailChangeItem" />
+			<realization supplier="base.itf.CustomItem" client="RetailChangeDetailItem" />
+		</realizations>
+		
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="Change" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="ChangeDetail" />	
+		</generalizations>
+		
+		<associations>
+			<association type="composition" roleB="belongChange" typeB="Change" roleA="changeDetails" typeA="ChangeDetail"/>
+			<association type="composition" roleB="id" typeB="Change" roleA="headItem" typeA="RetailChangeItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="ChangeDetail" roleA="bodyItem" typeA="RetailChangeDetailItem" roleAMulti="1" />
+		</associations>
+			
+	</component>
+	
+</components>

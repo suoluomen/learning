@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+	</references>
+	<component name="item" moduleName="gl" title="公用接口组件">
+		<interface name="AccountingDimension" title="核算维度组件">
+			<attributes>
+				<attribute name="department" title="部门id" type="aa.dept.Department" columnName="dept_id"/>
+				<attribute name="item" title="项目id" type="aa.item.Item" columnName="item_id"/>
+				<attribute name="vendor" title="供应商id" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="personal" title="个人id" type="aa.customer.Customer" columnName="personal_id"/>
+				<attribute name="accountingDimension6" title="核算维度6 " type="String" columnName="accountingDimension6" isGlobalization="true" iLength="255"/>
+				<attribute name="accountingDimension7" title="核算维度7 " type="String" columnName="accountingDimension7" isGlobalization="true" iLength="255"/>
+				<attribute name="accountingDimension8" title="核算维度8 " type="String" columnName="accountingDimension8" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension9" title="核算维度9 " type="String" columnName="accountingDimension9" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension10" title="核算维度10 " type="String" columnName="accountingDimension10" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension11" title="核算维度11 " type="String" columnName="accountingDimension11" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension12" title="核算维度12 " type="String" columnName="accountingDimension12" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension13" title="核算维度13 " type="String" columnName="accountingDimension13" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension14" title="核算维度14 " type="String" columnName="accountingDimension14" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension15" title="核算维度15 " type="String" columnName="accountingDimension15" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension16" title="核算维度16 " type="String" columnName="accountingDimension16" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension17" title="核算维度17 " type="String" columnName="accountingDimension17" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension18" title="核算维度18 " type="String" columnName="accountingDimension18" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension19" title="核算维度19 " type="String" columnName="accountingDimension19" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension20" title="核算维度20 " type="String" columnName="accountingDimension20" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension21" title="核算维度21 " type="String" columnName="accountingDimension21" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension22" title="核算维度22 " type="String" columnName="accountingDimension22" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension23" title="核算维度23 " type="String" columnName="accountingDimension23" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension24" title="核算维度24 " type="String" columnName="accountingDimension24" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension25" title="核算维度25 " type="String" columnName="accountingDimension25" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension26" title="核算维度26 " type="String" columnName="accountingDimension26" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension27" title="核算维度27 " type="String" columnName="accountingDimension27" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension28" title="核算维度28 " type="String" columnName="accountingDimension28" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension29" title="核算维度29 " type="String" columnName="accountingDimension29" isGlobalization="true" iLength = '255'/>
+				<attribute name="accountingDimension30" title="核算维度30 " type="String" columnName="accountingDimension30" isGlobalization="true" iLength = '255'/>
+			</attributes>
+		</interface>
+	</component>
+</components>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="voucher.base.xml"/>
+	</references>
+	<component name="transfer" moduleName="ar" title="转销组件">
+		<class name="Transfer" title="转销单" tableName="ar_transfer">
+			<attributes>
+				<attribute name="customer" title="客户" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="vendor" title="供应商" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<attribute name="transType" title="转销类型"  type="String" iLength="20"/>
+			</attributes>
+		</class>
+		<class name="TransferDetail" title="转销单明细" tableName="ar_transfer_details">
+			<attributes>
+				<attribute name="belongTransfer" title="所属转销单" type="Transfer" columnName="transfer_id"/>
+				<attribute name="handleType" title="处理方式"  type="String" iLength="20"/>
+				<attribute name="billType" title="单据类型"  type="String" iLength="20"/>
+				<attribute name="billCode" title="单据编码" type="String" iLength="20" />
+				<attribute name="billRowno" title="单据行号" type="Integer" />
+				<attribute name="vouchdate" title="单据日期" type="Date" isRequired="true"  />
+				<attribute name="customer" title="客户" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="vendor" title="供应商" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="num" title="数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="billOriAmo" title="单据原币金额" type="Decimal" iPrecision="12" iScale="8"/>
+				<attribute name="billLocAmo" title="单据本币金额" type="Decimal" iPrecision="12" iScale="8"/>
+				<attribute name="transOriAmo" title="转账原币金额" type="Decimal" iPrecision="12" iScale="8"/>
+				<attribute name="transLocAmo" title="转账本币金额" type="Decimal" iPrecision="12" iScale="8"/>
+				<attribute name="billOriBalAmo" title="单据原币余额" type="Decimal" iPrecision="12" iScale="8"/>
+				<attribute name="billLocBalAmo" title="单据本币余额" type="Decimal" iPrecision="12" iScale="8"/>
+				<attribute name="moneyType" title="款项类型"  type="String" iLength="20"/>
+				<attribute name="settlement" title="结算方式" type="aa.common.Settlement" columnName="settlement_id"/>
+				<attribute name="orderCode" title="订单编号" type="String" iLength="20" />
+				<attribute name="department" title="部门"  columnName="department_id" type="aa.dept.Department"/>
+				<attribute name="person" title="业务员" columnName="person_id" type="aa.person.Person" />
+			</attributes>
+		</class>
+		<class name="TransferCustomItem" title="转销单自定义项" tableName="ar_transfer_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="转销单id" type="Transfer" isKey="true" />
+		   </attributes>
+		</class>
+
+		<class name="TransferDetailCustomItem" title="转销单明细自定义项" tableName="ar_transferDetail_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="转销单明细id" type="TransferDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="TransferCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="TransferDetailCustomItem" />
+			<realization supplier="voucher.base.ICurrencyInfo" client="Transfer" />
+			<realization supplier="voucher.base.ICurrencyInfo" client="TransferDetail" />
+			<realization supplier="ar.itf.IARItemLine" client="TransferDetail" />
+		</realizations>
+		<generalizations>
+			<generalization parent="ar.abs.ARVouch" child="Transfer"/>
+			<generalization parent="ar.abs.ARVouchLine" child="TransferDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongTransfer" typeB="Transfer" roleA="transferDetails" typeA="TransferDetail"/>	
+			<association type="composition" roleB="id" typeB="Transfer" roleA="headItem" typeA="TransferCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="TransferDetail" roleA="bodyItem" typeA="TransferDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	<!--
+	<component name="transferScheme" moduleName="ar" title="应收收款转销方案组件">
+		<class name="TransferScheme" title="转销方案" tableName="ar_transferScheme">
+			<attributes>
+				<attribute name="transferOrderType" title="转销顺序"  type="String" iLength="20"/>
+			</attributes>
+        </class>
+		<class name="TransferRelation" title="转销关系" tableName="ar_TransferRelation">
+			<attributes>
+				<attribute name="belongTransferScheme" title="所属转销方案" type="TransferScheme" columnName="transferScheme_id"/>
+				<attribute name="transferOrderNo" title="转销顺序" type="Integer" isCode="true" />
+				<attribute name="transferRelation" title="转销关系" type="String" iLength="100"/>
+				<attribute name="isAllow" title="是否允许"  type="Boolean" /> 
+			</attributes>
+        </class>
+		<class name="TransferItem" title="匹配项目" tableName="ar_transferItem">
+			<attributes>
+				<attribute name="belongTransferScheme" title="所属转销方案" type="TransferScheme" columnName="transferScheme_id"/>
+				<attribute name="itemNo" title="项目序号" type="Integer" isCode="true" />
+				<attribute name="transferItem" title="匹配项目" type="String" iLength="100"/>
+				<attribute name="isMatch" title="是否匹配"  type="Boolean" /> 
+			</attributes>
+        </class>
+		<generalizations>
+            <generalization parent="archive.base.Archive" child="TransferScheme" />
+			<generalization parent="archive.base.Archive" child="TransferRelation" />
+			<generalization parent="archive.base.Archive" child="TransferItem" />
+        </generalizations>
+		<associations>
+			<association type="composition" roleB="belongTransferScheme" typeB="TransferScheme" roleA="transferRelationDetails" typeA="TransferRelation"/>
+			<association type="composition" roleB="belongTransferScheme" typeB="TransferScheme" roleA="transferItemDetails" typeA="TransferItem"/>
+		</associations>
+    </component>
+	-->
+</components>

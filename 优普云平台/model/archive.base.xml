@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="base.xml"/>
+	</references>
+	<component name="base" moduleName="archive" title="档案基础组件">
+		<interface name="IArchiveOrg" title="档案组织">
+			<attributes>
+				<attribute name="createOrg" title="创建组织" type="base.org.Organization" />
+				<attribute name="useOrg" title="使用组织" type="base.org.Organization"  />
+			</attributes>
+		</interface>
+		<class name="Archive" title="档案基类">
+			<attributes>
+				<attribute name="code" title="编码" type="String" iLength="20" isUnique="true" isCode="true" />
+				<attribute name="name" title="名称" type="String" isGlobalization="true" iLength="20" isUnique="true" isName="true" />
+			</attributes>
+		</class>
+		<class name="OrgArchive" title="组织档案基类">
+		</class>
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="Archive" />
+			<generalization parent="Archive" child="OrgArchive" />
+		</generalizations>
+		<realizations>
+			<realization supplier="IArchiveOrg" client="OrgArchive"/>
+		</realizations>
+	</component>
+</components>

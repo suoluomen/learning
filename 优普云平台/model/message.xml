@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+                <reference file="java.xml"/>
+                <reference file="base.xml"/>
+                <reference file="archive.base.xml"/>
+    </references>
+	<!--user component-->
+	<component name="message" moduleName="pub" title="门户消息">
+		<class name="MessageSource" title="消息来源" tableName="pub_msg_source">
+			<attributes>
+				<attribute name="name" columnName="name" title="名称" type="String" iLength="50" />
+			</attributes>
+		</class>
+		
+		<class name="MessageType" title="消息类型" tableName="pub_msg_type">
+			<attributes>
+				<attribute name="name" columnName="name" title="名称" type="String" iLength="50" />
+				<attribute name="source" columnName="source_id" title="消息来源" type="MessageSource" />
+				<attribute name="subId" columnName="sub_id" title="模块" type="String" iLength="10" note ="消息所属模块" />
+			</attributes>
+		</class>
+		
+		<class name="MessageTemplate" title="消息模板" tableName="pub_msg_tpl">
+			<attributes>
+				<attribute name="msgType" columnName="type_id" title="消息类型" type="MessageType" note="消息类型" />
+				<attribute name="msgTitle" columnName="msg_title" title="消息主题" type="String" iLength="256" note="消息主题"/>
+				<attribute name="msgContent" columnName="msg_content" title="消息内容" type="String" iLength="1024" note="消息内容"/>
+			</attributes>
+		</class>
+		
+		<class name="Message" title="桌面消息" tableName="pub_msg">
+			<attributes>
+				<attribute name="msgType" columnName="type_id" title="消息类型" type="MessageType" note="消息类型" />
+				<attribute name="msgTitle" columnName="msg_title" title="消息主题" type="String" iLength="256" note="消息主题"/>
+				<attribute name="msgContent" columnName="msg_content" title="消息内容" type="String" iLength="1024" note="消息内容"/>
+				<attribute name="sender" columnName="sender_id" title="发送人" type="base.user.User"   note="发送人"/>
+				<attribute name="receiver" columnName="receiver_id" title="接收人" type="base.user.User"  note="接收人"/>
+				<attribute name="sendTime" columnName="send_time" title="发送时间" type="DateTime"  note="消息的发送时间"/>
+				<attribute name="validDays" columnName="valid_days" title="消息有效期" type="Short" note="消息的有效期，单位天"/>
+				<attribute name="hasRead" columnName="has_read" title="是否已读" type="Boolean" note="是否已读"/>
+				<attribute name="isUrgent" columnName="is_urgent" title="是否紧急" type="Boolean" note="是否紧急"/>
+				<attribute name="isRemind" columnName="is_remind" title="是否提醒" type="Boolean" note ="是否提醒" />
+				<attribute name="account" columnName="account" title="账套" type="String" iLength="20" note ="账套" />
+				<attribute name="year" columnName="year" title="会计年度" type="Integer" note ="会计年度" />
+				<attribute name="msgParam" columnName="msg_param" title="消息参数" type="String"  iLength="1024" note ="消息参数，用于穿透" />
+				<attribute name="msgExtendParam" columnName="msg_ext_param" title="扩展参数" type="String" iLength="1024" note ="扩展参数" />
+			</attributes>
+		</class>
+		<generalizations>
+              <generalization parent="base.entity.BizObject" child="MessageSource" />
+              <generalization parent="base.entity.BizObject" child="MessageType" />
+              <generalization parent="base.entity.BizObject" child="MessageTemplate" />
+              <generalization parent="base.entity.BizObject" child="Message" />
+        </generalizations>
+        <realizations>
+              <realization supplier="base.itf.IStopping" client="MessageTemplate" />
+        </realizations>
+	</component>
+</components>

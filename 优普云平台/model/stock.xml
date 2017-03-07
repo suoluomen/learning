@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="base.xml"/>
+		<reference file="voucher.base.xml"/>
+	</references>
+	
+	<component name="currentstock" moduleName="stock" title="现存量组件">
+		<class name="CurrentStock" title="现存量" tableName="st_currentstock">
+			<attributes>
+				<attribute name="STOrg" title="库存组织id" type="base.org.Organization" columnName="STOrg_id" isRequired="true"/>
+				<attribute name="warehouse" title="仓库ID" type="aa.wh.Warehouse" columnName="warehouse_id" isRequired="true"/>
+				<attribute name="batchnum" title="批号" type="String" iLength="30" columnName="cbatch"/>
+				<attribute name="inventory" columnName="inventory_id" title="料品id" type="aa.inv.Inventory" />
+				<attribute name="status" title="库存状态" type="Integer" columnName="istatus" isRequired="true" defaultValue="1"/>
+				<attribute name="quantity" title="现存数量" type="Decimal" iPrecision="19" iScale="8" columnName="dQuantity"/>
+				<attribute name="num" title="现存件数" type="Decimal" iPrecision="19" iScale="8" columnName="dNum"/>
+				<attribute name="orderInQuantity" title="订单在途数量" type="Decimal" iPrecision="19" iScale="8" columnName="dOrderInQuantity"/>
+				<attribute name="orderInNum" title="订单在途件数" type="Decimal" iPrecision="19" iScale="8" columnName="dOrderInNum"/>
+				<attribute name="orderOutQuantity" title="订单待发数量" type="Decimal" iPrecision="19" iScale="8" columnName="dOrderOutQuantity"/>
+				<attribute name="orderOutNum" title="订单待发件数" type="Decimal" iPrecision="19" iScale="8" columnName="dOrderOutNum"/>
+				<attribute name="purQuantity" title="采购收货数量" type="Decimal" iPrecision="19" iScale="8" columnName="dPurQuantity"/>
+				<attribute name="purNum" title="采购收货件数" type="Decimal" iPrecision="19" iScale="8" columnName="dPurNum"/>
+				<attribute name="saleQuantity" title="销售发货数量" type="Decimal" iPrecision="19" iScale="8" columnName="dSaleQuantity"/>
+				<attribute name="saleNum" title="销售发货件数" type="Decimal" iPrecision="19" iScale="8" columnName="dSaleNum"/>
+				<attribute name="inQuantity" title="待入数量" type="Decimal" iPrecision="19" iScale="8" columnName="dInQuantity"/>
+				<attribute name="inNum" title="待入件数" type="Decimal" iPrecision="19" iScale="8" columnName="dInNum"/>
+				<attribute name="outQuantity" title="待出数量" type="Decimal" iPrecision="19" iScale="8" columnName="dOutQuantity"/>
+				<attribute name="outNum" title="待出件数" type="Decimal" iPrecision="19" iScale="8" columnName="dOutNum"/>
+				<attribute name="saleReturnQuantity" title="销售退货数量" type="Decimal" iPrecision="19" iScale="8" columnName="dSaleReturnQuantity"/>
+				<attribute name="saleReturnNum" title="销售退货件数" type="Decimal" iPrecision="19" iScale="8" columnName="dSaleReturnNum"/>
+				<attribute name="purReturnQuantity" title="采购退货数量" type="Decimal" iPrecision="19" iScale="8" columnName="dPurReturnQuantity"/>
+				<attribute name="purReturnNum" title="采购退货件数" type="Decimal" iPrecision="19" iScale="8" columnName="dPurReturnNum"/>
+				<attribute name="transInQuantity" title="调拨在途数量" type="Decimal" iPrecision="19" iScale="8" columnName="dTransInQuantity"/>
+				<attribute name="transInNum" title="调拨在途件数" type="Decimal" iPrecision="19" iScale="8" columnName="dTransInNum"/>
+				<attribute name="retailOrderQuantity" title="零售开单数量" type="Decimal" iPrecision="19" iScale="8" columnName="dRetailOrderQuantity"/>
+				<attribute name="retailOrderNum" title="零售开单件数" type="Decimal" iPrecision="19" iScale="8" columnName="dRetailOrderNum"/>			
+				<attribute name="guid" title="当前更新记录标记" type="String" iLength="30" columnName="guid"/>
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.FreeItem" client="CurrentStock"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="CurrentStock" />
+		</generalizations>
+	</component>
+</components>

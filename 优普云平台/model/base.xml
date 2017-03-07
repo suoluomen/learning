@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+	</references>
+	<!--biz itf component-->
+	<component name="itf" moduleName="base" title="公用接口组件">
+		<interface name="ITree" title="树型结构">
+			<attributes>
+				<attribute name="parent" columnName="parent_id" title="上级分类" type="Long" />
+				<attribute name="level" columnName="level" title="层级" type="Integer" />
+				<attribute name="path" columnName="path" title="路径" type="String" iLength="255" />
+				<attribute name="sort" columnName="sort_num" title="排序号" type="Integer" />
+               <attribute name="isEnd" title="是否末级" type="Boolean" />
+			</attributes>
+		</interface>
+		<interface name="IAuditInfo" title="审计信息">
+			<attributes>
+				<attribute name="createTime" columnName="create_time" title="创建时间" type="DateTime" />
+				<attribute name="createDate" columnName="create_date" title="创建日期" type="Date" />
+				<attribute name="modifyTime" columnName="modify_time" title="修改时间" type="DateTime" />
+				<attribute name="modifyDate" columnName="modify_date" title="修改日期" type="Date" />
+				<attribute name="creator" title="创建人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="modifier" title="修改人" type="String" isGlobalization="true" iLength="20" />
+			</attributes>
+		</interface>
+		
+		<interface name="IApprovalInfo" title="审批信息">
+			<attributes>
+				<attribute name="auditor" title="审批人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="auditTime" columnName="audit_time" title="审批时间" type="DateTime" />
+				<attribute name="auditDate" columnName="audit_date" title="审批日期" type="Date" />
+			</attributes>
+		</interface>
+		<interface name="IApprovalFlow" title="审批流信息">
+			<attributes>
+				<attribute name="isWfControlled" title="是否审批流控制" type="Boolean" />
+				<attribute name="verifystate" title="审批状态" type="Short" />
+				<attribute name="returncount" title="退回次数" type="Short" />
+			</attributes>
+		</interface>
+		<interface name="IClosing" title="关闭信息">
+			<attributes>
+				<attribute name="closer" columnName="closer" title="关闭人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="closeTime" columnName="close_time" title="关闭时间" type="DateTime" />
+				<attribute name="closeDate" columnName="close_Date" title="关闭日期" type="Date" /> 
+			</attributes>
+		</interface>
+		<interface name="ILock" title="锁定信息">
+			<attributes>
+				<attribute name="locker" columnName="locker" title="锁定人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="lockTime" columnName="lock_time" title="锁定时间" type="DateTime" />
+			</attributes>
+		</interface>
+		<interface name="IChange" title="变更信息">
+			<attributes>
+				<attribute name="changer" columnName="changer" title="变更人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="changeTime" columnName="change_time" title="变更时间" type="DateTime" />
+				<attribute name="changeAuditor" columnName="changeAuditor" title="变更审核人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="changeAuditTime" columnName="changeAudit_time" title="变更审核时间" type="DateTime" />
+				<attribute name="changeAuditDate" columnName="changeAuditDate" title="变更审核日期" type="Date" />
+			</attributes>
+		</interface>
+		<interface name="ILineClosing" title="行关闭信息">
+			<attributes>
+				<attribute name="linecloser" columnName="linecloser" title="行关闭人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="linecloseTime" columnName="lineclose_time" title="行关闭时间" type="DateTime" />
+			</attributes>
+		</interface>
+		<interface name="IStopping" title="停用信息">
+			<attributes>
+				<attribute name="stoptime" columnName="stop_time" title="停用时间" type="DateTime" />
+			</attributes>
+		</interface>
+		<interface name="IInvalid" title="作废信息">
+			<attributes>
+				<attribute name="invalidor" columnName="invalidor" title="作废人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="invalidTime" columnName="invalid_time" title="作废时间" type="DateTime" />
+				<attribute name="invalidReason" columnName="invalid_reason" title="作废原因" type="String" isGlobalization="true" iLength="100" />
+			</attributes>
+		</interface>
+		<interface name="IAccounting" title="记账信息">
+			<attributes>
+				<attribute name="accounter" title="记账人" type="String" isGlobalization="true" iLength="20" />
+				<attribute name="accountTime" columnName="account_time" title="记账时间" type="DateTime" />
+				<attribute name="accountDate" columnName="account_date" title="记账日期" type="Date" />
+			</attributes>
+		</interface>
+		<interface name="FreeItem" title="自由项">
+			<attributes>
+				<attribute name="free1" title="自由项1" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free2" title="自由项2" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free3" title="自由项3" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free4" title="自由项4" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free5" title="自由项5" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free6" title="自由项6" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free7" title="自由项7" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free8" title="自由项8" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free9" title="自由项9" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="free10" title="自由项10" type="String" isGlobalization="true" iLength="255"/>
+			</attributes>
+		</interface>
+		<interface name="CustomItem" title="自定义项">
+			<attributes>
+				<attribute name="define1" title="自定义项1" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define2" title="自定义项2" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define3" title="自定义项3" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define4" title="自定义项4" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define5" title="自定义项5" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define6" title="自定义项6" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define7" title="自定义项7" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define8" title="自定义项8" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define9" title="自定义项9" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define10" title="自定义项10" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define11" title="自定义项11" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define12" title="自定义项12" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define13" title="自定义项13" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define14" title="自定义项14" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define15" title="自定义项15" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define16" title="自定义项16" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define17" title="自定义项17" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define18" title="自定义项18" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define19" title="自定义项19" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define20" title="自定义项20" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define21" title="自定义项21" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define22" title="自定义项22" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define23" title="自定义项23" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define24" title="自定义项24" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define25" title="自定义项25" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define26" title="自定义项26" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define27" title="自定义项27" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define28" title="自定义项28" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define29" title="自定义项29" type="String" isGlobalization="true" iLength="255"/>
+				<attribute name="define30" title="自定义项30" type="String" isGlobalization="true" iLength="255"/>
+			</attributes>
+		</interface>
+	</component>
+	<component name="entity" moduleName="base" title="公用实体组件">
+		<class name="BizObject" title="基类">
+			<attributes>
+				<attribute name="id" title="ID" type="Long" isKey="true" />
+				<attribute name="pubts" columnName="pubts" title="时间戳" type="DateTime" isSyncKey="true" />
+			</attributes>
+		</class>
+	</component>
+	<component name="enum" moduleName="base" title="枚举组件">
+		<class name="Enum" title="枚举" tableName="aa_enum">
+			<attributes>
+				<attribute name="id" title="id" type="Long" isUnique="true" />
+				<attribute name="enumtype" title="枚举类型" type="String" iLength="50"/>
+				<attribute name="enumcode" title="枚举编码" type="String" iLength="50"/>
+				<attribute name="localid" title="语言" type="String" iLength="32"/>
+				<attribute name="enumname" title="枚举名称" type="String" iLength="100"/>
+				<attribute name="subid" title="所属应用" type="String" iLength="30"/>
+				<attribute name="ideleted" title="删除标记" type="Integer" />
+				<attribute name="enumindex" title="顺序" type="Integer"/>
+				<attribute name="pubts" title="时间戳" type="DateTime" isSyncKey="true" />
+			</attributes>
+		</class>
+	</component>
+	<component name="user" moduleName="base" title="用户组件">
+		<enum name="Sex" title="性别">
+			<item name="Male" title="男" value="1"/>
+			<item name="Female" title="女" value="2"/>
+			<item name="Secret" title="保密" value="3"/>
+		</enum>
+		<class name="User" title="用户" tableName="user_user">
+			<attributes>
+				<attribute name="phone" title="手机号" type="String" iLength="11" validate="Phone" isUnique="true" defaultValue="13601242418" note="登录账号，唯一" />
+				<attribute name="pass" columnName="pwd" title="密码" type="String" iLength="32" note="32位MD5加密"/>
+				<attribute name="isEnabled" columnName="is_enabled" title="是否启用" type="Boolean" note="仅影响是否能登录，1真0假，全系统统一约定"/>
+				<attribute name="nickName" columnName="nick_name" title="昵称" type="String" isGlobalization="true" iLength="20"/>
+				<attribute name="sex" columnName="sex" title="性别" type="Sex" />
+				<attribute name="headImgUrl" columnName="image_src" title="头像" type="String" iLength="255"/>
+				<attribute name="point" title="当前积分" type="Integer"/>
+				<attribute name="balance" title="钱包余额" type="Decimal" iPrecision="12" iScale="2"/>
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="User" />
+		</generalizations>
+	</component>
+	<component name="org" moduleName="base" title="组织机构组件">
+		<class name="Organization" title="组织机构" tableName="pb_organization">
+			<attributes>
+				<attribute name="code" title="编码" type="String" iLength="50" isUnique="true" isCode="true" />
+				<attribute name="name" columnName="name" title="名称" type="String" iLength="200"/>
+			</attributes>
+		</class>
+		<class name="Ability" title="职能" tableName="pb_org_ability">
+			<attributes>
+				<attribute name="code" title="编码" type="String" iLength="50" isUnique="true" isCode="true" />
+				<attribute name="name" columnName="name" title="名称" type="String" iLength="50"/>
+			</attributes>
+		</class>
+		<class name="OrgAbility" title="组织职能" tableName="pb_org_ability_config">
+			<attributes>
+				<attribute name="org" title="组织" type="Organization"  />
+				<attribute name="ability" title="职能" type="Ability" />
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization parent="base.entity.BizObject" child="Organization" />
+			<generalization parent="base.entity.BizObject" child="Ability" />
+			<generalization parent="base.entity.BizObject" child="OrgAbility" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="org" typeB="Organization" roleA="abilities" typeA="OrgAbility"/>
+		</associations>	
+	</component>
+	<!--queryschema component-->
+	<component name="qs" moduleName="base" title="查询方案组件">
+		<!--查询方案-->
+		<class name="QuerySchema" title="查询方案" id="BS201">
+		</class>
+		<class name="QueryCondition" title="查询条件" id="BS202">
+			<attributes>
+				<attribute name="name" title="名称" type="String" />
+				<attribute name="entity" title="实体" type="String" />
+				<attribute name="value1" title="值1" type="String" />
+				<attribute name="value2" title="值2" type="String" />
+				<attribute name="type" title="类型" type="String" />
+				<attribute name="op" title="操作符" type="String" note="eq,neq,gt,egt,lt,elt,between,like,in,nin,is_null,is_not_null" />
+				<attribute name="group" title="分组" type="Integer" />
+			</attributes>
+		</class>
+		<class name="QueryField" title="查询方案" id="BS203">
+			<attributes>
+				<attribute name="name" title="名称" type="String" />
+				<attribute name="alias" title="别名" type="String" />
+				<attribute name="entity" title="实体" type="String" />
+				<attribute name="format" title="格式化" type="String" />
+			</attributes>
+		</class>
+		<class name="QueryOrder" title="查询方案" id="BS204">
+			<attributes>
+				<attribute name="name" title="名称" type="String" />
+				<attribute name="entity" title="实体" type="String" />
+				<attribute name="order" title="排序(asc/desc)" type="String" />
+			</attributes>
+		</class>
+		<class name="QueryPager" title="分页信息" id="BS205">
+			<attributes>
+				<attribute name="pageIndex" title="页码" type="Integer" />
+				<attribute name="pageSize" title="每页条数" type="Integer" />
+				<attribute name="totalPage" title="总页码" type="Integer" />
+				<attribute name="totalCount" title="总条数" type="Integer" />
+			</attributes>
+		</class>
+		<associations>
+			<association type="composition" roleB="schema" typeB="QuerySchema" roleA="conditions" typeA="QueryCondition"/>
+			<association type="composition" roleB="schema" typeB="QuerySchema" roleA="fields" typeA="QueryField"/>
+			<association type="composition" roleB="schema" typeB="QuerySchema" roleA="orders" typeA="QueryOrder"/>
+			<association type="composition" roleB="schema" typeB="QuerySchema" roleA="pager" typeA="QueryPager" roleAMulti="1" />
+		</associations>
+	</component>
+</components>

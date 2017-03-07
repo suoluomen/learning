@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="scm.base.xml"/>
+	</references>
+
+	<component name="order" moduleName="pu" title="采购订单组件">
+		<class name="Order" title="采购订单" tableName="pu_order">
+			<attributes>
+				<attribute name="bustype" title="业务类型" type="String" iLength="20"/>
+				<attribute name="purchasingType" title="采购类型id" type="aa.purchase.PurchasingType" columnName="purchasingType_id"/>
+				<attribute name="department" title="采购部门id" type="aa.dept.Department" columnName="dept_id"/>
+				<attribute name="person" title="采购业务员id" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="vendor" title="供应商id" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<attribute name="vendorContact" title="供应商联系人" type="String" iLength="64"/>
+				<attribute name="paymentvendor" title="付款供应商id" type="aa.vendor.Vendor" columnName="paymentvendor_id"/>
+				<attribute name="payment" title="付款条件id" type="aa.pay.Payment" columnName="payment_id"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+			</attributes>
+		</class>
+		
+		<class name="OrderDetail" title="采购订单明细" tableName="pu_order_details">   
+			<attributes>
+				<attribute name="belongOrder" columnName="order_id" title="所属订单" type="Order" />
+				<attribute name="invvendor" title="料品供应商对照id" type="aa.relation.VendorAndInventory" columnName="invvendor_id"/>
+				<attribute name="isgift" title="赠品" type="Boolean"/>
+				<attribute name="arriveDate" title="计划到货日期" type="Date"/>  
+
+				<attribute name="goodsDescription" title="商品描述" type="String" iLength="100"/>
+				<attribute name="item" title="项目" type="aa.item.Item" columnName="item_id" />
+				<attribute name="receive" title="收货地址id" type="Long" columnName="receive_id"/>
+				<attribute name="receivecontact" title="收货联系人id" type="Long" columnName="receivecontact_id"/>
+				<attribute name="attachment" title="附件" type="String" iLength="255"/>
+				<attribute name="arrivaluplimit" title="到货上限" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="arrivaldownlimit" title="到货下限" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="arrqty" title="累计收货数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="arrnum" title="累计收货件数" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="retquantity" title="累计退货数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="retnum" title="累计退货件数" type="Decimal" iPrecision="12" iScale="2"/>
+				
+				<attribute name="refuseqty" title="累计拒收数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="refusenum" title="累计拒收件数" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="receivedqty" title="累计入库数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="receivednum" title="累计入库件数" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="retoutqty" title="累计退货出库数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="retoutnum" title="累计退货出库件数" type="Decimal" iPrecision="12" iScale="2"/>
+				
+				<attribute name="payqty" title="累计应付数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="paymoney" title="累计应付金额" type="Decimal" iPrecision="12" iScale="2"/>
+				
+				<attribute name="oripaymoney" title="累计原币付款金额" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="natpaymoney" title="累计本币付款金额" type="Decimal" iPrecision="12" iScale="2"/>
+				
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="needOrg" title="需求组织id" type="base.org.Organization" columnName="needOrg_id" />
+				<attribute name="receiptOrg" title="收货组织id" type="base.org.Organization" columnName="receiptOrg_id" />
+			</attributes>
+		</class>
+		<class name="OrderCustomItem" title="采购订单自定义项" tableName="pu_order_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="Order" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="OrderDetailCustomItem" title="采购订单明细自定义项" tableName="pu_order_details_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="OrderDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="Order"/>
+			<realization supplier="base.itf.CustomItem" client="OrderCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="OrderDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="Order" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="OrderDetail" />	
+			
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongOrder" typeB="Order" roleA="orderDetails" typeA="OrderDetail"/>
+			<association type="composition" roleB="id" typeB="Order" roleA="headItem" typeA="OrderCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="OrderDetail" roleA="bodyItem" typeA="OrderDetailCustomItem" roleAMulti="1" />
+			
+		</associations>
+	</component>
+		
+	<!-- 采购收获单组件 Start -->
+	<component name="arrival" moduleName="pu" title="采购收货单组件">
+		<class name="Arrival" title="采购收货单" tableName="pu_arrival">
+			<attributes>
+				<!-- 基本信息 -->
+				<attribute name="bustype" title="业务类型" type="String" iLength="8"/>
+				<attribute name="purchaseType" title="采购类型id" type="aa.purchase.PurchasingType" columnName="purchaseType_id"/>
+				<attribute name="purchaseOrg" title="采购组织id" type="base.org.Organization" columnName="purchaseOrg_id"/>
+				<attribute name="financeOrg" title="财务组织id" type="base.org.Organization" columnName="financeOrg_id"/>
+				<attribute name="receiptOrg" title="收货组织id" type="base.org.Organization" columnName="receiptOrg_id"/>
+				<attribute name="purchaseDept" title="采购部门id" type="aa.dept.Department" columnName="purchaseDept_id"/>
+				<attribute name="purchasePerson" title="采购业务员id" type="aa.person.Person" columnName="purchasePerson_id"/>
+				<attribute name="vendor" title="供应商id" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<attribute name="vendorContact" title="供应商联系人" type="String" iLength="64"/>
+				<attribute name="receiveAddress" title="收货地址id" type="Long"  columnName="receiveAddress_id"/>
+				<attribute name="receiveContact" title="收货联系人id" type="Long" columnName="receiveContact_id"/>
+				<attribute name="paymentVendor" title="付款供应商id" type="aa.vendor.Vendor" columnName="paymentVendor_id"/>
+				<!-- 财务信息 -->
+				<attribute name="payment" title="付款条件id" type="aa.pay.Payment" columnName="payment_id"/>
+				<!-- 其他信息 -->
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				
+				<!-- 单据标识：用于区分单据类型；1-收货单，2-拒收单，3-退货单； -->
+				<attribute name="billType" title="单据标识" type="Integer" />
+			</attributes>
+		</class>
+		<class name="ArrivalDetail" title="采购收货单明细" tableName="pu_arrival_detail">
+			<attributes>
+				<!-- 基本信息 -->
+				<attribute name="needOrg" title="需求组织id" type="base.org.Organization" columnName="needOrg_id" />
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>
+				<attribute name="goodsDescription" title="商品描述" type="String" iLength="255"/>
+				<attribute name="invvendor" title="供应商料品对照id" type="aa.relation.VendorAndInventory" columnName="invvendor_id"/>
+				<attribute name="gift" title="赠品" type="Boolean"/>
+				<attribute name="batchnum" title="批号" type="String" iLength="255"/>
+				<attribute name="warehouse" title="仓库" type="aa.wh.Warehouse" columnName="warehouse_id"/>
+				<!-- 数量单位信息 -->
+				<attribute name="realqty" title="实收数量" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="refuseqty" title="拒收数量" type="Decimal" iPrecision="12" iScale="6"/>
+				<!-- 其他业务信息 -->
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="orderCode" title="订单号" type="String" iLength="20" isCode="true" />
+				<attribute name="item" title="项目" type="aa.item.Item" columnName="item_id"/>
+				<attribute name="attachment" title="附件" type="String" iLength="255"/>
+				<!-- 执行信息 -->
+				<attribute name="receivedQty" title="累计入库数量" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="receivedNum" title="累计入库件数" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="sumrefuseqty" title="累计拒收数量" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="sumrefusenum" title="累计拒收件数" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="retqty" title="累计退货申请数量" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="retnum" title="累计退货申请件数" type="Decimal" iPrecision="12" iScale="6"/>
+
+			<!--
+				<attribute name="oriInvMoney" title="累计原币发票金额" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="arrNum" title="到货辅计量数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="voucherStatus" title="单据状态" type="String" iLength="8"/>
+				<attribute name="arrivalDate" title="收货日期" type="Date" columnName="arrival_date"/>
+				<attribute name="itemClass" title="项目大类" type="aa.item.ItemClass" columnName="itemClass_id" />
+				<attribute name="belongarrival" title="所属到货" type="Arrival" columnName="main_id"/>
+				<attribute name="rettype" title="退货类型" type="String" iLength="8"/>
+				<attribute name="realnum" title="实收件数" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="refusenum" title="拒收件数" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="unreceivedQty" title="未入库数量" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="unreceivedNum" title="未入库辅件数" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="receivedtime" title="最近一次入库时间" type="DateTime"/>
+				<attribute name="replenishmentqty" title="累计补货件数" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="replenishmentnum" title="累计补货件数" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="invMPCost" title="最高进价" type="Decimal" iPrecision="12" iScale="6"/>
+				<attribute name="isgsp" title="是否质检" type="Boolean"/>			
+				<attribute name="receiptOrg" title="收货组织id" type="base.org.Organization" columnName="receiptOrg_id"/>
+			-->
+			</attributes>
+		</class>
+		<class name="ArrivalCustomItem" title="采购收货单自定义项" tableName="pu_arrival_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="采购收货单id" type="Arrival" isKey="true" />
+		    </attributes>
+		</class>
+		<class name="ArrivalDetailCustomItem" title="采购收货单明细自定义项" tableName="pu_arrival_detail_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="采购收货单明细id" type="ArrivalDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="ArrivalCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="ArrivalDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="Arrival" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="ArrivalDetail" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongarrival" typeB="Arrival" roleA="arrivalDetails" typeA="ArrivalDetail"/>	
+			<association type="composition" roleB="id" typeB="Arrival" roleA="headItem" typeA="ArrivalCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="ArrivalDetail" roleA="bodyItem" typeA="ArrivalDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+
+	
+	<component name="in" moduleName="pu" title="采购入库单组件">
+		<class name="In" title="采购入库单" tableName="pu_in">
+			<attributes>
+				<attribute name="bustype" title="业务类型" type="String" iLength="20"/>
+				<attribute name="purchasingType" title="采购类型id" type="aa.purchase.PurchasingType" columnName="purchasingType_id"/>
+				<attribute name="purchaseOrg" title="采购组织id" type="base.org.Organization" columnName="purchaseOrg_id"/>
+				<attribute name="receiptOrg" title="收货组织id" type="base.org.Organization" columnName="receiptOrg_id"/>
+				<attribute name="financeOrg" title="财务组织id" type="base.org.Organization" columnName="financeOrg_id"/>
+				<attribute name="department" title="采购部门id" type="aa.dept.Department" columnName="dept_id"/>
+				<attribute name="person" title="采购业务员id" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="vendor" title="供应商id" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<attribute name="vendorContact" title="供应商联系人" type="String" iLength="64"/>
+				<attribute name="paymentvendor" title="付款供应商id" type="aa.vendor.Vendor" columnName="paymentvendor_id"/>
+				<attribute name="transceiverType" title="出入库类型id" type="aa.transceiverType.TransceiverType" columnName="transceiverType_id"/>
+				<attribute name="payment" title="付款条件id" type="aa.pay.Payment" columnName="payment_id"/>
+				
+				<attribute name="priceChaPerson" title="价格调整人" type="aa.person.Person" columnName="priceChaPerson_id"/> 
+				<attribute name="pricechaTime" title="价格调整时间"  type="DateTime" /> 
+				
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="iabegin" title="期初标识" type="Boolean" />
+				<attribute name="isred" title="红蓝标识" type="Boolean" />
+			</attributes>
+		</class>
+		
+		<class name="InDetail" title="采购入库单明细" tableName="pu_in_details">
+			<attributes>
+				<attribute name="belongIn" columnName="in_id" title="所属入库" type="In" />
+				<attribute name="warehouse" title="仓库id" type="aa.wh.Warehouse" columnName="warehouse_id"/>
+				<attribute name="goodsDescription" title="商品描述" type="String" iLength="100"/>
+				<attribute name="invvendor" title="料品供应商对照id" type="aa.relation.VendorAndInventory" columnName="invvendor_id"/>
+				<attribute name="isgift" title="赠品" type="Boolean"/>
+				<attribute name="guessPrice" title="暂估单价" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="guessMoney" title="暂估金额" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="storeKeeper" title="库管员id" type="aa.person.Person" columnName="storeKeeper_id"/>
+				<attribute name="batchNum" title="批号" type="String" iLength="200"/>
+				<attribute name="bookKeeper" title="记账人" type="String" iLength="100"/>
+				<attribute name="item" title="项目id" type="aa.item.Item" columnName="item_id" />
+				<attribute name="attachment" title="附件" type="String" iLength="255"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="payqty" title="累计应付数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="paynum" title="累计应付件数" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="paymoney" title="累计应付金额" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="balanceqty" title="累计结算数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="balancemoney" title="累计结算金额" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="orderpayqty" title="订单累计应付数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="orderpaymoney" title="订单累计应付金额" type="Decimal" iPrecision="12" iScale="2"/>
+			</attributes>
+		</class>
+		<class name="InCustomItem" title="采购入库单自定义项" tableName="pu_in_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="入库单id" type="In" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="InDetailCustomItem" title="采购入库单明细自定义项" tableName="pu_in_details_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="入库单id" type="InDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="In"/>
+			<realization supplier="base.itf.CustomItem" client="InCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="InDetailCustomItem" />
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="In" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="InDetail" />	
+			
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongIn" typeB="In" roleA="inDetails" typeA="InDetail"/>
+			<association type="composition" roleB="id" typeB="In" roleA="headItem" typeA="InCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="InDetail" roleA="bodyItem" typeA="InDetailCustomItem" roleAMulti="1" />
+			
+		</associations>
+	</component>
+</components>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="ar.xml"/>
+	</references>
+	<component name="receipt" moduleName="ar" title="收款单组件">
+		<class name="Receipt" title="收款单" tableName="ar_receipt">
+			<attributes>
+			<!--
+				<attribute name="bustype" title="业务类型" type="String" iLength="20"/>
+				<attribute name="apsource" title="来源单据"  type="String" iLength="20"/>
+				<attribute name="apdocumentstatus" title="单据状态"  type="String" iLength="20"/>
+				<attribute name="purchasingType" title="采购类型" type="aa.purchase.PurchasingType" columnName="purchasingType_id"/>
+				<attribute name="department" title="部门" type="aa.dept.Department" columnName="dept_id"/>
+				<attribute name="person" title="业务员" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="vendor" title="供应商" type="aa.vendor.Vendor" columnName="vendor_id"/>
+				<attribute name="paymentvendor" title="付款供应商id" type="aa.vendor.Vendor" columnName="paymentvendor_id"/>
+				<attribute name="currency" title="币种" type="aa.currency.Currency" columnName="currency_id"/>
+				<attribute name="payment" title="付款条件" type="aa.pay.Payment" columnName="payment_id" iPrecision="12" iScale="2"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/> 
+				<attribute name="originBizOrg" title="来源业务组织" type="base.org.Organization" />
+				<attribute name="businessorganization" title="业务组织" type="String" iLength="255"/>
+				<attribute name="billtmnumber" title="票据号" type="String" iLength="255"/>
+				<attribute name="paymentbank" title="付款银行" type="aa.vendor.VendorDeposit" />
+				<attribute name="paymentaccount" title="付款账号" type="aa.vendor.VendorDeposit" />
+				<attribute name="accountingperiod" title="记账期间" type="String" iLength="255"/>
+				<attribute name="payer" title="支付人" type="String" iLength="255"/>
+				<attribute name="Paymentdate" title="支付日期" type="String" iLength="255"/>
+				<attribute name="paymenttime" title="支付时间" type="String" iLength="255"/>
+				-->
+			</attributes>
+		</class>
+		
+		<class name="ReceiptDetail" title="收款单明细" tableName="ar_receipt_details">
+			<attributes>
+			<!-- 
+				<attribute name="belongReceipt" title="所属收款单" type="Receipt" columnName="receipt_id"/>
+				<attribute name="isgift" title="赠品" type="Boolean"/>
+				<attribute name="baseQtyNum" title="基本计量数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="attachment" title="附件" type="String" iLength="255"/>
+				<attribute name="batchnum" title="批号" type="String" iLength="30"/>
+				<attribute name="expenseDate" title="结算日期" type="DateTime"/>
+				<attribute name="totalNum" title="累计结算数量" type="Decimal" iPrecision="12" iScale="2"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="paymentslip" title="对应付款单" type="String" iLength="30"/>
+				<attribute name="businessorganization" title="业务组织" type="String" iLength="30"/>
+				<attribute name="originBizOrg" title="来源业务组织" type="base.org.Organization" />
+				<attribute name="cluenumber" title="来源单据线索号" type="String" iLength="30"/>
+				<attribute name="apPaymentType" title="款项类型"  type="String" iLength="20"/>
+				 -->
+			</attributes>
+		</class>
+		
+		<class name="ReceiptCustomItem" title="收款单自定义项" tableName="ar_receipt_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="收款单id" type="Receipt" isKey="true" />
+		   </attributes>
+		</class>
+		
+		<class name="ReceiptDetailCustomItem" title="收款单明细自定义项" tableName="ar_receiptDetail_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="收款单明细id" type="ReceiptDetail" isKey="true" />
+		   </attributes>
+		</class>	
+		<realizations>
+			<realization supplier="base.itf.CustomItem" client="ReceiptCustomItem" />
+			<realization supplier="base.itf.CustomItem" client="ReceiptDetailCustomItem" />
+			
+		    <realization supplier="voucher.base.IVouchOrg" client="Receipt" />
+			<!--note="引入应收单客户信息"-->
+			<realization supplier="ar.itf.IARCustomer" client="Receipt" />
+			<!--note="引入应收单部门、业务员"-->
+			<realization supplier="ar.itf.IARInventoryLine" client="ReceiptDetail"  />
+			<!--note="引入应收单项目"-->
+			<realization supplier="ar.itf.IARItemLine" client="ReceiptDetail" />
+		</realizations>
+		
+		<generalizations>
+			<generalization parent="ar.abs.ARVouch" child="Receipt" />
+			<generalization parent="ar.abs.ARVouchLine" child="ReceiptDetail" />
+		</generalizations>
+		
+		<associations>
+			<association type="composition" roleB="belongReceipt" typeB="Receipt" roleA="receiptDetails" typeA="ReceiptDetail"/>	
+			<association type="composition" roleB="id" typeB="Receipt" roleA="headItem" typeA="ReceiptCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="ReceiptDetail" roleA="bodyItem" typeA="ReceiptDetailCustomItem" roleAMulti="1" />
+		</associations>
+	</component>
+	
+</components>

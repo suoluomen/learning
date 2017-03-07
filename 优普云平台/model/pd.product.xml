@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="archive.base.xml"/>
+	</references>
+	<component name="product" moduleName="pd" title="商品档案组件">
+      <!--<class name="Producttype" title="商品类型" tableName="aa_product_type">
+      </class>
+      <class name="Brand" title="品牌" tableName="aa_brand">
+      </class>-->
+      <class name="Paidclasses" title="存货对应辅助分类值" tableName="aa_product_aidclasses">
+          <attributes>
+            <attribute name="id"  title="id" type="Long" isKey="true" />
+            <attribute name="product" columnName="product_id" title="存货" type="Product"  />
+            <attribute name="invAidClassSet" columnName="invaidclassset_id"  title="辅助分类" type="aa.inv.InvAidClassSet"  />
+            <attribute name="inventoryAidClass" columnName="inventoryaidclass_id" title="存货辅助分类值" type="aa.inv.InventoryAidClass"  />
+            <attribute name="isB2C" title="B2C商城" type="Boolean" />     
+            <attribute name="isB2B" title="B2B" type="Boolean" />
+          </attributes>
+      </class>
+      <class name="Product" title="商品档案" tableName="aa_product">
+          <attributes>
+             <!--<attribute name="code" title="商品编码" type="String" iLength="255" isUnique="true" isCode="true" />
+            <attribute name="name" title="商品名称" type="String" isGlobalization="true" iLength="255" isUnique="true" isName="true" />-->
+            <attribute name="inventory" title="料品id" columnName="inventory_id" type="aa.inv.Inventory" />
+            <!--<attribute name="producttype" title="商品类型id" columnName="producttype_id" type="Producttype"  note="lefttree"/>-->
+            <attribute name="productClass" title="商品分类id" columnName="productclass_id" type="aa.inv.InventoryClass"  note="lefttree"/>
+            <attribute name="helpCode" title="助记码"  type="String" iLength="120" />
+            <attribute name="barCode" title="条形码"  type="String" iLength="120" />  
+            <attribute name="uom" columnName="uom_id" title="计量单位"  type="aa.uom.UOM"/>
+            <attribute name="itemProperty" title="料品形态属性"  type="String" iLength="20" />
+            <attribute name="onsaleproperty" title="销售属性" type="String" iLength="20"/>
+            <attribute name="markprice" title="市场价格"  type="Decimal" iScale="2" iPrecision="19"  />
+            <attribute name="saleprice" title="销售价格"  type="Decimal" iScale="2" iPrecision="19"  />
+            <attribute name="iorder" title="排序" type="Integer" />
+            <attribute name="strengths" title="卖点"  type="String" iLength="255" />
+            <!--<attribute name="brand" title="品牌"  columnName="brand_id" type="Brand" />-->
+            <attribute name="B2Cstock" title="B2C存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Bstock" title="B2B存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Csaftstock" title="B2C安全存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Bsaftstock" title="B2B安全存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="sellcount" title="销量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="predeliverydate" title="预发货日期" type="DateTime"  />
+            <attribute name="B2Cshowprice" title="B2C是否显示价格"  type="Boolean" />
+            <attribute name="B2Cpriceinfo" title="B2C价格区域显示信息"  type="String" iLength="255" />
+            <attribute name="B2Bshowprice" title="B2B是否显示价格"  type="Boolean" />
+            <attribute name="B2Bpriceinfo" title="B2B价格区域显示信息"  type="String" iLength="255" />
+            <attribute name="sellpoint" title="销售积分" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="sellprice" title="市场销售价" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2BpricePC" title="B2B销售价格（PC）" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Bpricemobile" title="B2B销售价格（移动）" type="Decimal" iScale="2"  iPrecision="19" />
+            <attribute name="B2CpricePC" title="B2C销售价格（PC）" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Cpricemobile" title="B2C销售价格（移动）" type="Decimal" iScale="2"  iPrecision="19" />
+            <attribute name="sellercode" title="商家编码"  type="String" iLength="255" />
+            <attribute name="showPic" title="图片显示" type="Boolean" />
+            <attribute name="productdetailsPC" title="PC商品详情"  type="String" iLength="255" />
+            <attribute name="productdetailsMobile" title="移动商品详情"  type="String" iLength="255" />
+            <attribute name="SEOkeyword" title="SEO关键词"  type="String" iLength="255" />
+            <attribute name="SEOtitle" title="SEO页面标题"  type="String" iLength="255" />
+            <attribute name="keywords" title="商品关键词"  type="String" iLength="255" />
+            <attribute name="description" title="描述"  type="String" iLength="255" />             
+            <attribute name="weight" title="重量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="is_uprack" title="是否上架" type="Boolean" />
+            <attribute name="is_deleted" title="是否删除" type="Boolean" />                
+        </attributes>
+		</class>
+		<class name="Product_sku" title="商品信息表SKU" tableName="aa_product_sku">
+        <attributes>
+            <attribute name="product" title="商品id" columnName="product_id" type="Product" />
+            <attribute name="inventory" title="料品id" columnName="inventory_id" type="aa.inv.Inventory" />
+            <attribute name="is_deleted"  title="是否删除" type="Boolean"/>
+            <attribute name="skucode" title="SKU编码" type="String" iLength="255" isUnique="true" isCode="true" />
+            <attribute name="skubarcode" title="SKU条码" type="String" iLength="255" isUnique="true" isCode="true" />
+            <attribute name="freeitem" title="规格值" type="String" iLength="255" isUnique="true" isCode="true" />
+            <attribute name="picture" title="规格值图片" type="String" iLength="255" isUnique="true" isCode="true" />
+            <attribute name="is_B2Cshow"  title="是否B2C显示" type="Boolean"/>
+            <attribute name="is_B2Bshow"  title="是否B2B显示" type="Boolean"/>
+            <attribute name="B2Cstock" title="B2C存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Bstock" title="B2B存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Csafestock" title="B2C安全存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Bsaftstock" title="B2B安全存量" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="sellpoint" title="销售积分" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="marketprice" title="市场销售价" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2BpricePC" title="B2B销售价格（PC）" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Bpricemobile" title="B2B销售价格（移动）" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2CpricePC" title="B2C销售价格（PC）" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="B2Cpricemobile" title="B2C销售价格（移动）" type="Decimal" iScale="2" iPrecision="19" />
+            <attribute name="is_uprack"  title="是否上架" type="Boolean"/>
+            <attribute name="producturl" title="商品URL" type="String" iLength="255" isUnique="true" isCode="true" />
+            <attribute name="weight" title="重量" type="Decimal" iScale="2" iPrecision="19" />
+        </attributes>   
+		</class>
+		<class name="TagRel" title="标签关联" tableName="aa_tag_rel">
+			<attributes>
+				<attribute name="tag_id" title="标签ID" columnName="tag_id" type="pd.tag.Tag"/>
+				<attribute name="product" title="商品id" columnName="product_id" type="Product" />
+			</attributes>
+		</class>		
+    <generalizations>
+          <generalization parent="archive.base.OrgArchive" child="Product" />
+          <generalization parent="base.entity.BizObject" child="Product_sku" />
+          <generalization child="TagRel" parent="base.entity.BizObject"/>
+    </generalizations>
+    <realizations>
+          <realization supplier="base.itf.FreeItem" client="Product_sku" />
+    </realizations>
+        <associations>
+             <association type="composition" roleB="product" typeB="Product" roleA="product_sku" typeA="Product_sku" roleAMulti="0..n" />
+             <association type="composition" roleB="product" typeB="Product" roleA="paidclasses" typeA="Paidclasses" roleAMulti="0..n" />
+			 <association type="composition" roleB="product" typeB="Product" roleA="product_id" typeA="TagRel" roleAMulti="0..n" />
+        </associations>
+	</component>
+	<component name="tag" moduleName="pd" title="标签管理组件">
+		<class name="Tag" title="标签管理" tableName="aa_tag">
+			<attributes>
+				<attribute name="tag_mode" title="标签类型" type="String" iLength="50"/>
+				<attribute name="tag_abbr" title="标签备注" type="String" iLength="150"/>
+				<attribute name="tag_bgcolor" title="标签背景颜色" type="String" defaultValue="write" iLength="7"/>
+				<attribute name="tag_fgcolor" title="标签字体颜色" type="String" defaultValue="black" iLength="7"/>  
+				<attribute name="tag_filter" title="标签条件" type="String"  iLength="255"/>
+				<attribute name="rel_count" title="关联的个数" type="Integer" defaultValue="0"/>  
+				<attribute name="is_deleted" title="是否删除" type="Boolean"/>
+				</attributes>
+		</class>		
+		<generalizations>
+			<generalization child="Tag" parent="archive.base.Archive"/>
+		</generalizations>
+	</component>	
+	<component name="brand" moduleName="pd" title="品牌管理组件">
+		<class name="Brand" title="品牌管理" tableName="aa_brand">
+			<attributes>
+				<attribute name="brand_url" title="品牌网址" type="String" iLength="255"/>
+				<attribute name="brand_desc" title="品牌介绍" type="Text"  />
+				<attribute name="brand_logo" title="品牌图片标识" type="String" iLength="255"/>
+				<attribute name="brand_keywords" title="品牌别名" type="Text"  />
+				<attribute name="brand_setting" title="品牌模板" type="Text"  />
+				<attribute name="is_disabled" title="是否失效" type="Boolean" defaultValue="false" />
+				<attribute name="ordernumber" title="排序" type="Integer"/>  
+				<attribute name="is_deleted" title="是否删除" type="Boolean"/>
+				<attribute name="cfolder" title="图片目录" type="String" iLength="255"/>
+				<attribute name="cimgname" title="图片文件名" type="String" iLength="255"/>
+				<attribute name="coriginalname" title="图片原始文件名" type="String" iLength="255"/>
+				</attributes>
+		</class>
+		<class name="BrandRel" title="品牌关联" tableName="aa_type_brand">
+			<attributes>
+				<attribute name="type" title="商品类型ID" columnName="productType_id" type="aa.productType.ProductType"/>
+				<attribute name="brand" title="品牌id" columnName="brand_id" type="Brand" />
+				<attribute name="is_deleted"  title="是否删除" type="Boolean"/>
+			</attributes>
+		</class>
+		<generalizations>
+	  	<generalization child="Brand" parent="archive.base.Archive"/>
+			<generalization child="BrandRel" parent="base.entity.BizObject"/>
+		</generalizations>
+		 <associations>
+			 <association type="composition" roleB="brand" typeB="Brand" roleA="brandRels" typeA="BrandRel" roleAMulti="0..n" />
+        </associations>
+	</component>	
+</components>

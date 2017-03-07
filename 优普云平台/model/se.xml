@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="scm.base.xml"/>
+	</references>
+	<component name="order" moduleName="se" title="销售订单组件">
+		<class name="Order" title="销售订单" tableName="se_order">
+			<attributes>
+				<attribute name="bustype" title="业务类型" type="String" iLength="20"/>
+				<attribute name="saletype" title="销售类型id" type="aa.sale.SaleType" columnName="saletype_id"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="port" title="端口" type="String" iLength="20"/>
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id" />
+				<attribute name="cuscontact" title="客户联系人" type="String" iLength="64" />
+				<attribute name="cusofficephone" title="客户联系人固定电话" type="String"  iLength="20" />
+				<attribute name="cusmobile" title="客户联系人移动电话" type="String"  iLength="20" />
+				<attribute name="recaddr" title="收货单位" type="String" iLength="64" />
+				<attribute name="recaddrpcds" title="收货省市区街道" type="String" iLength="60" columnName="recaddrpcds_id"/>
+				<attribute name="recaddrprovince" title="收货省" type="String" iLength="60" columnName="recaddrprovince_id" />
+				<attribute name="recaddrcity" title="收货市" type="String" iLength="60" columnName="recaddrcity_id" />
+				<attribute name="recaddrdistrict" title="收货区" type="String" iLength="60" columnName="recaddrdistrict_id" />
+				<attribute name="recaddrstreet" title="收货街道" type="String" iLength="60" columnName="recaddrstreet_id" />
+				<attribute name="recaddrdetailed" title="收货详细地址" type="String" iLength="255" />
+				<attribute name="reccontact" title="收货联系人" type="String" iLength="64" />
+				<attribute name="recofficePhone" title="收货联系人固定电话" type="String"  iLength="20" />
+				<attribute name="recmobile" title="收货联系人移动电话" type="String"  iLength="20" />
+				<attribute name="billcustomer" title="开票客户id" type="aa.customer.Customer" columnName="billcustomer_id" />	
+				<attribute name="needbill" title="需要发票" type="Boolean" />	
+				<attribute name="billclass" title="发票种类" type="String" iLength="20"/>
+				<attribute name="billtype" title="发票类型" type="String" iLength="20"/>
+				<attribute name="billtitle" title="发票抬头" type="String" iLength="255"/>
+				<attribute name="billcontent" title="发票内容id" type="String" iLength="255" columnName="billcontent_id"/><!--组织档案携带-->
+				<attribute name="person" title="业务员id" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="department" title="销售部门id" type="aa.dept.Department" columnName="dept_id"/>
+				<attribute name="accountRule" title="立账规则id" columnName="accountRule_id" type="aa.arapaccountrule.ARAPAccountRule" />
+				<attribute name="paymentterm" title="付款条件id" columnName="payment_term_id" type="aa.pay.Payment" />
+				<attribute name="buyersremark" title="买家备注" type="String" iLength="255"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="oriamountmoney" title="累计原币收款金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+				<attribute name="natamountmoney" title="累计本币收款金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+				<attribute name="executionstatus" title="订单执行状态" type="String" iLength="20"/>
+				<attribute name="paymenttype" title="支付方式" type="String" iLength="20"/>
+				<attribute name="rebatepaymoney" title="返利账户余额付款金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+				<attribute name="rechargepaymoney" title="充值账户余额付款金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+				<attribute name="othpaymenttype" title="其他支付方式" type="String" iLength="20"/>
+				<attribute name="othpaymoney" title="其他支付方式支付金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+			</attributes>
+		</class>	
+		<class name="OrderDetail" title="销售订单明细" tableName="se_order_details">
+			<attributes>
+				<attribute name="belongOrder" columnName="order_id" title="所属订单" type="Order" />
+				<attribute name="product" title="商品id" type="Long" columnName="product_id"/>				
+				<attribute name="skuid" title="SkuID" type="Long"/>
+				<attribute name="cusinvid" title="客户料品对照ID" type="Long"/>
+				<attribute name="incomeexpenditure" title="项目ID" type="String" columnName="incomeexpenditure_id" iLength="255" />
+				<attribute name="quote" title="报价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="discountrate" title="折扣率" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="discountamount" title="折扣额" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="gift" title="赠品" type="Boolean" />
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="sendOrg" title="发货组织id" type="base.org.Organization" columnName="sendOrg_id" />
+				<attribute name="whouse" title="仓库id" columnName="whouse_id" type="aa.wh.Warehouse" />
+				<attribute name="hpreceivetime" title="希望到货日期" type="DateTime" />
+				<attribute name="plansendtime" title="计划发货日期" type="DateTime" />
+				<attribute name="uplimit" title="出库上限" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="lowlimit" title="出库下线" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="sendqty" title="累计发货数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="sendsubqty" title="累计发货销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="sendmoney" title="累计发货金额" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="outwhqty" title="累计出库数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="outwhsubqty" title="累计出库销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="outwhmoney" title="累计出库金额" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="receivablesqty" title="累计应收数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="receivablessubqty" title="累计应收销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="receivablesmoney" title="累计应收金额" type="Decimal" iPrecision="19" iScale="8" />		
+				<attribute name="purchasesqty" title="累计采购数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="purchasesubqty" title="累计采购销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="signqty" title="累计签收数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="signsubqty" title="累计签收销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="returnqty" title="累计退货数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="returnsubqty" title="累计退货销售单位数量" type="Decimal" iPrecision="19" iScale="8" />	
+				<attribute name="retinwhqty" title="累计退货入库数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="retinwhsubqty" title="累计退货入库销售单位数量" type="Decimal" iPrecision="19" iScale="8" />	
+				<attribute name="rebatepaymoney" title="返利账户余额付款金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+				<attribute name="rechargepaymoney" title="充值账户余额付款金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+				<attribute name="othpaymoney" title="其他支付方式支付金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>				
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+			</attributes>
+		</class>
+		<class name="OrderDetailPromotion" title="促销明细" tableName="se_order_details_pmt">
+			<attributes>
+				<attribute name="belongOrderDetail" columnName="orderdetail_id" title="所属订单行" type="OrderDetail" />
+				<attribute name="promotionactive" title="促销活动id" type="String" iLength="20" columnName="promotionactive_id"/>
+				<attribute name="promotionmode" title="促销方式id" type="String" iLength="20" columnName="promotionmode_id"/>
+			 </attributes>
+		</class>
+		<class name="OrderCustomItem" title="销售订单自定义项" tableName="se_order_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="Order" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="OrderDetailCustomItem" title="销售订单明细自定义项" tableName="se_order_details_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="OrderDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="Order"/>
+			<realization supplier="base.itf.CustomItem" client="OrderCustomItem"/>
+			<realization supplier="base.itf.CustomItem" client="OrderDetailCustomItem"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="Order" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="OrderDetail" />	
+			<generalization parent="base.entity.BizObject" child="OrderDetailPromotion" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongOrder" typeB="Order" roleA="orderdetails" typeA="OrderDetail"/>
+			<association type="composition" roleB="id" typeB="Order" roleA="headItem" typeA="OrderCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="OrderDetail" roleA="bodyItem" typeA="OrderDetailCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="belongOrderDetail" typeB="OrderDetail" roleA="orderdetailpromotions" typeA="OrderDetailPromotion" roleAMulti="0..n" />
+		</associations>
+		
+	</component>
+		
+		
+	<!-- 发货单 -->
+	<component name="delivery" moduleName="se" title="发货单组件">
+		<class name="Delivery" title="发货单" tableName="se_delivery">
+			<attributes>
+				<attribute name="bustype" title="业务类型" type="String" iLength="20"/>
+				<attribute name="saletype" title="销售类型id" type="aa.sale.SaleType" columnName="saletype_id"/>
+				<attribute name="isReturnOrSupple" title="退货补货" type="Boolean"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="deliveryOrg" title="发货组织" type="base.org.Organization"  columnName="deliveryOrg_id"/>
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id" />
+				<attribute name="cuscontact" title="客户联系人" type="String" iLength="64" />
+				<attribute name="cusofficephone" title="客户联系人固定电话" type="String"  iLength="20" />
+				<attribute name="cusmobile" title="客户联系人移动电话" type="String"  iLength="20" />
+				<attribute name="recaddr" title="收货单位" type="String" iLength="64" />
+				<attribute name="recaddrpcds" title="收货省市区街道" type="String" iLength="60" columnName="recaddrpcds_id"/>
+				<attribute name="recaddrprovince" title="收货省" type="String" iLength="60" columnName="recaddrprovince_id" />
+				<attribute name="recaddrcity" title="收货市" type="String" iLength="60" columnName="recaddrcity_id" />
+				<attribute name="recaddrdistrict" title="收货区" type="String" iLength="60" columnName="recaddrdistrict_id" />
+				<attribute name="recaddrstreet" title="收货街道" type="String" iLength="60" columnName="recaddrstreet_id" />
+				<attribute name="recaddrdetailed" title="收货详细地址" type="String" iLength="255" />
+				<attribute name="reccontact" title="收货联系人" type="String" iLength="64" />
+				<attribute name="recofficePhone" title="收货联系人固定电话" type="String"  iLength="20" />
+				<attribute name="recmobile" title="收货联系人移动电话" type="String"  iLength="20" />				
+				<attribute name="accountcustomer" title="立账客户id" type="aa.customer.Customer" columnName="accountcustomer_id" />					
+				<attribute name="needbill" title="需要发票" type="Boolean" />	
+				<attribute name="billclass" title="发票种类" type="String" iLength="20"/>
+				<attribute name="billtype" title="发票类型" type="String" iLength="20"/>				
+				<attribute name="billtitle" title="发票抬头" type="String" iLength="255" />				
+				<attribute name="billcontent" title="发票内容id" type="String" iLength="255" columnName="billcontent_id"/>				
+				<attribute name="person" title="业务员id" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="department" title="销售部门id" type="aa.dept.Department" columnName="dept_id"/>				
+				<attribute name="accountRule" title="立账规则id" columnName="accountRule_id" type="aa.arapaccountrule.ARAPAccountRule" />
+				<attribute name="paymentterm" title="付款条件id" columnName="payment_term_id" type="aa.pay.Payment" />		
+				<attribute name="buyersremark" title="买家备注" type="String" iLength="255"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>				
+				<attribute name="natamountmoney" title="累计本币收款金额" type="Decimal" iPrecision="19" iScale="8" defaultValue= "0"/>
+			</attributes>
+		</class>	
+		
+		<class name="DeliveryDetail" title="发货单明细" tableName="se_delivery_details">
+			<attributes>
+				<attribute name="belongDelivery" columnName="delivery_id" title="所属发货单" type="Delivery" />
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>	
+				<attribute name="product" title="商品id" type="Long" columnName="product_id"/>				
+				<attribute name="skuid" title="SkuID" type="Long"/>
+				<attribute name="cusinvid" title="客户料品对照ID" type="Long"/>
+				<attribute name="incomeexpenditure" title="项目ID" type="String" columnName="incomeexpenditure_id" iLength="255" />
+				<attribute name="whouse" title="仓库id" columnName="whouse_id" type="aa.wh.Warehouse" />
+				<attribute name="hpreceivetime" title="希望到货日期" type="DateTime" />
+				<attribute name="plansendtime" title="计划发货日期" type="DateTime" />				
+				<attribute name="priceMark" title="价格标识" type="String"  iLength="20"/>				
+				<attribute name="quote" title="报价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="discountrate" title="折扣率" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="discountamount" title="折扣额" type="Decimal" iPrecision="19" iScale="8" />								
+				<attribute name="gift" title="赠品" type="Boolean" />
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="uplimit" title="出库上限" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="lowlimit" title="出库下线" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="outwhqty" title="累计出库数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="outwhsubqty" title="累计出库销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="outwhmoney" title="累计出库金额" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="outType" title="出库状态" type="String"  iLength="20"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="attachment" title="附件" type="String" iLength="255"/>				
+
+			</attributes>
+		</class>
+		<class name="DeliveryDetailPromotion" title="促销明细" tableName="se_delivery_details_pmt">
+			<attributes>
+				<attribute name="belongDeliveryDetail" columnName="orderdetail_id" title="所属订单行" type="DeliveryDetail" />
+				<attribute name="promotionactive" title="促销活动id" type="String" iLength="20" columnName="promotionactive_id"/>
+				<attribute name="promotionmode" title="促销方式id" type="String" iLength="20" columnName="promotionmode_id"/>
+			 </attributes>
+		</class>
+		<class name="DeliveryCustomItem" title="发货单自定义项" tableName="se_delivery_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="Delivery" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="DeliveryDetailCustomItem" title="发货单明细自定义项" tableName="se_delivery_details_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="DeliveryDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="Delivery"/>
+			<realization supplier="base.itf.CustomItem" client="DeliveryCustomItem"/>
+			<realization supplier="base.itf.CustomItem" client="DeliveryDetailCustomItem"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="Delivery" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="DeliveryDetail" />	
+			<generalization parent="base.entity.BizObject" child="DeliveryDetailPromotion" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongDelivery" typeB="Delivery" roleA="deliveryDetails" typeA="DeliveryDetail"/>
+			<association type="composition" roleB="id" typeB="Delivery" roleA="headItem" typeA="DeliveryCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="DeliveryDetail" roleA="bodyItem" typeA="DeliveryDetailCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="belongDeliveryDetail" typeB="DeliveryDetail" roleA="deliveryDetailPromotions" typeA="DeliveryDetailPromotion" roleAMulti="0..n" />
+		</associations>	
+	</component>
+
+	<component name="outwhouse" moduleName="se" title="出库单组件">
+		<!-- 出库单 -->
+		<class name="OutWhouse" title="出库单" tableName="se_outwhouse">
+			<attributes>
+				<attribute name="bustype" title="业务类型" type="String" iLength="20"/>
+				<attribute name="saletype" title="销售类型id" type="aa.sale.SaleType" columnName="saletype_id"/>
+				<attribute name="outwhousetype" title="出库类型" type="Boolean"/>
+				<attribute name="channel" title="渠道" type="String" iLength="20"/>
+				<attribute name="deliveryOrg" title="发货组织" type="base.org.Organization"  columnName="deliveryOrg_id"/>				
+				<attribute name="whouse" title="仓库id" columnName="whouse_id" type="aa.wh.Warehouse" />				
+				<attribute name="customer" title="客户id" type="aa.customer.Customer" columnName="customer_id" />
+				<attribute name="cuscontact" title="客户联系人" type="String" iLength="64" />
+				<attribute name="cusofficephone" title="客户联系人固定电话" type="String"  iLength="20" />
+				<attribute name="cusmobile" title="客户联系人移动电话" type="String"  iLength="20" />
+				<attribute name="recaddr" title="收货单位" type="String" iLength="64" />
+				<attribute name="recaddrdetailed" title="收货详细地址" type="String" iLength="255" />
+				<attribute name="reccontact" title="收货联系人" type="String" iLength="64" />
+				<attribute name="recofficePhone" title="收货联系人固定电话" type="String"  iLength="20" />
+				<attribute name="recmobile" title="收货联系人移动电话" type="String"  iLength="20" />		
+				<attribute name="accountcustomer" title="立账客户id" type="aa.customer.Customer" columnName="accountcustomer_id" />									
+				<attribute name="needbill" title="需要发票" type="Boolean" />	
+				<attribute name="billclass" title="发票种类" type="String" iLength="20"/>
+				<attribute name="billtype" title="发票类型" type="String" iLength="20"/>				
+				<attribute name="billtitle" title="发票抬头" type="String" iLength="255" columnName="billtitle_id"/>				
+				<attribute name="billcontent" title="发票内容id" type="String" iLength="255" columnName="billcontent_id"/>					
+				<attribute name="person" title="业务员id" type="aa.person.Person" columnName="person_id"/>
+				<attribute name="department" title="销售部门id" type="aa.dept.Department" columnName="dept_id"/>				
+				<attribute name="accountRule" title="立账规则id" columnName="accountRule_id" type="aa.arapaccountrule.ARAPAccountRule" />
+				<attribute name="paymentterm" title="付款条件id" columnName="payment_term_id" type="aa.pay.Payment" />	
+				<attribute name="forreceivetime" title="预计到货日期" type="DateTime" />
+				<attribute name="logisticscom" title="物流公司" type="String" iLength="20" />								
+				<attribute name="buyersremark" title="买家备注" type="String" iLength="255"/>
+				<attribute name="remark" title="备注" type="String" iLength="255"/>					
+				<attribute name="changetime" title="价格调整时间" type="DateTime" />
+				<attribute name="changepersion" title="价格调整人" type="String" iLength="20"/>					
+			</attributes>
+		</class>	
+		
+		<class name="OutWhouseDetail" title="出库单明细" tableName="se_outwhouse_details">
+			<attributes>
+				<attribute name="belongOutWhouse" columnName="outwhouse_id" title="所属出库单" type="OutWhouse" />				
+				<attribute name="inventory" title="料品id" type="aa.inv.Inventory" columnName="inventory_id"/>	
+				<attribute name="product" title="商品id" type="Long" columnName="product_id"/>				
+				<attribute name="skuid" title="SkuID" type="Long"/>
+				<attribute name="cusinvid" title="客户料品对照ID" type="Long"/>
+				<attribute name="incomeexpenditure" title="项目ID" type="String" columnName="incomeexpenditure_id" iLength="255" />
+				<attribute name="whouse" title="仓库id" columnName="whouse_id" type="aa.wh.Warehouse" />
+				<attribute name="hpreceivetime" title="希望到货日期" type="DateTime" />
+				<attribute name="plansendtime" title="计划发货日期" type="DateTime" />				
+				<attribute name="priceMark" title="价格标识" type="String"  iLength="20"/>				
+				<attribute name="quote" title="报价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="discountrate" title="折扣率" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="discountamount" title="折扣额" type="Decimal" iPrecision="19" iScale="8" />								
+				<attribute name="gift" title="赠品" type="Boolean" />
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />								
+				<attribute name="isReturnOrSupple" title="退货补货" type="Boolean"/>
+				<attribute name="receivablesqty" title="累计应收数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="receivablessubqty" title="累计应收销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="receivablesmoney" title="累计应收金额" type="Decimal" iPrecision="19" iScale="8" />	
+				<attribute name="signqty" title="累计签收数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="signsubqty" title="累计签收销售单位数量" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="returnmoney" title="累计退货金额" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="accounttype" title="应收状态" type="String"  iLength="20"/>	
+				<attribute name="account" title="记账人" type="String"  iLength="20"/>					
+				<attribute name="remark" title="备注" type="String" iLength="255"/>
+				<attribute name="attachment" title="附件" type="String" iLength="255"/>				
+			</attributes>
+		</class>
+		<class name="OutWhouseDetailPromotion" title="促销明细" tableName="se_outwhouse_details_pmt">
+			<attributes>
+				<attribute name="belongOutWhouseDetail" columnName="outwhousedetail_id" title="所属订单行" type="OutWhouseDetail" />
+				<attribute name="promotionactive" title="促销活动id" type="String" iLength="20" columnName="promotionactive_id"/>
+				<attribute name="promotionmode" title="促销方式id" type="String" iLength="20" columnName="promotionmode_id"/>
+			 </attributes>
+		</class>
+		<class name="OutWhouseCustomItem" title="发货单自定义项" tableName="se_outwhouse_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="OutWhouse" isKey="true" />
+		   </attributes>
+		</class>
+		<class name="OutWhouseDetailCustomItem" title="发货单明细自定义项" tableName="se_outwhouse_details_customitem">
+			<attributes>
+				<attribute name="id" columnName="id" title="订单id" type="OutWhouseDetail" isKey="true" />
+		   </attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalFlow" client="OutWhouse"/>
+			<realization supplier="base.itf.CustomItem" client="OutWhouseCustomItem"/>
+			<realization supplier="base.itf.CustomItem" client="OutWhouseDetailCustomItem"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="scm.base.SCMVouch" child="OutWhouse" />
+			<generalization parent="scm.base.SCMVouchLineInv" child="OutWhouseDetail" />	
+			<generalization parent="base.entity.BizObject" child="OutWhouseDetailPromotion" />
+		</generalizations>
+		<associations>
+			<association type="composition" roleB="belongOutWhouse" typeB="OutWhouse" roleA="outWhouseDetails" typeA="OutWhouseDetail"/>
+			<association type="composition" roleB="id" typeB="OutWhouse" roleA="headItem" typeA="OutWhouseCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="id" typeB="OutWhouseDetail" roleA="bodyItem" typeA="OutWhouseDetailCustomItem" roleAMulti="1" />
+			<association type="composition" roleB="belongOutWhouseDetail" typeB="OutWhouseDetail" roleA="outWhouseDetailPromotions" typeA="OutWhouseDetailPromotion" roleAMulti="0..n" />
+		</associations>			
+		
+	</component>
+</components>

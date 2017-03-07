@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="archive.base.xml"/>
+	</references>
+
+	<component name="tag" moduleName="rm" title="标签管理组件">
+		<class name="Tag" title="标签管理" tableName="aa_tag">
+			<attributes>
+				<attribute name="tag_mode" title="标签类型" type="String" iLength="50"/>
+				<attribute name="tag_abbr" title="标签备注" type="String" iLength="150"/>
+				<attribute name="tag_bgcolor" title="标签背景颜色" type="String" defaultValue="write" iLength="7"/>
+				<attribute name="tag_fgcolor" title="标签字体颜色" type="String" defaultValue="black" iLength="7"/>  
+				<attribute name="tag_filter" title="标签条件" type="String"  iLength="255"/>
+				<attribute name="rel_count" title="关联的个数" type="Integer" defaultValue="0"/>  
+				<attribute name="is_deleted" title="是否删除" type="Boolean"/>
+				</attributes>
+		</class>
+		
+		<generalizations>
+			<generalization child="Tag" parent="archive.base.Archive"/>
+		</generalizations>
+	</component>
+		
+	<component name="brand" moduleName="rm" title="品牌管理组件">
+		<class name="Brand" title="品牌管理" tableName="aa_brand">
+			<attributes>
+				<attribute name="brand_url" title="品牌网址" type="String" iLength="255"/>
+				<attribute name="brand_desc" title="品牌介绍" type="Text"  />
+				<attribute name="brand_logo" title="品牌图片标识" type="String" iLength="255"/>
+				<attribute name="brand_keywords" title="品牌别名" type="Text"  />
+				<attribute name="brand_setting" title="品牌模板" type="Text"  />
+				<attribute name="is_disabled" title="是否失效" type="Boolean" defaultValue="false" />
+				<attribute name="ordernumber" title="排序" type="Integer"/>  
+				<attribute name="is_deleted" title="是否删除" type="Boolean"/>
+				<attribute name="cfolder" title="图片目录" type="String" iLength="255"/>
+				<attribute name="cimgname" title="图片文件名" type="String" iLength="255"/>
+				<attribute name="coriginalname" title="图片原始文件名" type="String" iLength="255"/>
+				</attributes>
+		</class>
+		<generalizations>
+			<generalization child="Brand" parent="archive.base.Archive"/>
+		</generalizations>
+	</component>
+	
+	<component name="tagRel" moduleName="rm" title="标签关联组件">
+		<class name="TagRel" title="标签关联" tableName="aa_tag_rel">
+			<attributes>
+				<attribute name="tag_id" title="标签ID" type="rm.tag.Tag" defaultValue="0"/>
+				<attribute name="rel_id" title="商品id" type="Long" />	
+			</attributes>
+		</class>
+		<generalizations>
+			<generalization child="TagRel" parent="archive.base.Archive"/>
+		</generalizations>
+	</component>
+	
+
+</components>

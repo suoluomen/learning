@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+		<reference file="aa.xml"/>
+		<reference file="scm.base.xml"/>
+	</references>
+	<component name="itf" moduleName="ar" title="应收公用接口组件">
+		<interface name="IARCustomer" title="客户信息">
+			<attributes>
+				<attribute name="customer" title="客户" type="aa.customer.Customer" columnName="customer_id"/>
+				<attribute name="billCustomer" title="立账客户" type="aa.customer.Customer" columnName="billCustomer_id"/>
+				<attribute name="settlement" title="结算方式" columnName="settlement_id" type="aa.common.Settlement" note="结算方式"/>
+				<attribute name="customerContact" title="客户联系人" columnName="customer_contact_id" type="aa.customer.CustomerContact"/>
+				<attribute name="customerContactMobile" title="客户联系人手机号" columnName="customer_contact_mobile" type="String" iLength="20"/>
+				<attribute name="paymentTerm" title="付款条件" columnName="payment_term_id" type="aa.pay.Payment" note="付款条件"/>
+				<attribute name="recCustomer" title="收货客户" type="aa.customer.Customer" columnName="receiptCustomer_id"/>
+				<attribute name="recaddr" title="收货单位" type="aa.customer.CustomerAd" columnName="recaddr_id"/>
+				<attribute name="recaddrdetailed" title="详细收货地址" type="String" iLength="255" />
+				<attribute name="reccontact" title="收货联系人" type="aa.customer.CustomerContact" />
+				<attribute name="recmobile" title="收货联系人移动电话" type="String"  iLength="20" />
+				<attribute name="whouse" title="仓库id" columnName="whouse_id" type="aa.wh.Warehouse" />
+			</attributes>
+		</interface>
+		<interface name="IARAccountRule" title="立账规则信息">
+			<attributes>
+				<attribute name="saleAccountRule" title="立账规则" columnName="sale_acc_rule_id" type="aa.arapaccountrule.ARAPAccountRule" note="销售立账规则"/>
+				<attribute name="baseDate" title="立账日" type="Date" isRequired="true"/>
+				<attribute name="dueDays" title="账期" type="Short" miniValue="0" maxiValue="36500"/>
+				<attribute name="endDate" title="到期日" type="DateTime"/>
+			</attributes>
+		</interface>
+		<interface name="IARInventoryLine" title="明细存货信息">
+			<attributes>
+				<attribute name="inventorySkuId" title="SkuID" columnName="inventory_sku_id" type="aa.inv.InventorySKU"/>
+				<attribute name="inventoryProId" title="商品ID" columnName="inventory_Pro_Id" type="aa.inv.InventorySKU"/>
+				<!--
+				<attribute name="invCode" title="存货编码" type="String" iLength="255"  />
+				<attribute name="invName" title="存货名称" type="String" isGlobalization="true" iLength="255" />
+				<attribute name="invModel" title="型号"  type="String" iLength="255" />
+				<attribute name="invSpecification" title="规格"  type="String" iLength="120" /> 
+				-->
+				<attribute name="invNote" title="商品描述" type="String" isGlobalization="true" iLength="255" />
+				
+				<attribute name="cusInvId" title="客户料品对照ID" columnName="cusInv_id" type="aa.inv.InventorySKU"/>
+				<!--
+				<attribute name="cusInvId" title="客户料品编号" type="String" iLength="255"  />
+				<attribute name="cusInvCode" title="客户料品编号" type="String" iLength="255"  />
+				<attribute name="cusInvName" title="客户料品名称" type="String" isGlobalization="true" iLength="255" />
+				<attribute name="cusInvModel" title="客户料品型号"  type="String" iLength="255" />
+				-->
+				
+				<!-- 存货带入主计量
+				<attribute name="uom" title="基本计量单位" columnName="uom_id" type="aa.uom.UOM" />
+				<attribute name="uomsa" title="销售记量单位" columnName="puuom_id" type="aa.uom.UOM" />
+				<attribute name="priceuomsa" title="销售计价单位" columnName="pupriceuom_id" type="aa.uom.UOM" />
+				<attribute name="uomqty" title="基本计量数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="uomsaqty" title="销售单位数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="priceuomsaqty" title="计价单位数量" type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="saCvrRate" title="销售单位换算率" type="Decimal" iScale="2" iPrecision="19" />
+				<attribute name="priceSaCvrRate" title="计价单位换算率" type="Decimal" iScale="2" iPrecision="19" />
+				-->
+				<attribute name="quote" title="报价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="discountrate" title="折扣率"  type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="discountamount" title="折扣额"  type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="discountamountshare" title="整单折扣分摊额"  type="Decimal" iPrecision="19" iScale="8"/>
+				<attribute name="cePrice" title="建议零售价" type="Decimal" iPrecision="19" iScale="8" />
+				<attribute name="saMinPrice" title="最低售价" type="Decimal" iPrecision="19" iScale="8" />
+				
+				
+				<attribute name="saDepartment" title="销售部门"  columnName="saDepartment_id" type="aa.dept.Department"/>
+				<attribute name="saPerson" title="销售人员" columnName="saPerson_id" type="aa.person.Person" />
+			</attributes>
+		</interface>
+		<interface name="IARItemLine" title="明细项目信息">
+			<attributes>
+				<attribute name="itemid" title="项目id" type="String" iLength="20"  />
+				<attribute name="itemcode" title="项目编码" type="String" iLength="20"  />
+				<attribute name="itemname" title="项目名称" type="String" isGlobalization="true" iLength="20"  />
+			</attributes>
+		</interface>
+		<interface name="IARReturnLine" title="明细回写信息">
+			<attributes>
+				<attribute name="totalVeriRecOriAmo" title="累计收款核金额（原币）" type="Decimal" iPrecision="12" iScale="8"/>
+				<attribute name="totalVeriRecLocAmo" title="累计收款核金额（本币）" type="Decimal" iPrecision="12" iScale="8"/>
+			</attributes>
+		</interface>
+	</component>
+	<component name="abs" moduleName="ar" title="应收公用基类组件">
+		<class name="ARVouch" title="应收单据基类">
+		</class>
+		<class name="ARVouchLine" title="应收单据行基类">
+			<attributes>
+				<attribute name="sourceid" title="上游单据主表id" type="Long"/>
+				<attribute name="sourceautoid" title="上游单据子表id" type="Long"/>
+				<attribute name="source" title="上游单据类型" type="String" iLength="30"/>
+				<attribute name="upcode" title="上游单据号" type="String" iLength="60"/>
+				<attribute name="makeRule" columnName="makerule_id" title="生单规则" type="Long" version="1.0.0824001" />
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IApprovalInfo" client="ARVouch"/>
+			<realization supplier="base.itf.IClosing" client="ARVouch"/>
+			<realization supplier="base.itf.ILock" client="ARVouch"/>
+			<realization supplier="base.itf.IChange" client="ARVouch"/>
+			<realization supplier="base.itf.IInvalid" client="ARVouch"/>
+			<realization supplier="base.itf.ILineClosing" client="ARVouchLine"/>
+			<realization supplier="base.itf.FreeItem" client="ARVouchLine"/>
+		</realizations>
+		<generalizations>
+			<generalization parent="voucher.base.Vouch" child="ARVouch" />
+			<generalization parent="voucher.base.VouchLine" child="ARVouchLine" />
+		</generalizations>
+	</component>
+</components>

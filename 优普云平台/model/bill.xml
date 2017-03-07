@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<references>
+		<reference file="java.xml"/>
+	</references>
+	<!--bill component-->
+	<component name="bill" moduleName="pb" title="表单模块">
+		<class name="Bill" title="表单" tableName="bill_base">
+		<attributes>
+			<attribute name="id" columnName="id" title="表单主表主键" type="Long" isKey="true"  note="表单主表主键" />
+			<attribute name="cBillNo" columnName="cBillNo" title="单据编号" type="String" iLength="40" note="单据编号-cardnumber" />
+			<attribute name="cName" columnName="cName" title="单据名称" type="String" iLength="200" note="单据名称" />
+			<attribute name="cCardType" columnName="cCardType" title="单据类型" type="String" iLength="100" note="单据类型（同cardnumber下来区分不同单据），同billno没有不同的类型可不需要预制此字段" />
+			<attribute name="cSubId" columnName="cSubId" title="子产品ID" type="String" iLength="45" note="子产品ID" />
+			<attribute name="iDefTplId" columnName="iDefTplId" title="单据默认显示模版" type="Long" note="单据默认显示模版" />
+			<attribute name="iDefPrnTplId" columnName="iDefPrnTplId" title="单据默认打印模版" type="Long" note="单据默认打印模版" />
+			<attribute name="iOrder" columnName="iOrder" title="排序号，从高往低排序" type="Integer" iLength="11" note="排序号，从高往低排序" />
+			<attribute name="bAllowMultiTpl" columnName="bAllowMultiTpl" title="是否允许多模版" type="Boolean" iLength="1" note="是否允许多模版" />
+			<attribute name="cDefWhere" columnName="cDefWhere" title="单据识别条件" type="String" iLength="1000" note="单据识别条件" />
+			<attribute name="pubts" columnName="pubts" title="时间戳" type="DateTime" note="时间戳" />
+			<attribute name="isDeleted" columnName="isDeleted" title="逻辑删除标记" type="Boolean" iLength="1" defaultValue="0" note="逻辑删除标记" />
+			<attribute name="bPrintLimited" columnName="bPrintLimited" title="是否打印控制" type="Boolean" iLength="1" note="是否打印控制" />
+			<attribute name="isSystem" columnName="iSystem" title="系统标识" type="Integer" iLength="1" defaultValue="0" note="bit型，0代表系统定义，其他再细分客户／行业等" />
+			<attribute name="cAuthId" columnName="cAuthId" title="权限号" type="String" iLength="45" note="权限号" />
+			<attribute name="cBillType" columnName="cBillType" title="标识是单据，列表还是档案" type="String" iLength="45" note="标识是单据，列表还是档案" />
+			<attribute name="cBeanId" columnName="cBeanId" title="服务标识" type="String" iLength="100" note="billservice,beanid—ufsystem的billregister的beanid" />
+		</attributes>
+		</class>
+		<class name="BillEntity" title="表单实体" tableName="billentity_base">
+			<attributes>
+				<attribute name="id" columnName="id" title="主键" type="Long" isKey="true"  note="主键" />
+					<attribute name="cCode" columnName="cCode" title="group编码" type="String" iLength="45" note="group编码" />
+					<attribute name="cSubId" columnName="cSubId" title="子产品号" type="String" iLength="45" note="子产品号" />
+					<attribute name="cName" columnName="cName" title="Group名称" type="String" iLength="100" note="Group名称" />
+					<attribute name="iOrder" columnName="iOrder" title="排序号" type="Integer" iLength="11" note="排序号，从高到低排" />
+					<attribute name="pubts" columnName="pubts" title="时间戳" type="DateTime" note="时间戳" />
+					<attribute name="isDeleted" columnName="isDeleted" title="逻辑删除标记" type="Boolean" iLength="1" defaultValue="0" note="逻辑删除标记" />
+					<attribute name="cDataSourceName" columnName="cDataSourceName" title="数据源名称" type="String" iLength="100" note="数据源名称，可能是一个表或者一个试图" />
+					<attribute name="cPrimaryKey" columnName="cPrimaryKey" title="cDataSourceName主键名称" type="String" iLength="100" note="cDsName主键名称" />
+					<attribute name="bill" columnName="iBillId"  title="所属bill" type="Bill" note="所属bill" />
+					<attribute name="iSystem" columnName="iSystem" title="系统标识" type="Integer" iLength="1" defaultValue="0" note="bit型，0代表系统定义，其他再细分客户／行业等" />
+					<attribute name="bMain" columnName="bMain" title="是否主表" type="Boolean" iLength="1" note="是否主表" />
+					<attribute name="cForeignKey" columnName="cForeignKey" title="子表中存的主表主键" type="String" iLength="100" note="如果是子表，则该字段代表该子表中存的主表主键" />
+					<attribute name="cParentDataSource" columnName="cParentDataSource" title="主表数据源名称" type="String" iLength="45" note="主表数据源名称，如果是子表填此项，否则为null" />
+			</attributes>
+		</class>
+		<class name="BillTemplate" title="表单模版" tableName="billtemplate_base">
+			<attributes>
+				<attribute name="id" columnName="id" title="主键" type="Long" isKey="true"  note="主键" />
+				<attribute name="cName" columnName="cName" title="模版名称" type="String" iLength="100" note="模版名称" />
+				<attribute name="iOrder" columnName="iOrder" title="排序号，从高到低排" type="Integer" iLength="11" note="排序号，从高到低排" />
+				<attribute name="iTplMode" columnName="iTplMode" title="模版类型,0代表显示模版，1代表打印模版，2代表word模版" type="Integer" iLength="11" note="模版类型,0代表显示模版，1代表打印模版，2代表word模版" />
+				<attribute name="bill" columnName="iBillId" title="所属bill" type="Bill" note="所属bill" />
+				<attribute name="cTotalColor" columnName="cTotalColor" title="表体合计行颜色" type="String" iLength="45" note="表体合计行颜色" />
+				<attribute name="cAmongColor" columnName="cAmongColor" title="隔行颜色" type="String" iLength="45" note="隔行颜色" />
+				<attribute name="iWidth" columnName="iWidth" title="画布宽度" type="Integer" iLength="11" note="画布宽度" />
+				<attribute name="pubts" columnName="pubts" title="时间戳" type="DateTime" note="时间戳" />
+				<attribute name="isDeleted" columnName="isDeleted" title="逻辑删除标记" type="Boolean" iLength="1" defaultValue="0" note="逻辑删除标记" />
+				<attribute name="cPrintSetting" columnName="cPrintSetting" title="打印设置" type="String" iLength="2000" note="打印设置" />
+				<attribute name="cPageHeader" columnName="cPageHeader" title="页眉" type="String" iLength="1000" note="页眉" />
+				<attribute name="cPageFooter" columnName="cPageFooter" title="页脚" type="String" iLength="1000" note="页脚" />
+				<attribute name="cFixedColor" columnName="cFixedColor" title="固定行颜色" type="String" iLength="45" note="固定行颜色" />
+				<attribute name="cTitleHeight" columnName="cTitleHeight" title="标题区高度" type="String" iLength="45" note="标题区高度" />
+				<attribute name="iPrintTotal" columnName="iPrintTotal" title="打印功能标识" type="Integer" iLength="11" note="是否打印具体行,00000000,第一位代表打印合计行，第二位代表打印小计行，第三位代表表体标题行" />
+				<attribute name="iFixedCols" columnName="iFixedCols" title="固定列数" type="Integer" iLength="11" note="固定列数" />
+				<attribute name="cMemo" columnName="cMemo" title="备注" type="String" iLength="1000" note="备注" />
+				<attribute name="cTitle" columnName="cTitle" title="模版标题" type="String" iLength="200" note="模版标题" />
+				<attribute name="iGridStyle" columnName="iGridStyle" title="网格风格" type="Integer" iLength="11" note="网格风格" />
+				<attribute name="cRowLayout" columnName="cRowLayout" title="行布局" type="String" iLength="2000" note="行布局" />
+				<attribute name="cTitleStyle" columnName="cTitleStyle" title="标题风格，比如字体，可以用xml或者json" type="String" iLength="500" note="标题风格，比如字体，可以用xml或者json" />
+			</attributes>
+		</class>
+		<class name="BillTplGroup" title="表单模版分组" tableName="billtplgroup_base">
+			<attributes>
+				<attribute name="id" columnName="id" title="主键" type="Long" isKey="true"  note="主键" />
+				<attribute name="cCode" columnName="cCode" title="group编码" type="String" iLength="45" note="group编码" />
+				<attribute name="cSubId" columnName="cSubId" title="子产品号" type="String" iLength="45" note="子产品号" />
+				<attribute name="cName" columnName="cName" title="Group名称" type="String" iLength="100" note="Group名称" />
+				<attribute name="pubts" columnName="pubts" title="时间戳" type="DateTime" note="时间戳" />
+				<attribute name="iOrder" columnName="iOrder" title="排序号，从高到低排" type="Integer" iLength="11" note="排序号，从高到低排" />
+				<attribute name="isDeleted" columnName="isDeleted" title="逻辑删除标记" type="Boolean" iLength="1" defaultValue="0" note="逻辑删除标记" />
+				<attribute name="cPrimaryKey" columnName="cPrimaryKey" title="cDsName主键名称" type="String" iLength="100" note="cDsName主键名称" />
+				<attribute name="cDataSourceName" columnName="cDataSourceName" title="数据源名称，可能是一个表或者一个试图" type="String" iLength="100" note="数据源名称，可能是一个表或者一个试图" />
+				<attribute name="bill" columnName="iBillId" title="所属bill" type="Bill" note="所属bill" />
+				<attribute name="billentity" columnName="iBillEntityId" title="所属billentity" type="BillEntity" note="所属billentity" />
+				<attribute name="isSystem" columnName="iSystem" title="系统标识" type="Integer" iLength="1" defaultValue="0" note="bit型，0代表系统定义，其他再细分客户／行业等" />
+				<attribute name="bMain" columnName="bMain" title="是否主表" type="Boolean" iLength="1" note="是否主表" />
+				<attribute name="cForeignKey" columnName="cForeignKey" title="如果是子表，则该字段代表该子表中存的主表主键" type="String" iLength="100" note="如果是子表，则该字段代表该子表中存的主表主键" />
+				<attribute name="cParentDataSource" columnName="cParentDataSource" title="主表数据源名称，如果是子表填此项，否则为null" type="String" iLength="45" note="主表数据源名称，如果是子表填此项，否则为null" />
+				<attribute name="billtemplate" columnName="iTplId" title="模版id" type="BillTemplate" note="模版id" />
+				<attribute name="cImage" columnName="cImage" title="图标" type="String" iLength="100" note="图标" />
+				<attribute name="cType" columnName="cType" title="控件类型" type="String" iLength="45" note="group标识类型，比如TabControl,Grid,Tree,Table等" />
+				<attribute name="iParentId" columnName="iParentId" title="父级billtplgroupid" type="Long" note="父级billtplgroupid" />
+			</attributes>
+		</class>
+		<class name="BillItem" title="表单元素" tableName="billitem_base">
+			<attributes>
+				<attribute name="id" columnName="id" title="主键" type="Long" isKey="true"  note="主键" />
+				<attribute name="cSubId" columnName="cSubId" title="子产品号" type="String" iLength="45" note="子产品号" />
+				<attribute name="bill" columnName="iBillId" title="所属表单" type="Bill" note="所属表单" />
+				<attribute name="cFieldName" columnName="cFieldName" title="带关联关系的字段名" type="String" iLength="100" note="带关联关系的字段名" />
+				<attribute name="cName" columnName="cName" title="字段名" type="String" iLength="45" note="字段名" />
+				<attribute name="cCaption" columnName="cCaption" title="名称" type="String" iLength="45" note="名称" />
+				<attribute name="cShowCaption" columnName="cShowCaption" title="显示名称" type="String" iLength="45" note="显示名称" />
+				<attribute name="billentity" columnName="iBillEntityId" title="billentityid" type="BillEntity" note="billentityid" />
+				<attribute name="billtplgroup" columnName="iBillTplGroupId" title="所属billtplgroup" type="BillTplGroup" note="所属billtplgroup" />
+				<attribute name="billtemplate" columnName="iTplId" title="模版id" type="BillTemplate" note="模版id" />
+				<attribute name="iOrder" columnName="iOrder" title="排序（只支持流式布局，所以只需要一个排序字段即可）" type="Integer" iLength="11" note="排序（只支持流式布局，所以只需要一个排序字段即可）" />
+				<attribute name="iMaxLength" columnName="iMaxLength" title="最大长度" type="Integer" iLength="11" note="最大长度" />
+				<attribute name="iFieldType" columnName="iFieldType" title="字段类型" type="Integer" iLength="11" note="字段类型" />
+				<attribute name="bEnum" columnName="bEnum" title="是否枚举" type="Boolean" iLength="1" note="是否枚举" />
+				<attribute name="cEnumString" columnName="cEnumString" title="枚举信息" type="String" iLength="45" note="枚举信息" />
+				<attribute name="pubts" columnName="pubts" title="时间戳" type="DateTime" note="时间戳" />
+				<attribute name="isDeleted" columnName="isDeleted" title="逻辑删除标记" type="Boolean" iLength="1" note="逻辑删除标记" />
+				<attribute name="bMustSelect" columnName="bMustSelect" title="是否必选" type="Boolean" iLength="1" note="是否必选" />
+				<attribute name="bHidden" columnName="bHidden" title="是否隐藏" type="Boolean" iLength="1" note="是否隐藏" />
+				<attribute name="cRefType" columnName="cRefType" title="参照类型" type="String" iLength="45" note="参照类型" />
+				<attribute name="cRefId" columnName="cRefId" title="参照Id" type="String" iLength="45" note="参照Id" />
+				<attribute name="cRefRetId" columnName="cRefRetId" title="参照返回信息" type="String" iLength="100" note="参照返回信息,可能是一个字段，也可能是多个字段，用逗号分隔" />
+				<attribute name="cDataRule" columnName="cDataRule" title="规则信息" type="String" iLength="200" note="规则信息，可能是公式规则，或者规则系统中的规则，取规则编码" />
+				<attribute name="iFunctionType" columnName="iFunctionType" title="功能标识" type="Integer" iLength="11" note="tinyint,一个字段标识可能的功能，00000000用八位二进制0，1代表8个功能。比如第一位代表业务通知，第二位代表UU消息，第三位代表智能输入，如果该字段三个功能都有则为00000111，为7。以此类推，是否关联查询也在此字段上标识" />
+				<attribute name="bSplit" columnName="bSplit" title="是否支持行拆分" type="Boolean" iLength="1" note="是否支持行拆分" />
+				<attribute name="bExtend" columnName="bExtend" title="是否扩展字段" type="Boolean" iLength="1" note="是否扩展字段" />
+				<attribute name="iNumPoint" columnName="iNumPoint" title="小数点" type="Integer" iLength="11" note="" />
+				<attribute name="bCanModify" columnName="bCanModify" title="是否可修改" type="Boolean" iLength="1" note="是否可修改" />
+				<attribute name="cSourceType" columnName="cSourceType" title="数据来源类型" type="String" iLength="45" note="数据来源类型" />
+				<attribute name="iMaxShowLen" columnName="iMaxShowLen" title="最大显示长度" type="Integer" iLength="11" note="最大显示长度" />
+				<attribute name="cMemo" columnName="cMemo" title="备注" type="String" iLength="45" note="备注" />
+				<attribute name="iColWidth" columnName="iColWidth" title="列宽" type="Integer" iLength="11" note="列宽" />
+				<attribute name="cSumType" columnName="cSumType" title="汇总类型" type="String" iLength="45" note="汇总类型" />
+				<attribute name="iAlign" columnName="iAlign" title="对齐方式" type="Boolean" iLength="1" note="对齐方式" />
+				<attribute name="bNeedSum" columnName="bNeedSum" title="是否支持合计" type="Boolean" iLength="1" note="是否支持合计" />
+				<attribute name="bShowIt" columnName="bShowIt" title="是否是显示字段" type="Boolean" iLength="1" note="是否是显示字段" />
+				<attribute name="bFixed" columnName="bFixed" title="是否是固定列" type="Boolean" iLength="1" note="是否是固定列" />
+				<attribute name="bFilter" columnName="bFilter" title="是否过滤字段" type="Boolean" iLength="1" note="是否过滤字段" />
+				<attribute name="cDefaultValue" columnName="cDefaultValue" title="默认值" type="String" iLength="45" note="默认值" />
+				<attribute name="cFormatData" columnName="cFormatData" title="格式化串设置" type="String" iLength="45" note="格式化串设置" />
+				<attribute name="cUserId" columnName="cUserId" title="用户信息" type="String" iLength="45" note="用户信息" />
+				<attribute name="iTabIndex" columnName="iTabIndex" title="Tab键的index" type="Integer" iLength="11" note="Tab键的index" />
+				<attribute name="bIsNull" columnName="bIsNull" title="是否可以为空" type="Boolean" iLength="1" note="是否可以为空" />
+				<attribute name="bPrintCaption" columnName="bPrintCaption" title="是否打印栏目标题" type="Boolean" iLength="1" note="是否打印栏目标题" />
+				<attribute name="bJointQuery" columnName="bJointQuery" title="是否支持关联查询" type="Boolean" iLength="1" note="是否支持关联查询" />
+				<attribute name="bPrintUpCase" columnName="bPrintUpCase" title="是否打印金额大写" type="Boolean" iLength="1" note="是否打印金额大写" />
+				<attribute name="bSelfDefine" columnName="bSelfDefine" title="是否自定义项目" type="Boolean" iLength="1" note="是否自定义项目" />
+				<attribute name="cDataSourceName" columnName="cDataSourceName" title="数据源名称" type="String" iLength="45" note="数据源名称，可能是一个表或者一个视图，group上有就按照group上的值赋值，也可以自行赋值，为了考虑一个页签可能包含多个实体的情况" />
+				<attribute name="cOrder" columnName="cOrder" title="排序信息" type="String" iLength="45" note="排序信息，为null说明该字段不是排序字段" />
+				<attribute name="bCheck" columnName="bCheck" title="是否向后端发送校验请求" type="Boolean" iLength="1" note="是否向后端发送校验请求" />
+				<attribute name="cControlType" columnName="cControlType" title="控件类型" type="String" iLength="20" note="控件类型" />
+			</attributes>
+		</class>
+		<associations>
+			<association type="composition" roleB="bill" typeB="Bill" roleA="billentities" typeA="BillEntity"/>
+			<association type="composition" roleB="bill" typeB="Bill" roleA="billtemplates" typeA="BillTemplate"/>
+			<association type="composition" roleB="billtemplate" typeB="BillTemplate" roleA="billtplgroups" typeA="BillTplGroup"/>
+			<association type="composition" roleB="billtplgroup" typeB="BillTplGroup" roleA="billitems" typeA="BillItem"/>
+		</associations>
+	</component>
+</components>

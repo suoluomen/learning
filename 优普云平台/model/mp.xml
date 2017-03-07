@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components>
+    <references>
+        <reference file="java.xml"/>
+        <reference file="base.xml"/>
+		<reference file="aa.xml" />
+        <reference file="archive.base.xml"/>
+    </references>
+    <component name="distributor" moduleName="mp" title="分销商组件">
+		<class name="Distributor" title="分销商" tableName="mp_distributor">
+			<attributes>
+				<attribute name="vouchdate" title="单据日期" type="Date"  />
+  				<attribute name="customer" title="客户" columnName="customer_id" type="aa.customer.Customer" />
+			</attributes>
+		</class>
+		<class name="Goods" title="分销商品关联表" tableName="mp_distributor_goods">
+			<attributes>
+				<attribute name="distributor" title="分销商" columnName="distributor_id" type="Distributor" />
+				<!--料品id 商品id(暂缺) SKUID 规格-->
+				<attribute name="belongInventory" title="料品ID" type="aa.inv.Inventory"  columnName="inventory_id" />
+				<attribute name="belongProduct" title="商品" type="Long" columnName="product_id" />
+				<attribute name="belongSku" title="商品Sku" type="Long" columnName="sku_id" />
+				<attribute name="applyTime" title="申请日期" type="Date" columnName="apply_time" />
+				<!--启用的相关字段暂缺-->
+			</attributes>
+		</class>
+		<associations>
+			<association type="composition" roleB="distributor" typeB="Distributor" roleA="goodses" typeA="Goods" roleAMulti="0..n"/>
+		</associations>
+		<generalizations>			
+			<generalization parent="voucher.base.Vouch" child="Distributor" />
+			<generalization parent="base.entity.BizObject" child="Goods" />
+		</generalizations>
+		<realizations>
+			<realization supplier="base.itf.IClosing" client="Distributor"/>
+			<realization supplier="base.itf.IApprovalFlow" client="Distributor"/>
+			<realization supplier="base.itf.IApprovalInfo" client="Distributor"/>
+			<realization supplier="base.itf.IApprovalFlow" client="Goods" />
+			<realization supplier="base.itf.IApprovalInfo" client="Goods" />
+		</realizations>
+	</component>
+	<component name="requiregoods" moduleName="mp" title="要货申请">
+		<class name="RequireGoods" title="要货单" tableName="mp_requiregoods">
+			<attributes>
+  				<attribute name="customer" title="客户" columnName="customer_id" type="Date" />
+  				<attribute name="arriveDate" title="到货时间"  type="Date" />
+  				<attribute name="remark" title="备注"  type="Text" />
+  				<attribute name="requireRemark" title="申请备注"  type="Text" />
+  				<attribute name="approveRemark" title="批复备注"  type="Text" />
+  				<attribute name="requiretype" title="业务类型"  type="String" iLength="2"/>
+  				<attribute name="refCode" title="关联单据编码"  type="String" iLength="60"/>
+			</attributes>
+		</class>
+		<class name="RequireGoodsDetail" title="要货单商品" tableName="mp_requiregoods_detail">
+			<attributes>
+				<attribute name="requiregoods" title="要货单" columnName="requiregoods_id" type="RequireGoods" />
+				<!--料品id 商品id(暂缺) SKUID 规格-->
+				<attribute name="belongInventory" title="料品ID" type="aa.inv.Inventory"  columnName="inventory_id" />
+				<attribute name="belongProduct" title="商品" type="Long" columnName="product_id" />
+				<attribute name="belongSku" title="商品Sku" type="Long" columnName="sku_id" />
+				<attribute name="quantity" title="数量" type="Decimal" iPrecision="12" iScale="2" />
+				<attribute name="approvequantity" title="批复数量" type="Decimal" iPrecision="12" iScale="2" />
+				<attribute name="sendWarehouse" title="发货仓库" type="aa.wh.Warehouse" columnName="sendwarehouse_id"/>
+				<attribute name="receiveWarehouse" title="收货仓库" type="aa.wh.Warehouse" columnName="receivewarehouse_id"/>
+				<!--启用的相关字段暂缺-->
+			</attributes>
+		</class>
+		<generalizations>			
+			<generalization parent="voucher.base.Vouch" child="RequireGoods" />
+			<generalization parent="base.entity.BizObject" child="RequireGoodsDetail" />
+		</generalizations>
+		<realizations>
+			<realization supplier="base.itf.IClosing" client="RequireGoods"/>
+			<realization supplier="base.itf.IApprovalFlow" client="RequireGoods"/>
+			<realization supplier="base.itf.IApprovalInfo" client="RequireGoods"/>
+		</realizations>
+		<associations>
+			<association type="composition" roleB="requiregoods" typeB="RequireGoods" roleA="goodsDetails" typeA="RequireGoodsDetail"/>
+		</associations>
+	</component>
+</components>

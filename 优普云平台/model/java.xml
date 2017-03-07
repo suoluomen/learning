@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components>
+  <references/>
+  <component name="lang" moduleName="java" title="系统类型组件" id="JAVA-BASE-COMPONENT">
+    <datatype name="Integer" title="整数" id="BS001"/>
+    <datatype name="Byte" title="字节" id="BS002"/>
+    <datatype name="Short" title="短整数" id="BS003"/>
+    <datatype name="Long" title="长整数" id="BS004"/>
+    <datatype name="Decimal" title="十进制数" id="BS005" />
+    <datatype name="Boolean" title="布尔" id="BS011" />
+    <datatype name="Date" title="日期" id="BS012" />
+    <datatype name="DateTime" title="日期时间" id="BS013" />
+    <datatype name="Time" title="时间" id="BS014" />
+    <datatype name="String" title="字符串" id="BS020"/>
+    <datatype name="Text" title="文本" id="BS021"/>
+    <datatype name="Binary" title="二进制" id="BS022"/>
+    <!--<datatype name="Custom" title="自定义项" id="BS031"/>
+    <datatype name="CustomItem" title="自由项" id="BS032"/>
+    <datatype name="Memo" title="备注" id="BS041"/>
+    <datatype name="I18N" title="多语文本" id="BS042"/>-->
+    <datatype name="T" title="泛型" id="BS101"/>
+  </component>
+</components>

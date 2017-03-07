@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<components>
+	<component name="enums" moduleName="pub" title="枚举类型">
+		<enum name="MakeBillType" title="生单类型">
+			<item name="Main" title="主子生单" value="0"/>
+			<item name="Single" title="单表生单" value="1"/>
+		</enum>
+		<enum name="TimeStampCheckType" title="时间戳校验类型">
+			<item name="FatherCheck" title="校验主" value="0"/>
+			<item name="ChildCheck" title="校验子" value="1"/>
+		</enum>
+		<enum name="MappedRelation" title="映射关系">
+			<item name="MainMPMain" title="主-主" value= "0"/>
+			<item name="MainMPChild" title="主-子" value= "1"/>
+			<item name="ChildMPMain" title="子-主" value= "2"/>
+			<item name="ChildMPChild" title="子-子" value= "3"/>
+		</enum>
+		<enum name="MappedType" title="映射类型">
+			<item name="SimpleMP" title="简单映射" value= "0"/>
+			<item name="Calculate" title="计算公式" value= "1"/>
+			<item name="OriginType" title="来源单据元数据类型标识" value= "2"/>
+		</enum>
+		<enum name="OriginKey" title="来源单据关键字">
+			<item name="NoKey" title="非关键字段" value= "0"/>
+			<item name="MainTable" title="主表" value= "1"/>
+			<item name="ChilderTable" title="子表" value= "2"/>
+			<item name="TimeStamp" title="时间戳" value= "3"/>
+		</enum>
+	</component>
+	<!--user component-->
+	<component name="makebill" moduleName="pub" title="生单规则组件">
+		<class name="MakeBillRule" title="生单规则" tableName="pub_makebillrule">
+			<attributes>
+				<attribute name="id" title="ID" type="Long" isKey="true"/>
+				<attribute name="name" title="生单规则名称" type="String" iLength="50"  isUnique="true"  note="生单规则名称" />
+				<attribute name="filterScheme" title="过滤方案标识" type="String" iLength="32" note="过滤方案标识"/>
+				<attribute name="makeBillType" columnName="makebill_type" title="生单类型" type="pub.enums.MakeBillType" />
+				<attribute name="isMainColumn" columnName="is_main_column" title="生单栏目标识（主）" type="String" iLength="100"  note="生单栏目标识（主）如生单类型为1则只有此字段有值"/>
+				<attribute name="isChilderColumn" columnName="is_childer_column" title="生单栏目标识（子）" type="String"  iLength="1" note="生单栏目标识（子）如生单类型为1则此字段无值"/>
+				<attribute name="buttonType" columnName="button_type" title="生单按钮标识" type="String"  iLength="10"/>
+				<attribute name="originDes" columnName="origin_des" title="来源元数据标识" type="String" iLength="20"/>
+				<attribute name="targetDes" columnName="target_des" title="目标元数据标识" type="String" iLength="20"/>
+				<attribute name="originType" columnName="origin_type" title="来源元数据主关键字描述" type="String" iLength="20"/>
+				<attribute name="targetType" columnName="target_type" title="来源元数据子关键字描述" type="String" iLength="20"/>
+				<attribute name="timeStamp" columnName="timeStamp" title="时间戳校验类型" type="Integer" />
+			</attributes>
+		</class>
+		<class name="MakeBillRuleDetail" title="生单规则明细" tableName="pub_makebillrule_detail">
+			<attributes>
+				<attribute name="id" title="ID" type="Long" isKey="true"/>
+				<attribute name="rule" columnName="rule_id" title="所属规则" type="MakeBillRule" />
+				<attribute name="originField" columnName="origin_field" title="来源元数据字段" type="String" iLength="50"  />
+				<attribute name="targetField" columnName="target_field" title="目标元数据字段" type="String" iLength="50"  />
+				<attribute name="mappedRelation" columnName="mapped_relation" title="映射关系" type="pub.enums.MappedRelation" />
+				<attribute name="mappedType" columnName="mapped_type" title="映射类型" type="pub.enums.MappedType" />
+				<attribute name="calculateFormulas" columnName="calculate_formulas" title="计算公式" type="String" iLength="500" note="计算公式"/>
+				<attribute name="originKey" columnName="origin_key" title="来源单据关键字" type="pub.enums.OriginKey" />
+				<attribute name="isWriteBack" columnName="is_write_back" title="是否回写字段" type="String" iLength="1" note="是否回写字段"/>
+				<attribute name="writeBackType" columnName="write_back_type" title="回写来源字段标识" type="String"  iLength="1" note="回写来源字段标识"/>
+				<attribute name="writeBackStr" columnName="write_back_str" title="回写字段类型" type="String" iLength="1"/>
+				<attribute name="isCompareField" columnName="is_comparefield" title="是否比较字段" type="Integer" />
+				<attribute name="compareRule" columnName="compare_rule" title="比较规则" type="String" iLength="10" />
+				<attribute name="isEdit" columnName="is_edit" title="是否编辑字段" type="Integer" />
+			</attributes>
+		</class>
+		<realizations>
+			<realization supplier="base.itf.IAuditInfo" client="MakeBillRule"/>
+			<realization supplier="base.itf.IAuditInfo" client="MakeBillRuleDetail"/>
+		</realizations>
+		<associations>
+			<association type="composition" roleB="rule" typeB="MakeBillRule" roleA="details" typeA="MakeBillRuleDetail"/>
+		</associations>
+	</component>
+</components>
